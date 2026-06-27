@@ -30,14 +30,6 @@
         "button_2_link": ""
       }
     },
-    "kj_main_collection_HnJ4ME": {
-      "type": "kj-main-collection",
-      "name": "KJ Main Collection",
-      "settings": {
-        "bg_color": "#ffffff",
-        "products_per_page": 24
-      }
-    },
     "kj_main_product_t8i9hm": {
       "type": "kj-main-product",
       "name": "KJ Main Product",
@@ -119,7 +111,6 @@
   },
   "order": [
     "kj_hero_banner_LqQPrr",
-    "kj_main_collection_HnJ4ME",
     "kj_main_product_t8i9hm",
     "kj_product_slider_y7xFYq",
     "kj_shop_by_category_rnENN9",
