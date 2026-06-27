@@ -20,11 +20,11 @@
             "text": "FREE SHIPPING ON U.S. ORDERS $40+",
             "link": "",
             "font": "var(--font-heading--family)",
-            "font_size": "0.875rem",
+            "font_size": "0.75rem",
             "weight": "bold",
             "letter_spacing": "normal",
             "case": "uppercase",
-            "text_color": ""
+            "text_color": "{{ settings.color_palette.color1 }}"
           },
           "blocks": {}
         }
@@ -36,11 +36,11 @@
       "settings": {
         "speed": 5,
         "section_width": "page-width",
-        "background_color": "",
+        "background_color": "{{ settings.color_palette.color2 }}",
         "divider_width": 1,
         "divider_color": "{{ settings.color_palette.color3 }}",
-        "padding-block-start": 15,
-        "padding-block-end": 15
+        "padding-block-start": 10,
+        "padding-block-end": 10
       }
     },
     "header_section": {
