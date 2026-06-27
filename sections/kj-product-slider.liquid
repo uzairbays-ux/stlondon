@@ -1,0 +1,336 @@
+<div class="kj-product-slider" style="background-color: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;">
+  <div class="kj-slider-container">
+    
+    <div class="kj-slider-header">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="kj-slider-heading" style="color: {{ section.settings.text_color }};">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.shop_all_link != blank -%}
+        <a href="{{ section.settings.shop_all_link }}" class="kj-slider-shop-all" style="color: {{ section.settings.text_color }};">Shop All</a>
+      {%- endif -%}
+    </div>
+
+    <div class="kj-slider-track-wrap">
+      <div class="kj-slider-track">
+        {%- assign collection = section.settings.collection -%}
+        {%- if collection != blank and collection.products_count > 0 -%}
+          {%- for product in collection.products limit: section.settings.product_limit -%}
+            
+            <div class="kj-product-card">
+              <a href="{{ product.url }}" class="kj-product-card-link">
+                <div class="kj-product-image-wrap">
+                  {%- if product.featured_image != blank -%}
+                    <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-primary" loading="lazy">
+                    {%- if product.images[1] != blank and section.settings.show_secondary_image -%}
+                      <img src="{{ product.images[1] | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-secondary" loading="lazy">
+                    {%- endif -%}
+                  {%- else -%}
+                    {{ 'product-1' | placeholder_svg_tag: 'kj-product-placeholder' }}
+                  {%- endif -%}
+                  
+                  <!-- Virtual Try On Badge / Trigger -->
+                  {%- if product.tags contains 'AR' or product.tags contains 'Virtual Try On' -%}
+                    <div class="kj-vto-badge">Try It On</div>
+                  {%- endif -%}
+
+                  <!-- Quick Add Button (Hover) -->
+                  <div class="kj-quick-add-wrap">
+                    <button type="button" class="kj-quick-add-btn">Add to Bag</button>
+                  </div>
+                </div>
+                
+                <div class="kj-product-info" style="color: {{ section.settings.text_color }};">
+                  <h3 class="kj-product-title">{{ product.title }}</h3>
+                  <div class="kj-product-price">
+                    {%- if product.compare_at_price > product.price -%}
+                      <s class="kj-price-compare">{{ product.compare_at_price | money }}</s>
+                    {%- endif -%}
+                    <span class="kj-price-regular">{{ product.price | money }}</span>
+                  </div>
+                  {%- if product.variants.size > 1 -%}
+                    <p class="kj-product-shades">{{ product.variants.size }} Shades</p>
+                  {%- endif -%}
+                </div>
+              </a>
+            </div>
+
+          {%- endfor -%}
+        {%- else -%}
+          <!-- Placeholder Products -->
+          {%- for i in (1..4) -%}
+            <div class="kj-product-card">
+              <div class="kj-product-image-wrap">
+                {{ 'product-' | append: i | placeholder_svg_tag: 'kj-product-placeholder' }}
+              </div>
+              <div class="kj-product-info" style="color: {{ section.settings.text_color }};">
+                <h3 class="kj-product-title">Sample Product</h3>
+                <div class="kj-product-price"><span class="kj-price-regular">$24.00</span></div>
+              </div>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </div>
+    
+  </div>
+</div>
+
+<style>
+  .kj-slider-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .kj-slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 10px;
+  }
+
+  .kj-slider-heading {
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+  }
+
+  .kj-slider-shop-all {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: underline;
+  }
+
+  .kj-slider-track-wrap {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .kj-slider-track-wrap::-webkit-scrollbar {
+    display: none;
+  }
+
+  .kj-slider-track {
+    display: flex;
+    gap: 20px;
+  }
+
+  .kj-product-card {
+    flex: 0 0 25%;
+    min-width: 280px;
+  }
+
+  .kj-product-card-link {
+    text-decoration: none;
+    display: block;
+  }
+
+  .kj-product-image-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4;
+    background-color: #f4f4f4;
+    overflow: hidden;
+    margin-bottom: 15px;
+  }
+
+  .kj-product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.4s ease;
+  }
+
+  .kj-product-placeholder {
+    width: 100%;
+    height: 100%;
+    fill: #ccc;
+  }
+
+  .kj-img-secondary {
+    opacity: 0;
+  }
+
+  .kj-product-card:hover .kj-img-secondary {
+    opacity: 1;
+  }
+  
+  .kj-product-card:hover .kj-img-primary {
+    opacity: 0;
+  }
+
+  .kj-vto-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #000;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    z-index: 2;
+  }
+
+  .kj-quick-add-wrap {
+    position: absolute;
+    bottom: -50px;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    transition: bottom 0.3s ease;
+    z-index: 2;
+  }
+
+  .kj-product-card:hover .kj-quick-add-wrap {
+    bottom: 0;
+  }
+
+  .kj-quick-add-btn {
+    width: 100%;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+  }
+
+  .kj-quick-add-btn:hover {
+    background-color: #333;
+  }
+
+  .kj-product-info {
+    text-align: center;
+  }
+
+  .kj-product-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .kj-product-price {
+    font-size: 14px;
+    margin-bottom: 5px;
+  }
+  
+  .kj-price-compare {
+    color: #999;
+    margin-right: 5px;
+  }
+
+  .kj-product-shades {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  @media screen and (max-width: 767px) {
+    .kj-product-card {
+      flex: 0 0 75%;
+      min-width: 220px;
+      scroll-snap-align: start;
+    }
+    .kj-slider-track {
+      scroll-snap-type: x mandatory;
+    }
+    .kj-quick-add-wrap {
+      display: none; /* Usually hide hover actions on mobile, or keep static */
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Product Slider",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "BEST SELLERS"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "url",
+      "id": "shop_all_link",
+      "label": "Shop All Link"
+    },
+    {
+      "type": "range",
+      "id": "product_limit",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "label": "Product Limit",
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show secondary image on hover",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "KJ Product Slider"
+    }
+  ]
+}
+{% endschema %}

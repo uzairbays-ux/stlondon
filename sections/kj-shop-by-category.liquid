@@ -1,0 +1,210 @@
+<div class="kj-shop-category" style="background-color: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;">
+  <div class="kj-category-container">
+    {%- if section.settings.heading != blank -%}
+      <h2 class="kj-category-heading" style="color: {{ section.settings.text_color }};">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    <div class="kj-category-list">
+      {%- for block in section.blocks -%}
+        <div class="kj-category-item" {{ block.shopify_attributes }}>
+          <a href="{{ block.settings.collection.url | default: '#' }}" class="kj-category-link">
+            <div class="kj-category-image-wrap">
+              {%- if block.settings.image != blank -%}
+                <img src="{{ block.settings.image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image">
+              {%- elsif block.settings.collection.image != blank -%}
+                <img src="{{ block.settings.collection.image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image">
+              {%- else -%}
+                <div class="kj-category-placeholder">{{ 'collection-1' | placeholder_svg_tag }}</div>
+              {%- endif -%}
+            </div>
+            <span class="kj-category-title" style="color: {{ section.settings.text_color }};">
+              {{ block.settings.title | default: block.settings.collection.title | default: 'Category' }}
+            </span>
+          </a>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<style>
+  .kj-category-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+  }
+
+  .kj-category-heading {
+    font-size: 24px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+  }
+
+  .kj-category-list {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .kj-category-item {
+    width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .kj-category-link {
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .kj-category-image-wrap {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 15px;
+    transition: transform 0.3s ease;
+    background: #f4f4f4;
+  }
+  
+  .kj-category-link:hover .kj-category-image-wrap {
+    transform: scale(1.05);
+  }
+
+  .kj-category-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .kj-category-placeholder svg {
+    width: 100%;
+    height: 100%;
+    fill: #ccc;
+  }
+
+  .kj-category-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    display: block;
+  }
+
+  @media screen and (max-width: 767px) {
+    .kj-category-list {
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 20px;
+      gap: 20px;
+      -webkit-overflow-scrolling: touch;
+      /* Hide scrollbar */
+      scrollbar-width: none;
+    }
+    .kj-category-list::-webkit-scrollbar {
+      display: none;
+    }
+    .kj-category-item {
+      scroll-snap-align: start;
+      flex: 0 0 auto;
+      width: 100px;
+    }
+    .kj-category-image-wrap {
+      width: 100px;
+      height: 100px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Shop by Category",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "SHOP BY CATEGORY"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 60
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Image (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Custom Title (Optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "KJ Shop by Category",
+      "blocks": [
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" },
+        { "type": "category" }
+      ]
+    }
+  ]
+}
+{% endschema %}

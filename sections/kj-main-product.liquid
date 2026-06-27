@@ -1,0 +1,390 @@
+<div class="kj-pdp" id="ProductSection-{{ section.id }}" data-section-id="{{ section.id }}">
+  <div class="kj-pdp-container">
+    
+    <!-- Left: Image Gallery (Scrolling) -->
+    <div class="kj-pdp-gallery">
+      {%- if product.media.size > 0 -%}
+        {%- for media in product.media -%}
+          <div class="kj-pdp-media">
+            {%- if media.media_type == 'image' -%}
+              <img src="{{ media | image_url: width: 1200 }}" alt="{{ media.alt | escape }}" class="kj-pdp-img">
+            {%- else -%}
+              <!-- Handle video/3d models here if needed -->
+              {{ media | media_tag }}
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        <div class="kj-pdp-media">
+          {{ 'product-1' | placeholder_svg_tag: 'kj-pdp-placeholder' }}
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- Right: Sticky Product Info -->
+    <div class="kj-pdp-info-wrapper">
+      <div class="kj-pdp-info">
+        
+        <h1 class="kj-pdp-title">{{ product.title }}</h1>
+        
+        <div class="kj-pdp-price-wrap">
+          {%- if product.compare_at_price > product.price -%}
+            <s class="kj-pdp-compare-price">{{ product.compare_at_price | money }}</s>
+          {%- endif -%}
+          <span class="kj-pdp-price">{{ product.price | money }}</span>
+        </div>
+        
+        <!-- Reviews Placeholder -->
+        <div class="kj-pdp-reviews">
+          <span class="kj-stars">★★★★★</span>
+          <span class="kj-review-count">(124 Reviews)</span>
+        </div>
+
+        <div class="kj-pdp-description">
+          {{ product.description | truncatewords: 30 }}
+        </div>
+
+        <!-- KJ Product Form (Variants & Add to Cart) -->
+        <div class="kj-pdp-form">
+          {%- form 'product', product, id: 'kj-product-form', novalidate: 'novalidate' -%}
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+            
+            {%- unless product.has_only_default_variant -%}
+              <div class="kj-pdp-variants">
+                {%- for option in product.options_with_values -%}
+                  <div class="kj-pdp-option">
+                    <label class="kj-pdp-option-label">{{ option.name }}: <span class="kj-selected-value">{{ option.selected_value }}</span></label>
+                    
+                    {%- if option.name == 'Color' or option.name == 'Shade' -%}
+                      <div class="kj-pdp-swatches">
+                        {%- for value in option.values -%}
+                          <div class="kj-pdp-swatch {% if option.selected_value == value %}active{% endif %}" title="{{ value }}">
+                            <!-- Assuming metafield color exists or fallback to CSS color -->
+                            <div class="kj-swatch-inner" style="background-color: {{ value | downcase | replace: ' ', '' }};"></div>
+                          </div>
+                        {%- endfor -%}
+                      </div>
+                    {%- else -%}
+                      <!-- Standard dropdown for non-color options -->
+                      <select class="kj-pdp-select" name="options[{{ option.name | escape }}]">
+                        {%- for value in option.values -%}
+                          <option value="{{ value | escape }}" {% if option.selected_value == value %}selected="selected"{% endif %}>
+                            {{ value }}
+                          </option>
+                        {%- endfor -%}
+                      </select>
+                    {%- endif -%}
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endunless -%}
+
+            <div class="kj-pdp-actions">
+              <!-- Add to Bag -->
+              <button type="submit" name="add" class="kj-pdp-add-btn" {% unless product.available %}disabled{% endunless %}>
+                {%- if product.available -%}
+                  Add to Bag
+                {%- else -%}
+                  Sold Out
+                {%- endif -%}
+              </button>
+              
+              <!-- Virtual Try On Trigger -->
+              {%- if product.tags contains 'AR' or product.tags contains 'Virtual Try On' -%}
+                <button type="button" class="kj-pdp-vto-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path>
+                    <path d="M12 2a10 10 0 0 1 10 10"></path>
+                    <path d="M2 12a10 10 0 0 1 10-10"></path>
+                  </svg>
+                  Virtual Try-On
+                </button>
+              {%- endif -%}
+            </div>
+            
+          {%- endform -%}
+        </div>
+
+        <!-- Accordions -->
+        <div class="kj-pdp-accordions">
+          <details class="kj-accordion">
+            <summary class="kj-accordion-title">Details <span class="kj-icon">+</span></summary>
+            <div class="kj-accordion-content">
+              {{ product.description }}
+            </div>
+          </details>
+          <details class="kj-accordion">
+            <summary class="kj-accordion-title">Ingredients <span class="kj-icon">+</span></summary>
+            <div class="kj-accordion-content">
+              <p>Clean, Vegan, Cruelty Free.</p>
+            </div>
+          </details>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .kj-pdp-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  /* Left Side: Scrolling Gallery */
+  .kj-pdp-gallery {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .kj-pdp-media {
+    width: 100%;
+    background: #f4f4f4;
+  }
+  
+  .kj-pdp-img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .kj-pdp-placeholder {
+    width: 100%;
+    height: 800px;
+    fill: #ccc;
+  }
+
+  /* Right Side: Sticky Info */
+  .kj-pdp-info-wrapper {
+    width: 40%;
+    padding: 40px;
+  }
+
+  .kj-pdp-info {
+    position: sticky;
+    top: 100px; /* Offset for header */
+  }
+
+  .kj-pdp-title {
+    font-size: 32px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 0 10px 0;
+  }
+
+  .kj-pdp-price-wrap {
+    font-size: 18px;
+    margin-bottom: 15px;
+  }
+
+  .kj-pdp-compare-price {
+    color: #999;
+    margin-right: 10px;
+  }
+
+  .kj-pdp-reviews {
+    margin-bottom: 25px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .kj-stars {
+    color: #000;
+  }
+
+  .kj-review-count {
+    color: #666;
+  }
+
+  .kj-pdp-description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+    margin-bottom: 30px;
+  }
+
+  /* Form & Swatches */
+  .kj-pdp-option {
+    margin-bottom: 25px;
+  }
+
+  .kj-pdp-option-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .kj-selected-value {
+    font-weight: normal;
+    color: #666;
+  }
+
+  .kj-pdp-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .kj-pdp-swatch {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    padding: 2px;
+    cursor: pointer;
+  }
+
+  .kj-pdp-swatch.active {
+    border-color: #000;
+  }
+
+  .kj-swatch-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #ccc; /* Default fallback */
+  }
+
+  .kj-pdp-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    background: #fff;
+    border-radius: 0;
+  }
+
+  /* Actions */
+  .kj-pdp-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 40px;
+  }
+
+  .kj-pdp-add-btn {
+    width: 100%;
+    padding: 16px;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+
+  .kj-pdp-add-btn:hover {
+    background-color: #333;
+  }
+  
+  .kj-pdp-add-btn:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+  }
+
+  .kj-pdp-vto-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: #fff;
+    color: #000;
+    border: 1px solid #000;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.3s;
+  }
+
+  .kj-pdp-vto-btn:hover {
+    background-color: #f9f9f9;
+  }
+
+  /* Accordions */
+  .kj-pdp-accordions {
+    border-top: 1px solid #eaeaea;
+  }
+
+  .kj-accordion {
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  .kj-accordion-title {
+    padding: 20px 0;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    list-style: none; /* Hide default arrow */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .kj-accordion-title::-webkit-details-marker {
+    display: none;
+  }
+
+  .kj-accordion-content {
+    padding-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #444;
+  }
+
+  .kj-accordion[open] .kj-icon {
+    transform: rotate(45deg);
+  }
+
+  .kj-icon {
+    font-size: 20px;
+    font-weight: 300;
+    transition: transform 0.3s;
+  }
+
+  @media screen and (max-width: 899px) {
+    .kj-pdp-gallery {
+      width: 100%;
+    }
+    .kj-pdp-info-wrapper {
+      width: 100%;
+      padding: 20px;
+    }
+    .kj-pdp-info {
+      position: static;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Main Product",
+  "tag": "section",
+  "settings": [],
+  "presets": [
+    {
+      "name": "KJ Main Product"
+    }
+  ]
+}
+{% endschema %}
