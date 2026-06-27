@@ -241,28 +241,33 @@
       if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
         const landmarks = results.multiFaceLandmarks[0];
         
-        const upperLip = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291];
-        const lowerLip = [291, 375, 321, 405, 314, 17, 84, 181, 91, 146, 61];
+        // Full outer lip contour
+        const outerLip = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185, 61];
+        // Full inner lip contour (mouth opening)
+        const innerLip = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 80, 191, 78];
 
         // We use globalCompositeOperation to smoothly blend the color over the lips
         canvasCtx.globalCompositeOperation = 'multiply';
         canvasCtx.fillStyle = activeColor;
         
         canvasCtx.beginPath();
-        upperLip.forEach((index, i) => {
+        
+        // Draw Outer Lip
+        outerLip.forEach((index, i) => {
           const pt = landmarks[index];
           if (i === 0) canvasCtx.moveTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
           else canvasCtx.lineTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
         });
-        canvasCtx.fill();
 
-        canvasCtx.beginPath();
-        lowerLip.forEach((index, i) => {
+        // Draw Inner Lip (creates a hole in the middle)
+        innerLip.forEach((index, i) => {
           const pt = landmarks[index];
           if (i === 0) canvasCtx.moveTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
           else canvasCtx.lineTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
         });
-        canvasCtx.fill();
+        
+        // fill with evenodd punches out the overlapping inner area (the teeth/mouth opening)
+        canvasCtx.fill('evenodd');
         
         canvasCtx.globalCompositeOperation = 'source-over';
       }
