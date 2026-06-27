@@ -1,0 +1,343 @@
+<footer class="kj-footer">
+  <div class="kj-footer-inner">
+    
+    <!-- Newsletter Section -->
+    <div class="kj-footer-newsletter">
+      <h2 class="kj-footer-heading">{{ section.settings.newsletter_heading }}</h2>
+      <p class="kj-footer-subtext">{{ section.settings.newsletter_subtext }}</p>
+      
+      {%- form 'customer', id: 'kj-newsletter-form', class: 'kj-newsletter-form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="kj-newsletter-input-group">
+          <input
+            id="kj-NewsletterForm--{{ section.id }}"
+            type="email"
+            name="contact[email]"
+            class="kj-newsletter-input"
+            value="{{ form.email }}"
+            aria-required="true"
+            autocorrect="off"
+            autocapitalize="off"
+            autocomplete="email"
+            placeholder="{{ 'newsletter.label' | t | default: 'Email Address' }}"
+            required
+          >
+          <button type="submit" class="kj-newsletter-btn" name="commit" id="Subscribe" aria-label="Subscribe">
+            <svg viewBox="0 0 14 10" fill="none" aria-hidden="true" focusable="false" role="presentation" class="icon icon-arrow" xmlns="http://www.w3.org/2000/svg">
+              <path fill-rule="evenodd" clip-rule="evenodd" d="M8.537.808a.5.5 0 01.817-.162l4 4a.5.5 0 010 .708l-4 4a.5.5 0 11-.708-.708L11.793 5.5H1a.5.5 0 010-1h10.793L8.646 1.354a.5.5 0 01-.109-.546z" fill="currentColor"></path>
+            </svg>
+          </button>
+        </div>
+        {%- if form.posted_successfully? -%}
+          <p class="kj-newsletter-success">Thanks for subscribing!</p>
+        {%- endif -%}
+      {%- endform -%}
+    </div>
+
+    <!-- Link Columns -->
+    <div class="kj-footer-links">
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'link_list' -%}
+            <div class="kj-footer-column" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h3 class="kj-footer-column-heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              {%- if block.settings.menu != blank -%}
+                <ul class="kj-footer-menu">
+                  {%- for link in block.settings.menu.links -%}
+                    <li>
+                      <a href="{{ link.url }}">{{ link.title }}</a>
+                    </li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+
+    <!-- Footer Bottom -->
+    <div class="kj-footer-bottom">
+      <div class="kj-footer-socials">
+        {%- if settings.social_instagram_link != blank -%}
+          <a href="{{ settings.social_instagram_link }}" class="kj-social-link">Instagram</a>
+        {%- endif -%}
+        {%- if settings.social_tiktok_link != blank -%}
+          <a href="{{ settings.social_tiktok_link }}" class="kj-social-link">TikTok</a>
+        {%- endif -%}
+        {%- if settings.social_twitter_link != blank -%}
+          <a href="{{ settings.social_twitter_link }}" class="kj-social-link">Twitter</a>
+        {%- endif -%}
+        {%- if settings.social_facebook_link != blank -%}
+          <a href="{{ settings.social_facebook_link }}" class="kj-social-link">Facebook</a>
+        {%- endif -%}
+        {%- if settings.social_youtube_link != blank -%}
+          <a href="{{ settings.social_youtube_link }}" class="kj-social-link">YouTube</a>
+        {%- endif -%}
+      </div>
+
+      <div class="kj-footer-copyright">
+        <p>&copy; {{ 'now' | date: "%Y" }}, {{ shop.name | link_to: routes.root_url }}. All rights reserved.</p>
+        <div class="kj-footer-legal-links">
+          <a href="/policies/terms-of-service">Terms of Service</a>
+          <a href="/policies/privacy-policy">Privacy Policy</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  .kj-footer {
+    background-color: #000000;
+    color: #ffffff;
+    padding: 60px 20px 20px;
+    font-family: var(--font-body-family, sans-serif);
+  }
+
+  .kj-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+  }
+
+  /* Newsletter */
+  .kj-footer-newsletter {
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .kj-footer-heading {
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .kj-footer-subtext {
+    font-size: 12px;
+    color: #999;
+    margin-bottom: 20px;
+  }
+
+  .kj-newsletter-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .kj-newsletter-input-group {
+    display: flex;
+    border-bottom: 1px solid #fff;
+    width: 100%;
+    padding-bottom: 8px;
+  }
+
+  .kj-newsletter-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    flex-grow: 1;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .kj-newsletter-input::placeholder {
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+  }
+
+  .kj-newsletter-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .kj-newsletter-btn svg {
+    width: 16px;
+  }
+
+  .kj-newsletter-success {
+    margin-top: 10px;
+    font-size: 12px;
+    color: #4caf50;
+  }
+
+  /* Links */
+  .kj-footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 40px;
+    border-top: 1px solid #222;
+    padding-top: 60px;
+  }
+
+  .kj-footer-column {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .kj-footer-column-heading {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+
+  .kj-footer-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .kj-footer-menu li {
+    margin-bottom: 12px;
+  }
+
+  .kj-footer-menu a {
+    color: #999;
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s ease;
+  }
+
+  .kj-footer-menu a:hover {
+    color: #fff;
+  }
+
+  /* Bottom */
+  .kj-footer-bottom {
+    border-top: 1px solid #222;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .kj-footer-socials {
+    display: flex;
+    gap: 20px;
+  }
+
+  .kj-social-link {
+    color: #fff;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+  }
+
+  .kj-social-link:hover {
+    text-decoration: underline;
+  }
+
+  .kj-footer-copyright {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .kj-footer-copyright a {
+    color: #666;
+    text-decoration: none;
+  }
+
+  .kj-footer-copyright a:hover {
+    color: #fff;
+  }
+
+  .kj-footer-legal-links {
+    display: flex;
+    gap: 15px;
+  }
+
+  @media (min-width: 768px) {
+    .kj-footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .kj-footer-copyright {
+      flex-direction: row;
+      gap: 20px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Footer",
+  "settings": [
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Newsletter Heading",
+      "default": "Sign Up For Updates"
+    },
+    {
+      "type": "textarea",
+      "id": "newsletter_subtext",
+      "label": "Newsletter Subtext",
+      "default": "By signing up you agree to our Terms."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "link_list",
+      "name": "Menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "default": "Quick links",
+          "label": "Heading"
+        },
+        {
+          "type": "link_list",
+          "id": "menu",
+          "default": "footer",
+          "label": "Menu"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "KJ Footer",
+      "blocks": [
+        {
+          "type": "link_list"
+        },
+        {
+          "type": "link_list"
+        },
+        {
+          "type": "link_list"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

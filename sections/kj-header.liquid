@@ -1,0 +1,295 @@
+<header class="kj-header" id="kj-header">
+  <!-- Announcement Bar (Optional, can be a separate section but keeping simple here) -->
+  {%- if section.settings.show_announcement -%}
+    <div class="kj-announcement-bar">
+      <p>{{ section.settings.announcement_text }}</p>
+    </div>
+  {%- endif -%}
+
+  <div class="kj-header-inner">
+    <!-- Left Navigation -->
+    <nav class="kj-header-nav kj-header-nav--left">
+      <ul class="kj-nav-list">
+        {%- for link in section.settings.menu.links -%}
+          <li class="kj-nav-item">
+            <a href="{{ link.url }}" class="kj-nav-link">{{ link.title }}</a>
+          </li>
+        {%- endfor -%}
+      </ul>
+      
+      <!-- Mobile Hamburger -->
+      <button class="kj-mobile-menu-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon icon-hamburger">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </nav>
+
+    <!-- Center Logo -->
+    <div class="kj-header-logo">
+      <a href="{{ routes.root_url }}">
+        {%- if section.settings.logo != blank -%}
+          <img src="{{ section.settings.logo | image_url: width: 400 }}" alt="{{ shop.name }}" width="{{ section.settings.logo_width }}">
+        {%- else -%}
+          <span class="kj-h1">{{ shop.name }}</span>
+        {%- endif -%}
+      </a>
+    </div>
+
+    <!-- Right Icons -->
+    <div class="kj-header-icons">
+      <!-- Search -->
+      <a href="{{ routes.search_url }}" class="kj-header-icon" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon icon-search">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </a>
+      
+      <!-- Account -->
+      {%- if shop.customer_accounts_enabled -%}
+        <a href="{%- if customer -%}{{ routes.account_url }}{%- else -%}{{ routes.account_login_url }}{%- endif -%}" class="kj-header-icon" aria-label="Account">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon icon-account">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+      {%- endif -%}
+      
+      <!-- Cart -->
+      <a href="{{ routes.cart_url }}" class="kj-header-icon kj-cart-icon" aria-label="Cart" id="kj-cart-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="icon icon-cart">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <path d="M16 10a4 4 0 0 1-8 0"></path>
+        </svg>
+        <span class="kj-cart-count" id="kj-cart-count">{{ cart.item_count }}</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .kj-header {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: #fff;
+    border-bottom: 1px solid #eaeaea;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Kylie often uses transparent headers over hero images */
+  .kj-header.kj-header--transparent {
+    background-color: transparent;
+    border-bottom: none;
+    position: absolute;
+  }
+  .kj-header.kj-header--transparent .kj-nav-link,
+  .kj-header.kj-header--transparent .kj-header-logo,
+  .kj-header.kj-header--transparent .kj-header-icon,
+  .kj-header.kj-header--transparent .kj-h1 {
+    color: #fff;
+  }
+
+  .kj-announcement-bar {
+    background-color: #000;
+    color: #fff;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  
+  .kj-announcement-bar p {
+    margin: 0;
+  }
+
+  .kj-header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  /* Navigation */
+  .kj-header-nav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .kj-nav-list {
+    display: flex;
+    gap: 30px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .kj-nav-link {
+    text-decoration: none;
+    color: #000;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+  }
+  
+  .kj-nav-link:hover {
+    opacity: 0.6;
+  }
+
+  .kj-mobile-menu-btn {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  .icon-hamburger {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* Logo */
+  .kj-header-logo {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .kj-header-logo a {
+    text-decoration: none;
+    color: #000;
+  }
+
+  .kj-h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  /* Icons */
+  .kj-header-icons {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .kj-header-icon {
+    color: #000;
+    text-decoration: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .kj-header-icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .kj-cart-count {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    background-color: #000;
+    color: #fff;
+    font-size: 9px;
+    font-weight: bold;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .kj-header.kj-header--transparent .kj-cart-count {
+    background-color: #fff;
+    color: #000;
+  }
+
+  @media (max-width: 990px) {
+    .kj-nav-list {
+      display: none;
+    }
+    .kj-mobile-menu-btn {
+      display: block;
+    }
+    .kj-header-inner {
+      padding: 15px 20px;
+    }
+  }
+</style>
+
+<script>
+  // Script to handle transparent header behavior on scroll
+  document.addEventListener('DOMContentLoaded', () => {
+    const header = document.getElementById('kj-header');
+    if (header && header.classList.contains('kj-header--transparent')) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          header.classList.remove('kj-header--transparent');
+        } else {
+          header.classList.add('kj-header--transparent');
+        }
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "KJ Header",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Show Announcement",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Announcement Text",
+      "default": "FREE SHIPPING ON ORDERS OVER $40"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo Image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 50,
+      "max": 250,
+      "step": 10,
+      "default": 100,
+      "unit": "px",
+      "label": "Custom logo width"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}
