@@ -293,10 +293,22 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "virtual_try_on_HMtbAb": {
+      "type": "virtual-try-on",
+      "name": "Virtual Try-On",
+      "settings": {
+        "heading": "Try It On Virtually",
+        "subtext": "See how this looks on you in real-time.",
+        "button_text": "Launch Camera",
+        "default_color_hex": "#FF69B4",
+        "default_color_name": "Hot Pink"
+      }
     }
   },
   "order": [
     "hero_jVaWmY",
-    "product_list_fa6P9H"
+    "product_list_fa6P9H",
+    "virtual_try_on_HMtbAb"
   ]
 }
