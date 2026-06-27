@@ -88,6 +88,49 @@
         "padding-block-end": 72
       }
     },
+    "marquee_kylie": {
+      "type": "marquee",
+      "blocks": {
+        "text_1": {
+          "type": "text",
+          "settings": {
+            "text": "<h2>FREE SHIPPING ON U.S. ORDERS $40+</h2>",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "var(--font-size--h4)",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "width": "fit-content"
+          }
+        },
+        "text_2": {
+          "type": "text",
+          "settings": {
+            "text": "<h2>FREE SHIPPING ON U.S. ORDERS $40+</h2>",
+            "type_preset": "custom",
+            "font": "var(--font-heading--family)",
+            "font_size": "var(--font-size--h4)",
+            "line_height": "tight",
+            "letter_spacing": "normal",
+            "case": "none",
+            "wrap": "nowrap",
+            "width": "fit-content"
+          }
+        }
+      },
+      "block_order": [
+        "text_1",
+        "text_2"
+      ],
+      "settings": {
+        "movement_direction": "normal",
+        "padding-block-start": 16,
+        "padding-block-end": 16,
+        "gap_between_elements": 48
+      }
+    },
     "product_list_fa6P9H": {
       "type": "product-list",
       "blocks": {
@@ -305,6 +348,7 @@
   },
   "order": [
     "hero_jVaWmY",
+    "marquee_kylie",
     "product_list_fa6P9H",
     "media_with_content_split"
   ]
