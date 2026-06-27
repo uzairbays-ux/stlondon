@@ -115,7 +115,7 @@
         "bubble_style": "default",
         "bubble_background_color": "",
         "bubble_text_color": "",
-        "enable_transparent_header_home": false,
+        "enable_transparent_header_home": true,
         "home_inverse_logo": false,
         "text_color_transparent_home": "",
         "enable_transparent_header_product": false,

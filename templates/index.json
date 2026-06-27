@@ -16,7 +16,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<h2>KYLIE COSMETICS</h2>",
+            "text": "<p>Browse our latest products</p>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -42,13 +42,14 @@
           "type": "button",
           "name": "t:names.button",
           "settings": {
-            "label": "SHOP NOW",
+            "label": "Shop all",
             "link": "shopify://collections/all",
             "open_in_new_tab": false,
             "style_class": "button-custom",
-            "custom_button_background": "rgba(0, 0, 0, 0)",
+            "custom_button_background": "rgba(0,0,0,0)",
             "custom_button_text": "{{ settings.color_palette.background }}",
             "custom_button_border": "{{ settings.color_palette.background }}",
+            "link_text_color": "",
             "width": "fit-content",
             "custom_width": 100,
             "width_mobile": "fit-content",
@@ -64,7 +65,12 @@
       "name": "t:names.hero",
       "settings": {
         "media_type_1": "image",
+        "image_1": "shopify://shop_images/v7a_Primer-Powder-Brush_Launch_HP_desktop.webp",
         "media_type_2": "image",
+        "stack_media_on_mobile": false,
+        "custom_mobile_media": false,
+        "media_type_1_mobile": "image",
+        "media_type_2_mobile": "image",
         "link": "",
         "open_in_new_tab": false,
         "content_direction": "column",
@@ -72,13 +78,14 @@
         "horizontal_alignment": "space-between",
         "vertical_alignment": "flex-end",
         "align_baseline": true,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "flex-end",
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
         "gap": 24,
         "section_width": "page-width",
-        "section_height": "medium",
-        "section_height_custom": 50,
-        "toggle_overlay": true,
+        "section_height": "custom",
+        "section_height_custom": 100,
+        "background_color": "",
+        "toggle_overlay": false,
         "overlay_color": "#12121266",
         "overlay_style": "solid",
         "gradient_direction": "to bottom",
@@ -86,49 +93,6 @@
         "reflection_opacity": 75,
         "padding-block-start": 100,
         "padding-block-end": 72
-      }
-    },
-    "marquee_kylie": {
-      "type": "marquee",
-      "blocks": {
-        "text_1": {
-          "type": "text",
-          "settings": {
-            "text": "<h2>FREE SHIPPING ON U.S. ORDERS $40+</h2>",
-            "type_preset": "custom",
-            "font": "var(--font-heading--family)",
-            "font_size": "var(--font-size--h4)",
-            "line_height": "tight",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "nowrap",
-            "width": "fit-content"
-          }
-        },
-        "text_2": {
-          "type": "text",
-          "settings": {
-            "text": "<h2>FREE SHIPPING ON U.S. ORDERS $40+</h2>",
-            "type_preset": "custom",
-            "font": "var(--font-heading--family)",
-            "font_size": "var(--font-size--h4)",
-            "line_height": "tight",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "nowrap",
-            "width": "fit-content"
-          }
-        }
-      },
-      "block_order": [
-        "text_1",
-        "text_2"
-      ],
-      "settings": {
-        "movement_direction": "normal",
-        "padding-block-start": 16,
-        "padding-block-end": 16,
-        "gap_between_elements": 48
       }
     },
     "product_list_fa6P9H": {
@@ -154,11 +118,13 @@
             "height": "fit",
             "custom_height": 100,
             "background_media": "none",
+            "background_color": "",
             "video_position": "cover",
             "background_image_position": "cover",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -181,6 +147,7 @@
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
+                "text_color": "",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -198,6 +165,10 @@
                 "label": "View all",
                 "open_in_new_tab": false,
                 "style_class": "button-unstyled",
+                "custom_button_background": "{{ settings.color_palette.foreground }}",
+                "custom_button_text": "{{ settings.color_palette.background }}",
+                "custom_button_border": "{{ settings.color_palette.background }}",
+                "link_text_color": "",
                 "width": "fit-content",
                 "custom_width": 100,
                 "width_mobile": "fit-content",
@@ -217,9 +188,11 @@
           "static": true,
           "settings": {
             "product_card_gap": 4,
+            "background_color": "",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -235,6 +208,7 @@
                 "border": "none",
                 "border_width": 1,
                 "border_opacity": 100,
+                "border_color": "",
                 "border_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -257,6 +231,7 @@
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
+                "text_color": "",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -282,6 +257,7 @@
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
+                "text_color": "",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -312,35 +288,8 @@
         "icons_shape": "none",
         "section_width": "page-width",
         "horizontal_alignment": "flex-start",
-        "padding-block-start": 48,
-        "padding-block-end": 48
-      }
-    },
-    "media_with_content_split": {
-      "type": "media-with-content",
-      "blocks": {
-        "text_heading": {
-          "type": "text",
-          "settings": {
-            "text": "<h2>LIP KITS</h2>",
-            "type_preset": "h2"
-          }
-        },
-        "button_shop": {
-          "type": "button",
-          "settings": {
-            "label": "SHOP NOW",
-            "link": "shopify://collections/all"
-          }
-        }
-      },
-      "block_order": [
-        "text_heading",
-        "button_shop"
-      ],
-      "settings": {
-        "layout": "image_first",
-        "media_type": "image",
+        "gap": 28,
+        "background_color": "",
         "padding-block-start": 48,
         "padding-block-end": 48
       }
@@ -348,8 +297,6 @@
   },
   "order": [
     "hero_jVaWmY",
-    "marquee_kylie",
-    "product_list_fa6P9H",
-    "media_with_content_split"
+    "product_list_fa6P9H"
   ]
 }
