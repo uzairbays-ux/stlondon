@@ -30,7 +30,7 @@
     // Only restore on wide viewports (squeeze mode). On narrow viewports the
     // drawer is a modal overlay — let it start closed after navigation rather
     // than re-opening a fullscreen dialog the user may have left behind.
-    if (!window.matchMedia('(min-width: 990px)').matches) return;
+    if (!window.matchMedia('(min-width: 99999px)').matches) return;
 
     var dialogs = [];
     for (var i = 0; i < drawerIds.length; i++) {
@@ -83,7 +83,7 @@
   type="module"
 >
   const pageWrapper = document.querySelector('.page-wrapper');
-  const squeezeQuery = window.matchMedia('(min-width: 990px)');
+  const squeezeQuery = window.matchMedia('(min-width: 99999px)');
 
   // ── Squeeze coordination ──
   // Listens to all drawers. Only squeezes on wide viewports.
