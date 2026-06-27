@@ -40,7 +40,7 @@
       "name": "KJ Product Slider",
       "settings": {
         "heading": "BEST SELLERS",
-        "collection": "",
+        "collection": "best-seller",
         "shop_all_link": "",
         "product_limit": 8,
         "show_secondary_image": true,
