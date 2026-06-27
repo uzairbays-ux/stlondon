@@ -240,6 +240,55 @@
                 "padding-inline-end": 0
               },
               "blocks": {}
+            },
+            "accordion_details": {
+              "type": "accordion",
+              "settings": {
+                "icon": "plus",
+                "dividers": true
+              },
+              "blocks": {
+                "row_ingredients": {
+                  "type": "_accordion-row",
+                  "settings": {
+                    "heading": "Ingredients"
+                  },
+                  "blocks": {
+                    "text_ing": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Ingredients vary by shade. Check packaging for details.</p>",
+                        "width": "100%"
+                      }
+                    }
+                  },
+                  "block_order": [
+                    "text_ing"
+                  ]
+                },
+                "row_usage": {
+                  "type": "_accordion-row",
+                  "settings": {
+                    "heading": "How To Use"
+                  },
+                  "blocks": {
+                    "text_use": {
+                      "type": "text",
+                      "settings": {
+                        "text": "<p>Apply to clean lips.</p>",
+                        "width": "100%"
+                      }
+                    }
+                  },
+                  "block_order": [
+                    "text_use"
+                  ]
+                }
+              },
+              "block_order": [
+                "row_ingredients",
+                "row_usage"
+              ]
             }
           },
           "block_order": [
@@ -247,7 +296,8 @@
             "divider_VJhene",
             "variant_picker_R3rGDr",
             "buy_buttons_eYQEYi",
-            "text_aEtTtq"
+            "text_aEtTtq",
+            "accordion_details"
           ]
         },
         "disclosures": {
@@ -392,8 +442,8 @@
       "settings": {
         "product": "{{ closest.product }}",
         "recommendation_type": "related",
-        "layout_type": "grid",
-        "carousel_on_mobile": false,
+        "layout_type": "carousel",
+        "carousel_on_mobile": true,
         "max_products": 4,
         "columns": 4,
         "mobile_columns": "2",

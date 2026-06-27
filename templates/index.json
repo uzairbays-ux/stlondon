@@ -16,7 +16,7 @@
           "type": "text",
           "name": "t:names.heading",
           "settings": {
-            "text": "<p>Browse our latest products</p>",
+            "text": "<h2>KYLIE COSMETICS</h2>",
             "width": "fit-content",
             "max_width": "normal",
             "alignment": "left",
@@ -42,7 +42,7 @@
           "type": "button",
           "name": "t:names.button",
           "settings": {
-            "label": "Shop all",
+            "label": "SHOP NOW",
             "link": "shopify://collections/all",
             "open_in_new_tab": false,
             "style_class": "button-custom",
@@ -269,7 +269,35 @@
         "icons_shape": "none",
         "section_width": "page-width",
         "horizontal_alignment": "flex-start",
-        "gap": 28,
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    },
+    "media_with_content_split": {
+      "type": "media-with-content",
+      "blocks": {
+        "text_heading": {
+          "type": "text",
+          "settings": {
+            "text": "<h2>LIP KITS</h2>",
+            "type_preset": "h2"
+          }
+        },
+        "button_shop": {
+          "type": "button",
+          "settings": {
+            "label": "SHOP NOW",
+            "link": "shopify://collections/all"
+          }
+        }
+      },
+      "block_order": [
+        "text_heading",
+        "button_shop"
+      ],
+      "settings": {
+        "layout": "image_first",
+        "media_type": "image",
         "padding-block-start": 48,
         "padding-block-end": 48
       }
@@ -277,6 +305,7 @@
   },
   "order": [
     "hero_jVaWmY",
-    "product_list_fa6P9H"
+    "product_list_fa6P9H",
+    "media_with_content_split"
   ]
 }

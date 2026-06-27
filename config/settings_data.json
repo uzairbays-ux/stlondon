@@ -82,7 +82,7 @@
       "background": "#ffffff",
       "foreground": "#000000",
       "color1": "#333333",
-      "color2": "#EEF1EA",
+      "color2": "#fce1e8",
       "color3": "#DFDFDF"
     }
   },
@@ -95,7 +95,7 @@
         "background": "#ffffff",
         "foreground": "#000000",
         "color1": "#333333",
-        "color2": "#EEF1EA",
+        "color2": "#fce1e8",
         "color3": "#DFDFDF"
       }
     }
