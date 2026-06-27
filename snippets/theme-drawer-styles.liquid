@@ -76,6 +76,8 @@
 
   .theme-drawer__dialog::backdrop {
     background: rgb(var(--backdrop-color-rgb) / var(--backdrop-opacity));
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
   }
 
   /* Exclude open drawers from the page navigation cross-fade so they
