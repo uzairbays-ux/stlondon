@@ -1,0 +1,374 @@
+<div class="virtual-try-on-section" id="vto-section-{{ section.id }}" style="text-align: center; margin: 40px 0;">
+  {% if section.settings.heading != blank %}
+    <h2 class="h2">{{ section.settings.heading }}</h2>
+  {% endif %}
+  {% if section.settings.subtext != blank %}
+    <p>{{ section.settings.subtext }}</p>
+  {% endif %}
+
+  <div class="virtual-try-on-trigger">
+    <button type="button" class="button button--primary virtual-try-on-btn" id="vto-button-{{ section.id }}">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path>
+        <path d="M12 2a10 10 0 0 1 10 10"></path>
+        <path d="M2 12a10 10 0 0 1 10-10"></path>
+      </svg>
+      {{ section.settings.button_text }}
+    </button>
+  </div>
+
+  <!-- AR Modal Overlay -->
+  <div class="vto-modal" id="vto-modal-{{ section.id }}">
+    <div class="vto-modal-content">
+      <button class="vto-close-btn" id="vto-close-{{ section.id }}">&times;</button>
+      
+      <div class="vto-video-container">
+        <!-- Hidden video element to capture webcam -->
+        <video id="vto-video-{{ section.id }}" class="vto-video" autoplay playsinline></video>
+        <!-- Canvas where we draw the camera feed and the makeup overlay -->
+        <canvas id="vto-canvas-{{ section.id }}" class="vto-canvas"></canvas>
+        <div id="vto-loading-{{ section.id }}" class="vto-loading">INITIALIZING CAMERA...</div>
+      </div>
+      
+      <div class="vto-controls">
+        <p>Color: <strong id="vto-color-name-{{ section.id }}">{{ section.settings.default_color_name }}</strong></p>
+        <div class="vto-swatches">
+          <div class="vto-swatch active" data-color="{{ section.settings.default_color_hex }}" style="background-color: {{ section.settings.default_color_hex }};"></div>
+          <!-- Additional dynamic swatches could be generated here via liquid based on product.variants -->
+          {% if product != blank and product.variants.size > 0 %}
+            {% for variant in product.variants %}
+              {% if variant.metafields.custom.hex_color != blank %}
+                <div class="vto-swatch" data-color="{{ variant.metafields.custom.hex_color }}" style="background-color: {{ variant.metafields.custom.hex_color }};" title="{{ variant.title }}"></div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .virtual-try-on-trigger {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+  }
+  .virtual-try-on-btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 32px;
+    cursor: pointer;
+    background-color: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .virtual-try-on-btn:hover {
+    background-color: #333;
+  }
+
+  /* Modal Styles */
+  .vto-modal {
+    display: none;
+    position: fixed;
+    z-index: 999999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .vto-modal.active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .vto-modal-content {
+    background-color: #111;
+    padding: 16px;
+    border-radius: 12px;
+    position: relative;
+    width: 95%;
+    max-width: 500px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  .vto-close-btn {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    font-size: 32px;
+    font-weight: normal;
+    color: #fff;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+  }
+
+  .vto-video-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .vto-video {
+    display: none;
+  }
+
+  .vto-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+  }
+
+  .vto-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-weight: bold;
+    letter-spacing: 2px;
+    z-index: 5;
+    font-size: 12px;
+  }
+
+  .vto-controls {
+    margin-top: 20px;
+  }
+
+  .vto-controls p {
+    margin-bottom: 12px;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .vto-swatches {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .vto-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s;
+  }
+
+  .vto-swatch:hover {
+    transform: scale(1.1);
+  }
+
+  .vto-swatch.active {
+    border: 2px solid #fff;
+    box-shadow: 0 0 0 2px #111 inset;
+  }
+</style>
+
+<!-- Load MediaPipe Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous" defer></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const sectionId = '{{ section.id }}';
+    const btn = document.getElementById(`vto-button-${sectionId}`);
+    const modal = document.getElementById(`vto-modal-${sectionId}`);
+    const closeBtn = document.getElementById(`vto-close-${sectionId}`);
+    const videoElement = document.getElementById(`vto-video-${sectionId}`);
+    const canvasElement = document.getElementById(`vto-canvas-${sectionId}`);
+    const canvasCtx = canvasElement.getContext('2d');
+    const loadingText = document.getElementById(`vto-loading-${sectionId}`);
+    const swatches = document.querySelectorAll(`#vto-modal-${sectionId} .vto-swatch`);
+    
+    let camera = null;
+    let faceMesh = null;
+
+    // Default AR color opacity (Hex + Alpha)
+    // We append '80' to the hex to make it 50% opacity
+    let activeColorHex = '{{ section.settings.default_color_hex }}'; 
+    let activeColor = activeColorHex + '80'; 
+
+    // Handle Swatch Clicks
+    swatches.forEach(swatch => {
+      swatch.addEventListener('click', (e) => {
+        swatches.forEach(s => s.classList.remove('active'));
+        e.target.classList.add('active');
+        activeColorHex = e.target.getAttribute('data-color');
+        activeColor = activeColorHex + '80'; // 50% opacity
+      });
+    });
+
+    function onResults(results) {
+      loadingText.style.display = 'none';
+
+      // Match canvas dimensions to actual video feed to ensure coordinates map perfectly
+      if (canvasElement.width !== videoElement.videoWidth) {
+        canvasElement.width = videoElement.videoWidth;
+        canvasElement.height = videoElement.videoHeight;
+      }
+
+      canvasCtx.save();
+      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+      
+      // Draw the video frame to the canvas (which is visually flipped by CSS)
+      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+
+      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
+        const landmarks = results.multiFaceLandmarks[0];
+        
+        const upperLip = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291];
+        const lowerLip = [291, 375, 321, 405, 314, 17, 84, 181, 91, 146, 61];
+
+        // We use globalCompositeOperation to smoothly blend the color over the lips
+        canvasCtx.globalCompositeOperation = 'multiply';
+        canvasCtx.fillStyle = activeColor;
+        
+        canvasCtx.beginPath();
+        upperLip.forEach((index, i) => {
+          const pt = landmarks[index];
+          if (i === 0) canvasCtx.moveTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
+          else canvasCtx.lineTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
+        });
+        canvasCtx.fill();
+
+        canvasCtx.beginPath();
+        lowerLip.forEach((index, i) => {
+          const pt = landmarks[index];
+          if (i === 0) canvasCtx.moveTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
+          else canvasCtx.lineTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
+        });
+        canvasCtx.fill();
+        
+        canvasCtx.globalCompositeOperation = 'source-over';
+      }
+      canvasCtx.restore();
+    }
+
+    async function initAR() {
+      if (!faceMesh) {
+        // We ensure MediaPipe is available in the window
+        const checkMediaPipe = setInterval(() => {
+          if (window.FaceMesh && window.Camera) {
+            clearInterval(checkMediaPipe);
+            
+            faceMesh = new window.FaceMesh({locateFile: (file) => {
+              return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+            }});
+            
+            faceMesh.setOptions({
+              maxNumFaces: 1,
+              refineLandmarks: true,
+              minDetectionConfidence: 0.5,
+              minTrackingConfidence: 0.5
+            });
+            
+            faceMesh.onResults(onResults);
+
+            camera = new window.Camera(videoElement, {
+              onFrame: async () => {
+                await faceMesh.send({image: videoElement});
+              },
+              width: 480,
+              height: 640
+            });
+            camera.start();
+          }
+        }, 100);
+      } else if (camera) {
+        camera.start();
+      }
+    }
+
+    function stopAR() {
+      if (camera) {
+        camera.stop();
+      }
+      loadingText.style.display = 'block';
+    }
+
+    if (btn) {
+      btn.addEventListener('click', () => {
+        modal.classList.add('active');
+        initAR();
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+        stopAR();
+      });
+    }
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Virtual Try-On",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Try It On Virtually"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "See how this looks on you in real-time."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Launch Camera"
+    },
+    {
+      "type": "color",
+      "id": "default_color_hex",
+      "label": "Default Try-On Color",
+      "default": "#FF69B4"
+    },
+    {
+      "type": "text",
+      "id": "default_color_name",
+      "label": "Default Color Name",
+      "default": "Hot Pink"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Virtual Try-On",
+      "category": "AR"
+    }
+  ]
+}
+{% endschema %}
