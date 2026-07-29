@@ -69,29 +69,26 @@
     text-decoration: underline;
   }
 
+  /* Mosaic like the reference: first tile spans 2x2, smaller squares pack around it */
   .kj-ig-tiles {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .kj-ig-tiles::-webkit-scrollbar {
-    display: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-flow: dense;
+    gap: 12px;
   }
 
   .kj-ig-tile {
     position: relative;
-    flex: 0 0 auto;
-    width: calc((100% - 40px) / 5);
-    min-width: 200px;
     aspect-ratio: 1/1;
     overflow: hidden;
     background-color: #f4f4f4;
     display: block;
-    scroll-snap-align: start;
+    border-radius: 6px;
+  }
+
+  .kj-ig-tile:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
   }
 
   .kj-ig-img {
@@ -128,9 +125,9 @@
   }
 
   @media screen and (max-width: 599px) {
-    .kj-ig-tile {
-      width: 65%;
-      min-width: 0;
+    .kj-ig-tiles {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
   }
 </style>

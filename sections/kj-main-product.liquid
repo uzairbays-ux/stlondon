@@ -1,127 +1,238 @@
 {% render 'kj-card-styles' %}
 {%- assign current_variant = product.selected_or_first_available_variant -%}
 
-<div class="kj-pdp" id="kj-pdp-{{ section.id }}">
+{%- comment -%}
+  Media is grouped per shade via media alt text (alt == variant title).
+  If any media matches the current variant, the gallery filters to the
+  selected shade's set (reference behavior); otherwise all media shows.
+{%- endcomment -%}
+{%- assign has_shade_media = false -%}
+{%- for media in product.media -%}
+  {%- if media.alt == current_variant.title -%}
+    {%- assign has_shade_media = true -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<div class="kj-pdp" id="kj-pdp-{{ section.id }}" data-has-shade-media="{{ has_shade_media }}">
   <div class="kj-pdp-container">
 
-    <!-- Left: scrolling gallery -->
-    <div class="kj-pdp-gallery">
-      {%- if product.media.size > 0 -%}
+    <!-- Thumbnail rail -->
+    <div class="kj-pdp-thumbs" data-kj-thumbs>
+      {%- for media in product.media -%}
+        {%- if media.media_type == 'image' -%}
+          {%- assign hidden = false -%}
+          {%- if has_shade_media and media.alt != current_variant.title -%}{%- assign hidden = true -%}{%- endif -%}
+          <button
+            type="button"
+            class="kj-pdp-thumb{% if hidden %} kj-media-hidden{% endif %}"
+            data-kj-pdp-thumb
+            data-alt="{{ media.alt | escape }}"
+            data-full="{{ media | image_url: width: 1400 }}"
+            aria-label="View image"
+          >
+            <img src="{{ media | image_url: width: 160, height: 160, crop: 'center' }}" alt="{{ media.alt | escape }}" width="80" height="80" loading="lazy">
+          </button>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    <!-- Main image -->
+    <div class="kj-pdp-main-media">
+      {%- assign main_media = product.featured_image -%}
+      {%- if has_shade_media -%}
         {%- for media in product.media -%}
-          <div class="kj-pdp-media">
-            {%- if media.media_type == 'image' -%}
-              <img
-                src="{{ media | image_url: width: 1200 }}"
-                alt="{{ media.alt | escape }}"
-                class="kj-pdp-img"
-                {% if forloop.first %}data-kj-pdp-main{% endif %}
-                width="1200"
-                height="{{ 1200 | divided_by: media.aspect_ratio | round }}"
-                {% unless forloop.first %}loading="lazy"{% endunless %}
-              >
-            {%- else -%}
-              {{ media | media_tag }}
-            {%- endif -%}
-          </div>
+          {%- if media.alt == current_variant.title -%}{%- assign main_media = media -%}{%- break -%}{%- endif -%}
         {%- endfor -%}
+      {%- endif -%}
+      {%- if main_media != blank -%}
+        <img src="{{ main_media | image_url: width: 1400 }}" alt="{{ product.title | escape }}" class="kj-pdp-img" data-kj-pdp-main width="1400" height="{{ 1400 | divided_by: main_media.aspect_ratio | round }}">
       {%- else -%}
-        <div class="kj-pdp-media">{{ 'product-1' | placeholder_svg_tag: 'kj-pdp-placeholder' }}</div>
+        {{ 'product-1' | placeholder_svg_tag: 'kj-pdp-placeholder' }}
       {%- endif -%}
     </div>
 
-    <!-- Right: sticky info -->
-    <div class="kj-pdp-info-wrapper">
-      <div class="kj-pdp-info">
+    <!-- Info rail -->
+    <div class="kj-pdp-info">
 
-        <div class="kj-pdp-title-row">
-          <h1 class="kj-pdp-title">{{ product.title }}</h1>
-          <div class="kj-pdp-price-wrap">
-            {%- if current_variant.compare_at_price > current_variant.price -%}
-              <s class="kj-pdp-compare-price" data-kj-pdp-compare>{{ current_variant.compare_at_price | money }}</s>
-            {%- endif -%}
-            <span class="kj-pdp-price" data-kj-pdp-price>{{ current_variant.price | money }}</span>
-          </div>
-        </div>
+      <nav class="kj-pdp-breadcrumbs">
+        <a href="{{ routes.root_url }}">home</a> / <span>{{ product.title | downcase }}</span>
+      </nav>
 
-        {%- assign rating = product.metafields.reviews.rating.value.rating -%}
-        {%- assign rating_count = product.metafields.reviews.rating_count -%}
-        <div class="kj-stars{% if rating == blank %} kj-stars--placeholder{% endif %}" aria-hidden="true">
-          {%- assign filled = rating | default: 5 | round -%}
-          {%- for i in (1..5) -%}
-            <span class="kj-star{% if i <= filled %} kj-star--filled{% endif %}">&#9733;</span>
-          {%- endfor -%}
-          {%- if rating_count != blank -%}
-            <span class="kj-star-count">({{ rating_count }} reviews)</span>
+      <div class="kj-pdp-title-row">
+        <h1 class="kj-pdp-title">{{ product.title }}</h1>
+        {%- assign pdp_badge = '' -%}
+        {%- for tag in product.tags -%}
+          {%- assign tag_down = tag | downcase -%}
+          {%- if tag_down == 'best seller' or tag_down == 'bestseller' or tag_down == 'new' or tag_down == 'favorite' or tag_down == 'favourite' -%}
+            {%- assign pdp_badge = tag_down | replace: 'bestseller', 'best seller' -%}
+            {%- break -%}
           {%- endif -%}
-        </div>
+        {%- endfor -%}
+        {%- if pdp_badge != blank -%}
+          <span class="kj-pdp-badge">{{ pdp_badge }}</span>
+        {%- endif -%}
+      </div>
 
-        <div class="kj-pdp-short-desc">{{ product.description | strip_html | truncatewords: 32 }}</div>
+      {%- if section.settings.subtitle != blank -%}
+        <p class="kj-pdp-subtitle">{{ section.settings.subtitle }}</p>
+      {%- elsif product.type != blank -%}
+        <p class="kj-pdp-subtitle">{{ product.type | downcase }}</p>
+      {%- endif -%}
 
-        {%- form 'product', product, id: 'kj-product-form', novalidate: 'novalidate' -%}
-          <input type="hidden" name="id" value="{{ current_variant.id }}" data-kj-pdp-id>
+      {%- assign rating = product.metafields.reviews.rating.value.rating -%}
+      {%- assign rating_count = product.metafields.reviews.rating_count -%}
+      <div class="kj-stars{% if rating == blank %} kj-stars--placeholder{% endif %}" aria-hidden="true">
+        {%- assign filled = rating | default: 5 | round -%}
+        {%- for i in (1..5) -%}
+          <span class="kj-star{% if i <= filled %} kj-star--filled{% endif %}">&#9733;</span>
+        {%- endfor -%}
+        {%- if rating_count != blank -%}
+          <span class="kj-star-count">({{ rating_count }}) reviews</span>
+        {%- endif -%}
+      </div>
 
-          {%- unless product.has_only_default_variant -%}
-            <p class="kj-pdp-shade-label">
-              {{ product.options.first | downcase }}: <strong data-kj-pdp-shade>{{ current_variant.title }}</strong>
-            </p>
-            <div class="kj-pdp-swatches">
+      {%- form 'product', product, id: 'kj-product-form', novalidate: 'novalidate' -%}
+        <input type="hidden" name="id" value="{{ current_variant.id }}" data-kj-pdp-id>
+
+        {%- unless product.has_only_default_variant -%}
+          <p class="kj-pdp-shade-label">
+            {{ product.options.first | downcase }}: <span data-kj-pdp-shade>{{ current_variant.title | downcase }}</span>
+          </p>
+
+          <!-- Shade dropdown -->
+          <div class="kj-pdp-dropdown">
+            <span class="kj-pdp-dropdown-chip">
+              {%- if current_variant.featured_image != blank -%}
+                <img src="{{ current_variant.featured_image | image_url: width: 56, height: 56, crop: 'center' }}" alt="" width="28" height="28" data-kj-pdp-chip>
+              {%- endif -%}
+            </span>
+            <select data-kj-pdp-select aria-label="{{ product.options.first | escape }}">
               {%- for variant in product.variants -%}
-                <button
-                  type="button"
-                  class="kj-pdp-swatch{% if variant == current_variant %} kj-pdp-swatch--active{% endif %}"
-                  data-kj-pdp-swatch
-                  data-id="{{ variant.id }}"
-                  data-title="{{ variant.title | escape }}"
-                  data-price="{{ variant.price | money }}"
-                  data-compare="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money }}{% endif %}"
-                  data-available="{{ variant.available }}"
-                  {% if variant.featured_image != blank %}data-image="{{ variant.featured_image | image_url: width: 1200 }}"{% endif %}
-                  aria-label="{{ variant.title | escape }}"
-                  {% unless variant.available %}data-soldout="true"{% endunless %}
-                >
-                  {%- if variant.featured_image != blank -%}
-                    <img src="{{ variant.featured_image | image_url: width: 72, height: 72, crop: 'center' }}" alt="" width="72" height="72" loading="lazy">
-                  {%- else -%}
-                    <span class="kj-pdp-swatch-blank"></span>
-                  {%- endif -%}
-                </button>
+                <option value="{{ variant.id }}"{% if variant == current_variant %} selected{% endif %}>{{ variant.title | downcase }}</option>
+              {%- endfor -%}
+            </select>
+            <svg class="kj-pdp-dropdown-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </div>
+
+          <!-- Family tabs -->
+          {%- assign family_lines = section.settings.shade_families | newline_to_br | split: '<br />' -%}
+          {%- if section.settings.shade_families != blank -%}
+            <div class="kj-pdp-families" data-kj-families>
+              <button type="button" class="kj-pdp-family kj-family-active" data-kj-family-tab data-family="all">all</button>
+              {%- for line in family_lines -%}
+                {%- assign parts = line | split: ':' -%}
+                {%- if parts.size == 2 -%}
+                  <button type="button" class="kj-pdp-family" data-kj-family-tab data-family="{{ parts[0] | strip | downcase }}">{{ parts[0] | strip | downcase }}</button>
+                {%- endif -%}
               {%- endfor -%}
             </div>
-          {%- endunless -%}
+          {%- endif -%}
 
+          <!-- Shade chips -->
+          <div class="kj-pdp-swatches">
+            {%- for variant in product.variants -%}
+              {%- assign v_family = '' -%}
+              {%- for line in family_lines -%}
+                {%- assign parts = line | split: ':' -%}
+                {%- if parts.size == 2 -%}
+                  {%- assign members = parts[1] | split: ',' -%}
+                  {%- for m in members -%}
+                    {%- assign m_clean = m | strip | downcase -%}
+                    {%- assign v_clean = variant.title | downcase -%}
+                    {%- if m_clean == v_clean -%}{%- assign v_family = parts[0] | strip | downcase -%}{%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+              {%- endfor -%}
+              <button
+                type="button"
+                class="kj-pdp-swatch{% if variant == current_variant %} kj-pdp-swatch--active{% endif %}"
+                data-kj-pdp-swatch
+                data-id="{{ variant.id }}"
+                data-title="{{ variant.title | escape }}"
+                data-price="{{ variant.price | money }}"
+                data-available="{{ variant.available }}"
+                data-family="{{ v_family }}"
+                {% if variant.featured_image != blank %}data-image="{{ variant.featured_image | image_url: width: 1400 }}" data-chip="{{ variant.featured_image | image_url: width: 56, height: 56, crop: 'center' }}"{% endif %}
+                aria-label="{{ variant.title | escape }}"
+                {% unless variant.available %}data-soldout="true"{% endunless %}
+              >
+                {%- if variant.featured_image != blank -%}
+                  <img src="{{ variant.featured_image | image_url: width: 56, height: 56, crop: 'center' }}" alt="" width="28" height="28" loading="lazy">
+                {%- else -%}
+                  <span class="kj-pdp-swatch-blank"></span>
+                {%- endif -%}
+              </button>
+            {%- endfor -%}
+          </div>
+        {%- endunless -%}
+
+        <!-- Qty + add to cart -->
+        <div class="kj-pdp-buy-row">
+          <div class="kj-pdp-qty">
+            <button type="button" data-kj-qty-minus aria-label="Decrease quantity">&minus;</button>
+            <input type="number" name="quantity" value="1" min="1" data-kj-qty aria-label="Quantity">
+            <button type="button" data-kj-qty-plus aria-label="Increase quantity">+</button>
+          </div>
           <button type="submit" name="add" class="kj-pdp-add" data-kj-pdp-add {% unless current_variant.available %}disabled{% endunless %}>
-            {%- if current_variant.available -%}add to bag{%- else -%}sold out{%- endif -%}
+            {%- if current_variant.available -%}
+              add to cart - <span data-kj-pdp-price>{{ current_variant.price | money }}</span>
+            {%- else -%}
+              sold out
+            {%- endif -%}
           </button>
-        {%- endform -%}
-
-        <div class="kj-pdp-accordions">
-          <details class="kj-pdp-acc" open>
-            <summary>details</summary>
-            <div class="kj-pdp-acc-body">{{ product.description }}</div>
-          </details>
-          {%- if product.metafields.custom.how_to_use != blank -%}
-            <details class="kj-pdp-acc">
-              <summary>how to use</summary>
-              <div class="kj-pdp-acc-body">{{ product.metafields.custom.how_to_use | metafield_tag }}</div>
-            </details>
-          {%- endif -%}
-          {%- if product.metafields.custom.ingredients != blank -%}
-            <details class="kj-pdp-acc">
-              <summary>ingredients</summary>
-              <div class="kj-pdp-acc-body">{{ product.metafields.custom.ingredients | metafield_tag }}</div>
-            </details>
-          {%- endif -%}
-          {%- if section.settings.shipping_text != blank -%}
-            <details class="kj-pdp-acc">
-              <summary>shipping &amp; returns</summary>
-              <div class="kj-pdp-acc-body">{{ section.settings.shipping_text }}</div>
-            </details>
-          {%- endif -%}
         </div>
+      {%- endform -%}
 
+      <!-- Accordions -->
+      <div class="kj-pdp-accordions">
+        <details class="kj-pdp-acc" open>
+          <summary>details</summary>
+          <div class="kj-pdp-acc-body">{{ product.description }}</div>
+        </details>
+        {%- if product.metafields.custom.ingredients != blank -%}
+          <details class="kj-pdp-acc">
+            <summary>ingredients</summary>
+            <div class="kj-pdp-acc-body">{{ product.metafields.custom.ingredients | metafield_tag }}</div>
+          </details>
+        {%- endif -%}
+        {%- if product.metafields.custom.how_to_use != blank -%}
+          <details class="kj-pdp-acc">
+            <summary>how to use</summary>
+            <div class="kj-pdp-acc-body">{{ product.metafields.custom.how_to_use | metafield_tag }}</div>
+          </details>
+        {%- endif -%}
+        {%- if section.settings.shipping_text != blank -%}
+          <details class="kj-pdp-acc">
+            <summary>shipping &amp; returns</summary>
+            <div class="kj-pdp-acc-body">{{ section.settings.shipping_text }}</div>
+          </details>
+        {%- endif -%}
       </div>
-    </div>
 
+      <!-- Benefits icons -->
+      {%- if section.settings.benefits != blank -%}
+        {%- assign benefit_items = section.settings.benefits | split: ',' -%}
+        <div class="kj-pdp-benefits">
+          {%- for b in benefit_items -%}
+            {%- assign icon_index = forloop.index0 | modulo: 3 -%}
+            <div class="kj-pdp-benefit">
+              <span class="kj-pdp-benefit-icon">
+                {%- if icon_index == 0 -%}
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+                {%- elsif icon_index == 1 -%}
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c4 4.5 6 7.5 6 10.5a6 6 0 1 1-12 0C6 10.5 8 7.5 12 3z"/></svg>
+                {%- else -%}
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 14c4-1 6-3 7-7 3 1 7 4 7 8a7 7 0 0 1-14 0z"/><path d="M5 21c2-3 4-4 7-5"/></svg>
+                {%- endif -%}
+              </span>
+              <span class="kj-pdp-benefit-label">{{ b | strip | downcase }}</span>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+    </div>
   </div>
 </div>
 
@@ -129,35 +240,90 @@
   (function () {
     if (window.__kjPdpDelegated) return;
     window.__kjPdpDelegated = true;
-    document.addEventListener('click', function (e) {
-      var swatch = e.target.closest('[data-kj-pdp-swatch]');
-      if (!swatch) return;
-      var root = swatch.closest('.kj-pdp');
-      root.querySelectorAll('[data-kj-pdp-swatch]').forEach(function (s) {
-        s.classList.toggle('kj-pdp-swatch--active', s === swatch);
-      });
+
+    function selectVariant(root, data) {
       var idInput = root.querySelector('[data-kj-pdp-id]');
-      if (idInput) idInput.value = swatch.dataset.id;
+      if (idInput) idInput.value = data.id;
       var price = root.querySelector('[data-kj-pdp-price]');
-      if (price) price.textContent = swatch.dataset.price;
-      var compare = root.querySelector('[data-kj-pdp-compare]');
-      if (compare) {
-        compare.textContent = swatch.dataset.compare || '';
-        compare.style.display = swatch.dataset.compare ? '' : 'none';
-      }
+      if (price && data.price) price.textContent = data.price;
       var shade = root.querySelector('[data-kj-pdp-shade]');
-      if (shade) shade.textContent = swatch.dataset.title;
-      var main = root.querySelector('[data-kj-pdp-main]');
-      if (main && swatch.dataset.image) main.src = swatch.dataset.image;
+      if (shade) shade.textContent = (data.title || '').toLowerCase();
+      var chip = root.querySelector('[data-kj-pdp-chip]');
+      if (chip && data.chip) chip.src = data.chip;
+      var sel = root.querySelector('[data-kj-pdp-select]');
+      if (sel) sel.value = data.id;
+      root.querySelectorAll('[data-kj-pdp-swatch]').forEach(function (s) {
+        s.classList.toggle('kj-pdp-swatch--active', s.dataset.id === data.id);
+      });
       var add = root.querySelector('[data-kj-pdp-add]');
       if (add) {
-        var available = swatch.dataset.available === 'true';
-        add.disabled = !available;
-        add.textContent = available ? 'add to bag' : 'sold out';
+        var ok = data.available !== 'false';
+        add.disabled = !ok;
+        if (!ok) add.textContent = 'sold out';
       }
+      // Gallery: filter thumbs to this shade if any match, else show all
+      var thumbs = root.querySelectorAll('[data-kj-pdp-thumb]');
+      var matches = [];
+      thumbs.forEach(function (t) { if (t.dataset.alt === data.title) matches.push(t); });
+      thumbs.forEach(function (t) {
+        t.classList.toggle('kj-media-hidden', matches.length > 0 && t.dataset.alt !== data.title);
+        t.classList.remove('kj-thumb-active');
+      });
+      var main = root.querySelector('[data-kj-pdp-main]');
+      var first = matches[0] || thumbs[0];
+      if (main && first) { main.src = first.dataset.full; first.classList.add('kj-thumb-active'); }
+      else if (main && data.image) { main.src = data.image; }
       var url = new URL(window.location.href);
-      url.searchParams.set('variant', swatch.dataset.id);
+      url.searchParams.set('variant', data.id);
       window.history.replaceState({}, '', url.toString());
+    }
+
+    document.addEventListener('click', function (e) {
+      var root;
+      var swatch = e.target.closest('[data-kj-pdp-swatch]');
+      if (swatch) {
+        root = swatch.closest('.kj-pdp');
+        selectVariant(root, swatch.dataset);
+        return;
+      }
+      var thumb = e.target.closest('[data-kj-pdp-thumb]');
+      if (thumb) {
+        root = thumb.closest('.kj-pdp');
+        var main = root.querySelector('[data-kj-pdp-main]');
+        if (main) main.src = thumb.dataset.full;
+        root.querySelectorAll('[data-kj-pdp-thumb]').forEach(function (t) {
+          t.classList.toggle('kj-thumb-active', t === thumb);
+        });
+        return;
+      }
+      var tab = e.target.closest('[data-kj-family-tab]');
+      if (tab) {
+        root = tab.closest('.kj-pdp');
+        var fam = tab.dataset.family;
+        root.querySelectorAll('[data-kj-family-tab]').forEach(function (t) {
+          t.classList.toggle('kj-family-active', t === tab);
+        });
+        root.querySelectorAll('[data-kj-pdp-swatch]').forEach(function (s) {
+          s.classList.toggle('kj-media-hidden', fam !== 'all' && s.dataset.family !== fam);
+        });
+        return;
+      }
+      var minus = e.target.closest('[data-kj-qty-minus]');
+      var plus = e.target.closest('[data-kj-qty-plus]');
+      if (minus || plus) {
+        root = (minus || plus).closest('.kj-pdp');
+        var qty = root.querySelector('[data-kj-qty]');
+        var v = parseInt(qty.value, 10) || 1;
+        qty.value = Math.max(1, v + (plus ? 1 : -1));
+      }
+    });
+
+    document.addEventListener('change', function (e) {
+      var sel = e.target.closest('[data-kj-pdp-select]');
+      if (!sel) return;
+      var root = sel.closest('.kj-pdp');
+      var swatch = root.querySelector('[data-kj-pdp-swatch][data-id="' + sel.value + '"]');
+      if (swatch) selectVariant(root, swatch.dataset);
     });
   })();
 </script>
@@ -168,25 +334,57 @@
   }
 
   .kj-pdp-container {
-    max-width: 1400px;
+    max-width: 1500px;
     margin: 0 auto;
     padding: 30px 20px 70px;
     display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: 50px;
+    grid-template-columns: 84px minmax(0, 1fr) minmax(0, 480px);
+    gap: 28px;
     align-items: start;
   }
 
-  .kj-pdp-gallery {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    align-content: start;
+  .kj-pdp-thumbs {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 640px;
+    overflow-y: auto;
+    scrollbar-width: none;
   }
 
-  .kj-pdp-media {
+  .kj-pdp-thumbs::-webkit-scrollbar { display: none; }
+
+  .kj-pdp-thumb {
+    width: 72px;
+    height: 72px;
+    padding: 0;
+    border: 1px solid #ece4e4;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+
+  .kj-pdp-thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .kj-thumb-active {
+    border-color: #393939;
+  }
+
+  .kj-media-hidden {
+    display: none !important;
+  }
+
+  .kj-pdp-main-media {
     position: relative;
-    background: #ffffff;
+    aspect-ratio: 1 / 1;
+    background: #fff;
     border: 1px solid #ece4e4;
     border-radius: 6px;
     overflow: hidden;
@@ -194,66 +392,132 @@
 
   .kj-pdp-img,
   .kj-pdp-placeholder {
-    display: block;
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
   }
 
-  .kj-pdp-info-wrapper {
-    position: sticky;
-    top: 90px;
+  .kj-pdp-breadcrumbs {
+    font-size: 12px;
+    color: #777;
+    text-transform: lowercase;
+    margin-bottom: 14px;
   }
+
+  .kj-pdp-breadcrumbs a {
+    color: #777;
+    text-decoration: none;
+  }
+
+  .kj-pdp-breadcrumbs a:hover { text-decoration: underline; }
 
   .kj-pdp-title-row {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: baseline;
-    gap: 16px;
+    gap: 14px;
   }
 
   .kj-pdp-title {
     font-family: var(--font-heading--family);
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
     text-transform: lowercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     margin: 0;
   }
 
-  .kj-pdp-price-wrap {
+  .kj-pdp-badge {
+    background: #f6dee6;
+    color: #5c5c5c;
+    font-size: 12px;
+    text-transform: lowercase;
+    border-radius: 4px;
+    padding: 5px 12px;
     white-space: nowrap;
-    font-size: 18px;
   }
 
-  .kj-pdp-compare-price {
-    color: #999;
-    margin-right: 6px;
+  .kj-pdp-subtitle {
+    font-size: 14px;
+    color: #444;
+    text-transform: lowercase;
+    margin: 6px 0 0;
   }
 
   .kj-pdp .kj-stars {
-    margin: 10px 0 0;
+    margin: 10px 0 18px;
   }
 
-  .kj-pdp .kj-star {
-    font-size: 13px;
-  }
-
-  .kj-pdp .kj-star-count {
-    font-size: 12px;
-  }
-
-  .kj-pdp-short-desc {
-    font-size: 13px;
-    line-height: 1.65;
-    color: #444;
-    margin: 16px 0 22px;
-  }
+  .kj-pdp .kj-star { font-size: 15px; }
+  .kj-pdp .kj-star-count { font-size: 13px; }
 
   .kj-pdp-shade-label {
-    font-size: 12px;
+    font-size: 13px;
     text-transform: lowercase;
+    color: #333;
+    margin: 0 0 8px;
+  }
+
+  .kj-pdp-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 320px;
+    max-width: 100%;
+    border: 1px solid #cfcfcf;
+    border-radius: 4px;
+    background: #fff;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+  }
+
+  .kj-pdp-dropdown-chip img {
+    display: block;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .kj-pdp-dropdown select {
+    appearance: none;
+    -webkit-appearance: none;
+    border: none;
+    background: transparent;
+    font-size: 14px;
+    text-transform: lowercase;
+    flex: 1;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .kj-pdp-dropdown-caret {
+    pointer-events: none;
     color: #555;
-    margin: 0 0 10px;
+  }
+
+  .kj-pdp-families {
+    display: flex;
+    gap: 18px;
+    margin-bottom: 12px;
+  }
+
+  .kj-pdp-family {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 14px;
+    color: #555;
+    text-transform: lowercase;
+    cursor: pointer;
+  }
+
+  .kj-family-active {
+    color: #000;
+    font-weight: 700;
   }
 
   .kj-pdp-swatches {
@@ -264,11 +528,11 @@
   }
 
   .kj-pdp-swatch {
-    width: 38px;
-    height: 38px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     border: 1px solid #ddd;
-    padding: 2px;
+    padding: 1px;
     background: #fff;
     cursor: pointer;
     overflow: hidden;
@@ -286,40 +550,70 @@
   }
 
   .kj-pdp-swatch--active {
-    border: 2px solid #000;
+    border: 2px solid #393939;
   }
 
-  .kj-pdp-swatch[data-soldout] {
-    opacity: 0.35;
+  .kj-pdp-swatch[data-soldout] { opacity: 0.35; }
+
+  .kj-pdp-buy-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+
+  .kj-pdp-qty {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cfcfcf;
+    border-radius: 4px;
+    background: #fff;
+  }
+
+  .kj-pdp-qty button {
+    background: none;
+    border: none;
+    width: 34px;
+    height: 42px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #333;
+  }
+
+  .kj-pdp-qty input {
+    width: 34px;
+    border: none;
+    text-align: center;
+    font-size: 14px;
+    background: transparent;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+
+  .kj-pdp-qty input::-webkit-outer-spin-button,
+  .kj-pdp-qty input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
   }
 
   .kj-pdp-add {
     font-family: var(--font-heading--family);
-    width: 100%;
-    background: #000;
+    flex: 1;
+    background: #3a3a3a;
     color: #fff;
     border: none;
-    border-radius: 100px;
-    padding: 16px;
+    border-radius: 4px;
+    padding: 12px 20px;
     font-size: 14px;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: lowercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.4px;
     cursor: pointer;
-    transition: opacity 0.2s ease;
+    transition: background 0.2s ease;
   }
 
-  .kj-pdp-add:hover:not(:disabled) {
-    opacity: 0.85;
-  }
-
-  .kj-pdp-add:disabled {
-    background: #999;
-    cursor: not-allowed;
-  }
+  .kj-pdp-add:hover:not(:disabled) { background: #191919; }
+  .kj-pdp-add:disabled { background: #999; cursor: not-allowed; }
 
   .kj-pdp-accordions {
-    margin-top: 30px;
     border-top: 1px solid #e5d8d8;
   }
 
@@ -329,10 +623,11 @@
 
   .kj-pdp-acc summary {
     font-family: var(--font-heading--family);
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 600;
+    color: #b0697a;
     text-transform: lowercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     padding: 15px 0;
     cursor: pointer;
     list-style: none;
@@ -341,50 +636,65 @@
     align-items: center;
   }
 
-  .kj-pdp-acc summary::-webkit-details-marker {
-    display: none;
-  }
-
-  .kj-pdp-acc summary::after {
-    content: '+';
-    font-size: 16px;
-    font-weight: 400;
-  }
-
-  .kj-pdp-acc[open] summary::after {
-    content: '\2212';
-  }
+  .kj-pdp-acc summary::-webkit-details-marker { display: none; }
+  .kj-pdp-acc summary::after { content: '+'; font-size: 18px; font-weight: 400; color: #b0697a; }
+  .kj-pdp-acc[open] summary::after { content: '\2212'; }
 
   .kj-pdp-acc-body {
-    font-size: 13px;
-    line-height: 1.65;
+    font-size: 14px;
+    line-height: 1.7;
     color: #444;
-    padding: 0 0 16px;
+    padding: 0 0 18px;
+  }
+
+  .kj-pdp-benefits {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px 26px;
+    margin-top: 30px;
+  }
+
+  .kj-pdp-benefit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 68px;
+  }
+
+  .kj-pdp-benefit-icon {
+    width: 52px;
+    height: 52px;
+    border: 1px solid #999;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #444;
+  }
+
+  .kj-pdp-benefit-label {
+    font-size: 11px;
+    color: #444;
+    text-align: center;
+    text-transform: lowercase;
+    line-height: 1.3;
   }
 
   @media screen and (max-width: 989px) {
     .kj-pdp-container {
       grid-template-columns: 1fr;
-      gap: 26px;
+      gap: 20px;
       padding-top: 12px;
     }
-    .kj-pdp-info-wrapper {
-      position: static;
-    }
-    .kj-pdp-gallery {
-      grid-template-columns: none;
-      grid-auto-flow: column;
-      grid-auto-columns: 85%;
+    .kj-pdp-thumbs {
+      order: 2;
+      flex-direction: row;
+      max-height: none;
       overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: none;
     }
-    .kj-pdp-gallery::-webkit-scrollbar {
-      display: none;
-    }
-    .kj-pdp-media {
-      scroll-snap-align: start;
-    }
+    .kj-pdp-main-media { order: 1; }
+    .kj-pdp-info { order: 3; }
   }
 </style>
 
@@ -397,7 +707,23 @@
       "type": "color",
       "id": "bg_color",
       "label": "Background Color",
-      "default": "#f7efef"
+      "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle (e.g. 0.12 oz | soft-matte finish)"
+    },
+    {
+      "type": "textarea",
+      "id": "shade_families",
+      "label": "Shade families (one per line: label: shade, shade)"
+    },
+    {
+      "type": "text",
+      "id": "benefits",
+      "label": "Benefit icons (comma separated)",
+      "default": "clean, cruelty free, high pigmented, non-drying, paraben free, smudge-resistant, vegan"
     },
     {
       "type": "richtext",

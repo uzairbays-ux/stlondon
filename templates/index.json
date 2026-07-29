@@ -70,7 +70,7 @@
         "heading": "SHOP THE EDIT",
         "collection": "best-seller",
         "shop_all_link": "/collections/best-seller",
-        "product_limit": 8,
+        "product_limit": 4,
         "show_secondary_image": true,
         "bg_color": "#f7efef",
         "heading_color": "#b0697a",

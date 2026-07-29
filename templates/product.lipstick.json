@@ -13,7 +13,10 @@
       "type": "kj-main-product",
       "name": "KJ Main Product",
       "settings": {
-        "bg_color": "#f7efef",
+        "bg_color": "#ffffff",
+        "subtitle": "0.12 oz | soft-matte finish",
+        "shade_families": "nudes: Kylie, Blushing Babe, Koko K, An Apple A Day, Summer Somewhere, Irreplaceable, Work Mode, Here For It\nreds: Rendezvous, Fire Sign, Up To No Good, You Could Never",
+        "benefits": "clean, cruelty free, high pigmented, non-drying, paraben free, smudge-resistant, vegan",
         "shipping_text": "<p>free uk shipping on orders over £40. easy returns within 30 days.</p>"
       }
     },
