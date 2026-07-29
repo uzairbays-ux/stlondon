@@ -36,6 +36,57 @@
     {% endif %}
 
     {{ content_for_header }}
+
+    {%- comment -%} KJ global overrides: dark scrollbar, centered announcement, white nav on transparent header, Kylie mega menu {%- endcomment -%}
+    <style>
+      html {
+        scrollbar-color: #1a1a1a #f1e8e8;
+      }
+      .page-wrapper::-webkit-scrollbar {
+        width: 10px;
+      }
+      .page-wrapper::-webkit-scrollbar-thumb {
+        background: #1a1a1a;
+        border-radius: 10px;
+      }
+      .page-wrapper::-webkit-scrollbar-track {
+        background: #f1e8e8;
+      }
+
+      .announcement-bar,
+      .announcement-bar__text {
+        text-align: center !important;
+        justify-content: center !important;
+      }
+
+      /* Homepage transparent header: white nav, black on header hover */
+      body.template-index .header-section:not(:hover) .menu-list__link:not(:hover) {
+        color: #ffffff;
+      }
+      .header-section:hover {
+        background: #ffffff;
+      }
+      .header-section:hover .menu-list__link {
+        color: #000000;
+      }
+      .menu-list__link:hover {
+        color: #000000 !important;
+        opacity: 0.75;
+      }
+
+      /* Kylie-style mega menu: white panel, lowercase links */
+      .mega-menu {
+        background: #ffffff;
+      }
+      .mega-menu__link {
+        text-transform: lowercase;
+        font-size: 13px;
+        letter-spacing: 0.2px;
+      }
+      .mega-menu__link--parent {
+        font-weight: 700;
+      }
+    </style>
   </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">

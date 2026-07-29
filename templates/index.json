@@ -15,6 +15,7 @@
       "settings": {
         "image_desktop": "shopify://shop_images/kj-hero-desktop.jpg",
         "image_mobile": "shopify://shop_images/kj-hero-mobile.jpg",
+        "height_mode": "vh",
         "desktop_height": 100,
         "mobile_height": 100,
         "overlay_color": "#000000",
@@ -50,14 +51,30 @@
       }
     },
     "kj_featured_product_1": {
-      "type": "kj-featured-product",
-      "name": "KJ Featured Product",
+      "type": "kj-product-slider",
+      "blocks": {
+        "tab_all": {
+          "type": "tab",
+          "settings": {
+            "label": "All",
+            "collection": "best-seller"
+          }
+        }
+      },
+      "block_order": [
+        "tab_all"
+      ],
+      "name": "KJ Featured Grid",
       "settings": {
+        "layout": "grid",
         "heading": "SHOP THE EDIT",
-        "heading_color": "#b0697a",
-        "product": "",
-        "fallback_collection": "best-seller",
+        "collection": "best-seller",
+        "shop_all_link": "/collections/best-seller",
+        "product_limit": 8,
+        "show_secondary_image": true,
         "bg_color": "#f7efef",
+        "heading_color": "#b0697a",
+        "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
       }

@@ -1,9 +1,15 @@
 {%- comment -%}
-  Shared visual styles for kj-product-card. Rendered once per section that
-  uses the card outside kj-product-slider (which carries its own copy).
-  Container-specific sizing (.kj-product-card flex/width) stays in the section.
+  Shared visual styles for kj-product-card (Kylie reference anatomy).
+  Rendered once per section that uses the card. Container-specific sizing
+  (.kj-product-card flex/width) stays in the section.
 {%- endcomment -%}
 <style>
+  .kj-product-card {
+    background: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
   .kj-product-card-link {
     text-decoration: none;
     display: block;
@@ -12,11 +18,9 @@
   .kj-product-image-wrap {
     position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1.1;
-    background-color: #ffffff;
-    border-radius: 4px;
+    aspect-ratio: 1 / 1;
+    background-color: #f0eded;
     overflow: hidden;
-    margin-bottom: 10px;
   }
 
   .kj-product-image {
@@ -49,75 +53,29 @@
 
   .kj-shades-inline {
     position: absolute;
-    bottom: 10px;
-    left: 10px;
+    top: 12px;
+    left: 12px;
     z-index: 2;
-    font-size: 11px;
-    color: #333;
+    font-size: 12px;
+    font-weight: 500;
+    color: #222;
     text-transform: lowercase;
     letter-spacing: 0.2px;
   }
 
-  .kj-swatch-row {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    margin: 0 0 8px 0;
-    min-height: 16px;
-  }
-
-  .kj-swatch {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid #e2d5d5;
-  }
-
-  .kj-swatch-more {
-    font-size: 10px;
-    color: #666;
-  }
-
-  .kj-stars {
-    display: flex;
-    align-items: center;
-    gap: 1px;
-    margin-top: 4px;
-    line-height: 1;
-  }
-
-  .kj-star {
-    font-size: 11px;
-    color: #d8c8c8;
-  }
-
-  .kj-star--filled {
-    color: #000;
-  }
-
-  .kj-stars--placeholder .kj-star--filled {
-    color: #333;
-  }
-
-  .kj-star-count {
-    font-size: 10px;
-    color: #666;
-    margin-left: 4px;
-  }
-
-  .kj-vto-badge {
+  .kj-card-badge {
     position: absolute;
     top: 10px;
-    left: 10px;
-    background: #000;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 4px 8px;
+    right: 10px;
     z-index: 2;
+    background: #ffffff;
+    border: 1px solid #e7e2e2;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    color: #222;
+    text-transform: lowercase;
+    letter-spacing: 0.2px;
   }
 
   .kj-quick-add-wrap {
@@ -154,6 +112,35 @@
 
   .kj-product-info {
     text-align: left;
+    padding: 12px 14px 16px;
+    background: #ffffff;
+  }
+
+  .kj-stars {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    margin: 0 0 5px;
+    line-height: 1;
+  }
+
+  .kj-star {
+    font-size: 12px;
+    color: #d8c8c8;
+  }
+
+  .kj-star--filled {
+    color: #000;
+  }
+
+  .kj-stars--placeholder .kj-star--filled {
+    color: #333;
+  }
+
+  .kj-star-count {
+    font-size: 11px;
+    color: #666;
+    margin-left: 4px;
   }
 
   .kj-product-title-row {
@@ -165,29 +152,30 @@
 
   .kj-product-title {
     font-family: var(--font-heading--family);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
-    margin: 0 0 5px 0;
+    margin: 0;
     text-transform: lowercase;
     letter-spacing: 0.2px;
   }
 
   .kj-product-price {
-    font-size: 13px;
-    margin-bottom: 5px;
+    font-size: 14px;
+    font-weight: 700;
     white-space: nowrap;
   }
 
   .kj-price-compare {
     color: #999;
     margin-right: 5px;
+    font-weight: 400;
   }
 
-  .kj-product-shades {
-    font-size: 11px;
-    color: #666;
-    margin: 0;
+  .kj-product-subtitle {
+    font-size: 13px;
+    color: #555;
     text-transform: lowercase;
+    margin: 3px 0 0;
   }
 
   @media screen and (max-width: 767px) {

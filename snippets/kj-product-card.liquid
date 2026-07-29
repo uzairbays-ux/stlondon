@@ -1,5 +1,7 @@
 {%- comment -%}
-  Renders a KJ-style product card.
+  Renders a KJ-style product card (Kylie reference anatomy):
+  grey image tile with "+N shades" top-left and tag badge top-right,
+  white info strip with stars, bold title + price row, grey subtitle.
 
   Accepts:
   - product: {Object} Product Liquid object
@@ -10,9 +12,26 @@
   {% render 'kj-product-card', product: product, show_secondary_image: true, text_color: '#000000' %}
 {%- endcomment -%}
 
+{%- assign card_badge = '' -%}
+{%- for tag in product.tags -%}
+  {%- assign tag_down = tag | downcase -%}
+  {%- if tag_down == 'best seller' or tag_down == 'bestseller' or tag_down == 'new' or tag_down == 'favorite' or tag_down == 'favourite' -%}
+    {%- assign card_badge = tag_down | replace: 'bestseller', 'best seller' -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+
 <div class="kj-product-card">
   <a href="{{ product.url }}" class="kj-product-card-link">
     <div class="kj-product-image-wrap">
+      {%- if product.variants.size > 1 -%}
+        <span class="kj-shades-inline">+{{ product.variants.size }} shades</span>
+      {%- endif -%}
+
+      {%- if card_badge != blank -%}
+        <span class="kj-card-badge">{{ card_badge }}</span>
+      {%- endif -%}
+
       {%- if product.featured_image != blank -%}
         <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-primary" loading="lazy" width="600" height="{{ 600 | divided_by: product.featured_image.aspect_ratio | round }}">
         {%- if product.images[1] != blank and show_secondary_image -%}
@@ -22,44 +41,12 @@
         {{ 'product-1' | placeholder_svg_tag: 'kj-product-placeholder' }}
       {%- endif -%}
 
-      {%- if product.tags contains 'AR' or product.tags contains 'Virtual Try On' -%}
-        <div class="kj-vto-badge">Try It On</div>
-      {%- endif -%}
-
-      {%- if product.variants.size > 1 -%}
-        <span class="kj-shades-inline">+{{ product.variants.size }} shades</span>
-      {%- endif -%}
-
       <div class="kj-quick-add-wrap">
         <button type="button" class="kj-quick-add-btn">Add to Bag</button>
       </div>
     </div>
 
-    {%- if product.variants.size > 1 -%}
-      {%- assign swatch_count = 0 -%}
-      <div class="kj-swatch-row">
-        {%- for variant in product.variants -%}
-          {%- if variant.featured_image != blank and swatch_count < 8 -%}
-            <img src="{{ variant.featured_image | image_url: width: 40, height: 40, crop: 'center' }}" alt="{{ variant.title | escape }}" class="kj-swatch" width="40" height="40" loading="lazy">
-            {%- assign swatch_count = swatch_count | plus: 1 -%}
-          {%- endif -%}
-        {%- endfor -%}
-        {%- if product.variants.size > swatch_count and swatch_count > 0 -%}
-          <span class="kj-swatch-more">+{{ product.variants.size | minus: swatch_count }}</span>
-        {%- endif -%}
-      </div>
-    {%- endif -%}
-
     <div class="kj-product-info" style="color: {{ text_color }};">
-      <div class="kj-product-title-row">
-        <h3 class="kj-product-title">{{ product.title }}</h3>
-        <div class="kj-product-price">
-          {%- if product.compare_at_price > product.price -%}
-            <s class="kj-price-compare">{{ product.compare_at_price | money }}</s>
-          {%- endif -%}
-          <span class="kj-price-regular">{{ product.price | money }}</span>
-        </div>
-      </div>
       {%- assign rating = product.metafields.reviews.rating.value.rating -%}
       {%- assign rating_count = product.metafields.reviews.rating_count -%}
       <div class="kj-stars{% if rating == blank %} kj-stars--placeholder{% endif %}" aria-hidden="true">
@@ -71,6 +58,20 @@
           <span class="kj-star-count">({{ rating_count }})</span>
         {%- endif -%}
       </div>
+
+      <div class="kj-product-title-row">
+        <h3 class="kj-product-title">{{ product.title }}</h3>
+        <div class="kj-product-price">
+          {%- if product.compare_at_price > product.price -%}
+            <s class="kj-price-compare">{{ product.compare_at_price | money }}</s>
+          {%- endif -%}
+          <span class="kj-price-regular">{{ product.price | money }}</span>
+        </div>
+      </div>
+
+      {%- if product.type != blank -%}
+        <p class="kj-product-subtitle">{{ product.type | downcase }}</p>
+      {%- endif -%}
     </div>
   </a>
 </div>

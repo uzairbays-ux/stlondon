@@ -1,6 +1,8 @@
 {%- assign tab_blocks = section.blocks | where: 'type', 'tab' -%}
+{%- assign is_grid = false -%}
+{%- if section.settings.layout == 'grid' -%}{%- assign is_grid = true -%}{%- endif -%}
 
-<div class="kj-product-slider" id="kj-slider-{{ section.id }}" style="background-color: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;">
+<div class="kj-product-slider{% if is_grid %} kj-layout-grid{% endif %}" id="kj-slider-{{ section.id }}" style="background-color: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;">
   <div class="kj-slider-container">
 
     <div class="kj-slider-header">
@@ -11,14 +13,16 @@
         {%- if section.settings.shop_all_link != blank -%}
           <a href="{{ section.settings.shop_all_link }}" class="kj-slider-shop-all" style="color: {{ section.settings.text_color }};">Shop All</a>
         {%- endif -%}
-        <div class="kj-slider-arrows">
-          <button type="button" class="kj-slider-arrow" data-kj-prev aria-label="Previous products">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button type="button" class="kj-slider-arrow" data-kj-next aria-label="Next products">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
-          </button>
-        </div>
+        {%- unless is_grid -%}
+          <div class="kj-slider-arrows">
+            <button type="button" class="kj-slider-arrow" data-kj-prev aria-label="Previous products">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="kj-slider-arrow" data-kj-next aria-label="Next products">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+        {%- endunless -%}
       </div>
     </div>
 
@@ -250,6 +254,21 @@
     min-width: 280px;
   }
 
+  /* Grid layout: Kylie-style static wrapped grid instead of a slider */
+  .kj-layout-grid .kj-slider-track-wrap {
+    overflow-x: visible;
+  }
+
+  .kj-layout-grid .kj-slider-track {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 26px 20px;
+  }
+
+  .kj-layout-grid .kj-product-card {
+    min-width: 0;
+  }
+
   .kj-product-card-link {
     text-decoration: none;
     display: block;
@@ -448,14 +467,40 @@
     .kj-quick-add-wrap {
       display: none; /* Usually hide hover actions on mobile, or keep static */
     }
+    .kj-layout-grid .kj-slider-track {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px 12px;
+    }
+    .kj-layout-grid .kj-product-card {
+      min-width: 0;
+    }
+  }
+
+  @media screen and (min-width: 768px) and (max-width: 989px) {
+    .kj-layout-grid .kj-slider-track {
+      grid-template-columns: repeat(3, 1fr);
+    }
   }
 </style>
+
+{%- comment -%} Shared card styles render last so they win over the legacy card CSS above. {%- endcomment -%}
+{% render 'kj-card-styles' %}
 
 {% schema %}
 {
   "name": "KJ Product Slider",
   "tag": "section",
   "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "slider", "label": "Slider" },
+        { "value": "grid", "label": "Grid" }
+      ],
+      "default": "slider"
+    },
     {
       "type": "text",
       "id": "heading",
