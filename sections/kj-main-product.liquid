@@ -1,124 +1,122 @@
-<div class="kj-pdp" id="ProductSection-{{ section.id }}" data-section-id="{{ section.id }}">
+{% render 'kj-card-styles' %}
+{%- assign current_variant = product.selected_or_first_available_variant -%}
+
+<div class="kj-pdp" id="kj-pdp-{{ section.id }}">
   <div class="kj-pdp-container">
-    
-    <!-- Left: Image Gallery (Scrolling) -->
+
+    <!-- Left: scrolling gallery -->
     <div class="kj-pdp-gallery">
       {%- if product.media.size > 0 -%}
         {%- for media in product.media -%}
           <div class="kj-pdp-media">
             {%- if media.media_type == 'image' -%}
-              <img src="{{ media | image_url: width: 1200 }}" alt="{{ media.alt | escape }}" class="kj-pdp-img" width="1200" height="{{ 1200 | divided_by: media.aspect_ratio | round }}">
+              <img
+                src="{{ media | image_url: width: 1200 }}"
+                alt="{{ media.alt | escape }}"
+                class="kj-pdp-img"
+                {% if forloop.first %}data-kj-pdp-main{% endif %}
+                width="1200"
+                height="{{ 1200 | divided_by: media.aspect_ratio | round }}"
+                {% unless forloop.first %}loading="lazy"{% endunless %}
+              >
             {%- else -%}
-              <!-- Handle video/3d models here if needed -->
               {{ media | media_tag }}
             {%- endif -%}
           </div>
         {%- endfor -%}
       {%- else -%}
-        <div class="kj-pdp-media">
-          {{ 'product-1' | placeholder_svg_tag: 'kj-pdp-placeholder' }}
-        </div>
+        <div class="kj-pdp-media">{{ 'product-1' | placeholder_svg_tag: 'kj-pdp-placeholder' }}</div>
       {%- endif -%}
     </div>
 
-    <!-- Right: Sticky Product Info -->
+    <!-- Right: sticky info -->
     <div class="kj-pdp-info-wrapper">
       <div class="kj-pdp-info">
-        
-        <h1 class="kj-pdp-title">{{ product.title }}</h1>
-        
-        <div class="kj-pdp-price-wrap">
-          {%- if product.compare_at_price > product.price -%}
-            <s class="kj-pdp-compare-price">{{ product.compare_at_price | money }}</s>
+
+        <div class="kj-pdp-title-row">
+          <h1 class="kj-pdp-title">{{ product.title }}</h1>
+          <div class="kj-pdp-price-wrap">
+            {%- if current_variant.compare_at_price > current_variant.price -%}
+              <s class="kj-pdp-compare-price" data-kj-pdp-compare>{{ current_variant.compare_at_price | money }}</s>
+            {%- endif -%}
+            <span class="kj-pdp-price" data-kj-pdp-price>{{ current_variant.price | money }}</span>
+          </div>
+        </div>
+
+        {%- assign rating = product.metafields.reviews.rating.value.rating -%}
+        {%- assign rating_count = product.metafields.reviews.rating_count -%}
+        <div class="kj-stars{% if rating == blank %} kj-stars--placeholder{% endif %}" aria-hidden="true">
+          {%- assign filled = rating | default: 5 | round -%}
+          {%- for i in (1..5) -%}
+            <span class="kj-star{% if i <= filled %} kj-star--filled{% endif %}">&#9733;</span>
+          {%- endfor -%}
+          {%- if rating_count != blank -%}
+            <span class="kj-star-count">({{ rating_count }} reviews)</span>
           {%- endif -%}
-          <span class="kj-pdp-price">{{ product.price | money }}</span>
-        </div>
-        
-        <!-- Reviews Placeholder -->
-        <div class="kj-pdp-reviews">
-          <span class="kj-stars">★★★★★</span>
-          <span class="kj-review-count">(124 Reviews)</span>
         </div>
 
-        <div class="kj-pdp-description">
-          {{ product.description | truncatewords: 30 }}
-        </div>
+        <div class="kj-pdp-short-desc">{{ product.description | strip_html | truncatewords: 32 }}</div>
 
-        <!-- KJ Product Form (Variants & Add to Cart) -->
-        <div class="kj-pdp-form">
-          {%- form 'product', product, id: 'kj-product-form', novalidate: 'novalidate' -%}
-            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-            
-            {%- unless product.has_only_default_variant -%}
-              <div class="kj-pdp-variants">
-                {%- for option in product.options_with_values -%}
-                  <div class="kj-pdp-option">
-                    <label class="kj-pdp-option-label">{{ option.name }}: <span class="kj-selected-value">{{ option.selected_value }}</span></label>
-                    
-                    {%- if option.name == 'Color' or option.name == 'Shade' -%}
-                      <div class="kj-pdp-swatches">
-                        {%- for value in option.values -%}
-                          <div class="kj-pdp-swatch {% if option.selected_value == value %}active{% endif %}" title="{{ value }}">
-                            <!-- Assuming metafield color exists or fallback to CSS color -->
-                            <div class="kj-swatch-inner" style="background-color: {{ value | downcase | replace: ' ', '' }};"></div>
-                          </div>
-                        {%- endfor -%}
-                      </div>
-                    {%- else -%}
-                      <!-- Standard dropdown for non-color options -->
-                      <select class="kj-pdp-select" name="options[{{ option.name | escape }}]">
-                        {%- for value in option.values -%}
-                          <option value="{{ value | escape }}" {% if option.selected_value == value %}selected="selected"{% endif %}>
-                            {{ value }}
-                          </option>
-                        {%- endfor -%}
-                      </select>
-                    {%- endif -%}
-                  </div>
-                {%- endfor -%}
-              </div>
-            {%- endunless -%}
+        {%- form 'product', product, id: 'kj-product-form', novalidate: 'novalidate' -%}
+          <input type="hidden" name="id" value="{{ current_variant.id }}" data-kj-pdp-id>
 
-            <div class="kj-pdp-actions">
-              <!-- Add to Bag -->
-              <button type="submit" name="add" class="kj-pdp-add-btn" {% unless product.available %}disabled{% endunless %}>
-                {%- if product.available -%}
-                  Add to Bag
-                {%- else -%}
-                  Sold Out
-                {%- endif -%}
-              </button>
-              
-              <!-- Virtual Try On Trigger -->
-              {%- if product.tags contains 'AR' or product.tags contains 'Virtual Try On' -%}
-                <button type="button" class="kj-pdp-vto-btn">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path>
-                    <path d="M12 2a10 10 0 0 1 10 10"></path>
-                    <path d="M2 12a10 10 0 0 1 10-10"></path>
-                  </svg>
-                  Virtual Try-On
+          {%- unless product.has_only_default_variant -%}
+            <p class="kj-pdp-shade-label">
+              {{ product.options.first | downcase }}: <strong data-kj-pdp-shade>{{ current_variant.title }}</strong>
+            </p>
+            <div class="kj-pdp-swatches">
+              {%- for variant in product.variants -%}
+                <button
+                  type="button"
+                  class="kj-pdp-swatch{% if variant == current_variant %} kj-pdp-swatch--active{% endif %}"
+                  data-kj-pdp-swatch
+                  data-id="{{ variant.id }}"
+                  data-title="{{ variant.title | escape }}"
+                  data-price="{{ variant.price | money }}"
+                  data-compare="{% if variant.compare_at_price > variant.price %}{{ variant.compare_at_price | money }}{% endif %}"
+                  data-available="{{ variant.available }}"
+                  {% if variant.featured_image != blank %}data-image="{{ variant.featured_image | image_url: width: 1200 }}"{% endif %}
+                  aria-label="{{ variant.title | escape }}"
+                  {% unless variant.available %}data-soldout="true"{% endunless %}
+                >
+                  {%- if variant.featured_image != blank -%}
+                    <img src="{{ variant.featured_image | image_url: width: 72, height: 72, crop: 'center' }}" alt="" width="72" height="72" loading="lazy">
+                  {%- else -%}
+                    <span class="kj-pdp-swatch-blank"></span>
+                  {%- endif -%}
                 </button>
-              {%- endif -%}
+              {%- endfor -%}
             </div>
-            
-          {%- endform -%}
-        </div>
+          {%- endunless -%}
 
-        <!-- Accordions -->
+          <button type="submit" name="add" class="kj-pdp-add" data-kj-pdp-add {% unless current_variant.available %}disabled{% endunless %}>
+            {%- if current_variant.available -%}add to bag{%- else -%}sold out{%- endif -%}
+          </button>
+        {%- endform -%}
+
         <div class="kj-pdp-accordions">
-          <details class="kj-accordion">
-            <summary class="kj-accordion-title">Details <span class="kj-icon">+</span></summary>
-            <div class="kj-accordion-content">
-              {{ product.description }}
-            </div>
+          <details class="kj-pdp-acc" open>
+            <summary>details</summary>
+            <div class="kj-pdp-acc-body">{{ product.description }}</div>
           </details>
-          <details class="kj-accordion">
-            <summary class="kj-accordion-title">Ingredients <span class="kj-icon">+</span></summary>
-            <div class="kj-accordion-content">
-              <p>Clean, Vegan, Cruelty Free.</p>
-            </div>
-          </details>
+          {%- if product.metafields.custom.how_to_use != blank -%}
+            <details class="kj-pdp-acc">
+              <summary>how to use</summary>
+              <div class="kj-pdp-acc-body">{{ product.metafields.custom.how_to_use | metafield_tag }}</div>
+            </details>
+          {%- endif -%}
+          {%- if product.metafields.custom.ingredients != blank -%}
+            <details class="kj-pdp-acc">
+              <summary>ingredients</summary>
+              <div class="kj-pdp-acc-body">{{ product.metafields.custom.ingredients | metafield_tag }}</div>
+            </details>
+          {%- endif -%}
+          {%- if section.settings.shipping_text != blank -%}
+            <details class="kj-pdp-acc">
+              <summary>shipping &amp; returns</summary>
+              <div class="kj-pdp-acc-body">{{ section.settings.shipping_text }}</div>
+            </details>
+          {%- endif -%}
         </div>
 
       </div>
@@ -127,251 +125,261 @@
   </div>
 </div>
 
+<script>
+  (function () {
+    if (window.__kjPdpDelegated) return;
+    window.__kjPdpDelegated = true;
+    document.addEventListener('click', function (e) {
+      var swatch = e.target.closest('[data-kj-pdp-swatch]');
+      if (!swatch) return;
+      var root = swatch.closest('.kj-pdp');
+      root.querySelectorAll('[data-kj-pdp-swatch]').forEach(function (s) {
+        s.classList.toggle('kj-pdp-swatch--active', s === swatch);
+      });
+      var idInput = root.querySelector('[data-kj-pdp-id]');
+      if (idInput) idInput.value = swatch.dataset.id;
+      var price = root.querySelector('[data-kj-pdp-price]');
+      if (price) price.textContent = swatch.dataset.price;
+      var compare = root.querySelector('[data-kj-pdp-compare]');
+      if (compare) {
+        compare.textContent = swatch.dataset.compare || '';
+        compare.style.display = swatch.dataset.compare ? '' : 'none';
+      }
+      var shade = root.querySelector('[data-kj-pdp-shade]');
+      if (shade) shade.textContent = swatch.dataset.title;
+      var main = root.querySelector('[data-kj-pdp-main]');
+      if (main && swatch.dataset.image) main.src = swatch.dataset.image;
+      var add = root.querySelector('[data-kj-pdp-add]');
+      if (add) {
+        var available = swatch.dataset.available === 'true';
+        add.disabled = !available;
+        add.textContent = available ? 'add to bag' : 'sold out';
+      }
+      var url = new URL(window.location.href);
+      url.searchParams.set('variant', swatch.dataset.id);
+      window.history.replaceState({}, '', url.toString());
+    });
+  })();
+</script>
+
 <style>
+  .kj-pdp {
+    background: {{ section.settings.bg_color }};
+  }
+
   .kj-pdp-container {
     max-width: 1400px;
     margin: 0 auto;
-    display: flex;
-    flex-wrap: wrap;
+    padding: 30px 20px 70px;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 50px;
+    align-items: start;
   }
 
-  /* Left Side: Scrolling Gallery */
   .kj-pdp-gallery {
-    width: 60%;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    display: grid;
+    gap: 14px;
   }
 
   .kj-pdp-media {
-    width: 100%;
-    background: #f4f4f4;
+    position: relative;
+    background: #ffffff;
+    border-radius: 6px;
+    overflow: hidden;
   }
-  
-  .kj-pdp-img {
+
+  .kj-pdp-img,
+  .kj-pdp-placeholder {
+    display: block;
     width: 100%;
     height: auto;
-    display: block;
   }
 
-  .kj-pdp-placeholder {
-    width: 100%;
-    height: 800px;
-    fill: #ccc;
-  }
-
-  /* Right Side: Sticky Info */
   .kj-pdp-info-wrapper {
-    width: 40%;
-    padding: 40px;
+    position: sticky;
+    top: 90px;
   }
 
-  .kj-pdp-info {
-    position: sticky;
-    top: 100px; /* Offset for header */
+  .kj-pdp-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
   }
 
   .kj-pdp-title {
-    font-size: 32px;
+    font-family: var(--font-heading--family);
+    font-size: 26px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 0 0 10px 0;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+    margin: 0;
   }
 
   .kj-pdp-price-wrap {
+    white-space: nowrap;
     font-size: 18px;
-    margin-bottom: 15px;
   }
 
   .kj-pdp-compare-price {
     color: #999;
-    margin-right: 10px;
+    margin-right: 6px;
   }
 
-  .kj-pdp-reviews {
-    margin-bottom: 25px;
+  .kj-pdp .kj-stars {
+    margin: 10px 0 0;
+  }
+
+  .kj-pdp .kj-star {
+    font-size: 13px;
+  }
+
+  .kj-pdp .kj-star-count {
     font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
   }
 
-  .kj-stars {
-    color: #000;
-  }
-
-  .kj-review-count {
-    color: #666;
-  }
-
-  .kj-pdp-description {
-    font-size: 14px;
-    line-height: 1.6;
+  .kj-pdp-short-desc {
+    font-size: 13px;
+    line-height: 1.65;
     color: #444;
-    margin-bottom: 30px;
+    margin: 16px 0 22px;
   }
 
-  /* Form & Swatches */
-  .kj-pdp-option {
-    margin-bottom: 25px;
-  }
-
-  .kj-pdp-option-label {
-    display: block;
+  .kj-pdp-shade-label {
     font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-  }
-
-  .kj-selected-value {
-    font-weight: normal;
-    color: #666;
+    text-transform: lowercase;
+    color: #555;
+    margin: 0 0 10px;
   }
 
   .kj-pdp-swatches {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
+    margin-bottom: 24px;
   }
 
   .kj-pdp-swatch {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
-    border: 2px solid transparent;
+    border: 1px solid #ddd;
     padding: 2px;
+    background: #fff;
     cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.15s ease;
   }
 
-  .kj-pdp-swatch.active {
-    border-color: #000;
-  }
-
-  .kj-swatch-inner {
+  .kj-pdp-swatch img,
+  .kj-pdp-swatch-blank {
+    display: block;
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background-color: #ccc; /* Default fallback */
+    object-fit: cover;
+    background: #eee;
   }
 
-  .kj-pdp-select {
+  .kj-pdp-swatch--active {
+    border: 2px solid #000;
+  }
+
+  .kj-pdp-swatch[data-soldout] {
+    opacity: 0.35;
+  }
+
+  .kj-pdp-add {
+    font-family: var(--font-heading--family);
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    font-size: 14px;
-    background: #fff;
-    border-radius: 0;
-  }
-
-  /* Actions */
-  .kj-pdp-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 40px;
-  }
-
-  .kj-pdp-add-btn {
-    width: 100%;
-    padding: 16px;
-    background-color: #000;
+    background: #000;
     color: #fff;
     border: none;
+    border-radius: 100px;
+    padding: 16px;
     font-size: 14px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+    text-transform: lowercase;
+    letter-spacing: 1px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: opacity 0.2s ease;
   }
 
-  .kj-pdp-add-btn:hover {
-    background-color: #333;
+  .kj-pdp-add:hover:not(:disabled) {
+    opacity: 0.85;
   }
-  
-  .kj-pdp-add-btn:disabled {
-    background-color: #999;
+
+  .kj-pdp-add:disabled {
+    background: #999;
     cursor: not-allowed;
   }
 
-  .kj-pdp-vto-btn {
-    width: 100%;
-    padding: 14px;
-    background-color: #fff;
-    color: #000;
-    border: 1px solid #000;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    transition: background 0.3s;
-  }
-
-  .kj-pdp-vto-btn:hover {
-    background-color: #f9f9f9;
-  }
-
-  /* Accordions */
   .kj-pdp-accordions {
-    border-top: 1px solid #eaeaea;
+    margin-top: 30px;
+    border-top: 1px solid #e5d8d8;
   }
 
-  .kj-accordion {
-    border-bottom: 1px solid #eaeaea;
+  .kj-pdp-acc {
+    border-bottom: 1px solid #e5d8d8;
   }
 
-  .kj-accordion-title {
-    padding: 20px 0;
+  .kj-pdp-acc summary {
+    font-family: var(--font-heading--family);
     font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+    padding: 15px 0;
     cursor: pointer;
-    list-style: none; /* Hide default arrow */
+    list-style: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  
-  .kj-accordion-title::-webkit-details-marker {
+
+  .kj-pdp-acc summary::-webkit-details-marker {
     display: none;
   }
 
-  .kj-accordion-content {
-    padding-bottom: 20px;
-    font-size: 14px;
-    line-height: 1.6;
+  .kj-pdp-acc summary::after {
+    content: '+';
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  .kj-pdp-acc[open] summary::after {
+    content: '\2212';
+  }
+
+  .kj-pdp-acc-body {
+    font-size: 13px;
+    line-height: 1.65;
     color: #444;
+    padding: 0 0 16px;
   }
 
-  .kj-accordion[open] .kj-icon {
-    transform: rotate(45deg);
-  }
-
-  .kj-icon {
-    font-size: 20px;
-    font-weight: 300;
-    transition: transform 0.3s;
-  }
-
-  @media screen and (max-width: 899px) {
-    .kj-pdp-gallery {
-      width: 100%;
+  @media screen and (max-width: 989px) {
+    .kj-pdp-container {
+      grid-template-columns: 1fr;
+      gap: 26px;
+      padding-top: 12px;
     }
     .kj-pdp-info-wrapper {
-      width: 100%;
-      padding: 20px;
-    }
-    .kj-pdp-info {
       position: static;
+    }
+    .kj-pdp-gallery {
+      grid-auto-flow: column;
+      grid-auto-columns: 85%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .kj-pdp-gallery::-webkit-scrollbar {
+      display: none;
+    }
+    .kj-pdp-media {
+      scroll-snap-align: start;
     }
   }
 </style>
@@ -380,10 +388,18 @@
 {
   "name": "KJ Main Product",
   "tag": "section",
-  "settings": [],
-  "presets": [
+  "settings": [
     {
-      "name": "KJ Main Product"
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f7efef"
+    },
+    {
+      "type": "richtext",
+      "id": "shipping_text",
+      "label": "Shipping & Returns Text",
+      "default": "<p>free uk shipping on orders over £40. easy returns within 30 days.</p>"
     }
   ]
 }

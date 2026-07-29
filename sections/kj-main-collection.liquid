@@ -1,95 +1,67 @@
+{% render 'kj-card-styles' %}
+
 <div class="kj-collection-page" style="background-color: {{ section.settings.bg_color }};">
-  
-  <!-- Collection Header -->
+
   <div class="kj-collection-header">
-    <h1 class="kj-collection-title">{{ collection.title }}</h1>
+    <h1 class="kj-collection-title" style="color: {{ section.settings.heading_color }};">{{ collection.title }}</h1>
     {%- if collection.description != blank -%}
-      <div class="kj-collection-description">
-        {{ collection.description }}
-      </div>
+      <div class="kj-collection-description">{{ collection.description }}</div>
     {%- endif -%}
   </div>
 
-  <div class="kj-collection-content">
-    
-    <!-- Sidebar / Filters (Placeholder for full filter logic) -->
-    <div class="kj-collection-sidebar">
-      <div class="kj-filter-group">
-        <h3 class="kj-filter-title">Filter By <span class="kj-icon">+</span></h3>
-        <ul class="kj-filter-list">
-          <li><a href="#">New Arrivals</a></li>
-          <li><a href="#">Best Sellers</a></li>
-          <li><a href="#">Bundles</a></li>
-        </ul>
-      </div>
-      <div class="kj-filter-group">
-        <h3 class="kj-filter-title">Sort By <span class="kj-icon">+</span></h3>
-        <ul class="kj-filter-list">
-          <li><a href="#">Featured</a></li>
-          <li><a href="#">Price: Low to High</a></li>
-          <li><a href="#">Price: High to Low</a></li>
-        </ul>
-      </div>
-    </div>
+  {% paginate collection.products by section.settings.products_per_page %}
 
-    <!-- Product Grid -->
-    <div class="kj-collection-grid">
-      {% paginate collection.products by section.settings.products_per_page %}
-        {%- if collection.products.size == 0 -%}
-          <p class="kj-no-products">No products found in this collection.</p>
-        {%- else -%}
-          <div class="kj-grid">
-            {%- for product in collection.products -%}
-              <div class="kj-product-card">
-                <a href="{{ product.url }}" class="kj-product-card-link">
-                  <div class="kj-product-image-wrap">
-                    {%- if product.featured_image != blank -%}
-                      <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-primary" loading="lazy" width="600" height="{{ 600 | divided_by: product.featured_image.aspect_ratio | round }}">
-                      {%- if product.images[1] != blank -%}
-                        <img src="{{ product.images[1] | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-secondary" loading="lazy" width="600" height="{{ 600 | divided_by: product.images[1].aspect_ratio | round }}">
-                      {%- endif -%}
-                    {%- else -%}
-                      {{ 'product-1' | placeholder_svg_tag: 'kj-product-placeholder' }}
-                    {%- endif -%}
-                    
-                    {%- if product.tags contains 'AR' or product.tags contains 'Virtual Try On' -%}
-                      <div class="kj-vto-badge">Try It On</div>
-                    {%- endif -%}
+    <div class="kj-collection-container">
 
-                    <div class="kj-quick-add-wrap">
-                      <button type="button" class="kj-quick-add-btn">Add to Bag</button>
-                    </div>
-                  </div>
-                  
-                  <div class="kj-product-info">
-                    <h3 class="kj-product-title">{{ product.title }}</h3>
-                    <div class="kj-product-price">
-                      {%- if product.compare_at_price > product.price -%}
-                        <s class="kj-price-compare">{{ product.compare_at_price | money }}</s>
-                      {%- endif -%}
-                      <span class="kj-price-regular">{{ product.price | money }}</span>
-                    </div>
-                    {%- if product.variants.size > 1 -%}
-                      <p class="kj-product-shades">{{ product.variants.size }} Shades</p>
-                    {%- endif -%}
-                  </div>
-                </a>
-              </div>
-            {%- endfor -%}
-          </div>
-          
-          <!-- Pagination -->
-          {%- if paginate.pages > 1 -%}
-            <div class="kj-pagination">
-              {{ paginate | default_pagination: next: 'Next &rarr;', previous: '&larr; Prev' }}
-            </div>
+      <div class="kj-collection-toolbar">
+        <span class="kj-collection-count">{{ collection.products_count }} products</span>
+        <form class="kj-collection-sort" method="get">
+          {%- if collection.current_type or collection.current_vendor -%}
+            <input type="hidden" name="q" value="{{ collection.current_type | default: collection.current_vendor | escape }}">
           {%- endif -%}
-          
+          <label for="kj-sort-{{ section.id }}">sort by:</label>
+          <select id="kj-sort-{{ section.id }}" name="sort_by" onchange="this.form.submit()">
+            {%- assign current_sort = collection.sort_by | default: collection.default_sort_by -%}
+            {%- for option in collection.sort_options -%}
+              <option value="{{ option.value }}"{% if option.value == current_sort %} selected{% endif %}>{{ option.name | downcase }}</option>
+            {%- endfor -%}
+          </select>
+        </form>
+      </div>
+
+      {%- if collection.products.size == 0 -%}
+        <p class="kj-no-products">no products found in this collection.</p>
+      {%- else -%}
+        <div class="kj-collection-grid">
+          {%- for product in collection.products -%}
+            {% render 'kj-product-card', product: product, show_secondary_image: true, text_color: section.settings.text_color %}
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="kj-pagination">
+            {%- if paginate.previous -%}
+              <a href="{{ paginate.previous.url }}" class="kj-page-arrow">&larr; prev</a>
+            {%- endif -%}
+            {%- for part in paginate.parts -%}
+              {%- if part.is_link -%}
+                <a href="{{ part.url }}" class="kj-page-num">{{ part.title }}</a>
+              {%- elsif part.title == paginate.current_page -%}
+                <span class="kj-page-num kj-page-current">{{ part.title }}</span>
+              {%- else -%}
+                <span class="kj-page-num">{{ part.title }}</span>
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" class="kj-page-arrow">next &rarr;</a>
+            {%- endif -%}
+          </nav>
         {%- endif -%}
-      {% endpaginate %}
+      {%- endif -%}
+
     </div>
 
-  </div>
+  {% endpaginate %}
 </div>
 
 <style>
@@ -100,239 +72,121 @@
 
   .kj-collection-header {
     text-align: center;
-    padding: 60px 20px;
-    background: #f9f9f9;
-    margin-bottom: 40px;
+    padding: 46px 20px 24px;
   }
 
   .kj-collection-title {
-    font-size: 36px;
+    font-family: var(--font-heading--family);
+    font-size: 30px;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 0 0 15px 0;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    margin: 0 0 12px 0;
   }
 
   .kj-collection-description {
-    max-width: 600px;
+    max-width: 560px;
     margin: 0 auto;
-    font-size: 14px;
-    color: #666;
+    font-size: 13px;
     line-height: 1.6;
+    color: #555;
   }
 
-  .kj-collection-content {
+  .kj-collection-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 20px;
-    display: flex;
-    gap: 40px;
   }
 
-  /* Sidebar */
-  .kj-collection-sidebar {
-    width: 250px;
-    flex-shrink: 0;
-  }
-
-  .kj-filter-group {
-    margin-bottom: 30px;
-    border-bottom: 1px solid #eaeaea;
-    padding-bottom: 20px;
-  }
-
-  .kj-filter-title {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin: 0 0 15px 0;
+  .kj-collection-toolbar {
     display: flex;
     justify-content: space-between;
-    cursor: pointer;
+    align-items: center;
+    border-top: 1px solid #e8dede;
+    border-bottom: 1px solid #e8dede;
+    padding: 12px 0;
+    margin-bottom: 28px;
   }
 
-  .kj-filter-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .kj-filter-list li {
-    margin-bottom: 10px;
-  }
-
-  .kj-filter-list a {
-    text-decoration: none;
+  .kj-collection-count {
+    font-size: 12px;
     color: #666;
-    font-size: 13px;
-    transition: color 0.2s;
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
   }
 
-  .kj-filter-list a:hover {
-    color: #000;
+  .kj-collection-sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    text-transform: lowercase;
   }
 
-  /* Grid */
+  .kj-collection-sort select {
+    border: none;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: lowercase;
+    cursor: pointer;
+    padding: 4px 2px;
+    outline: none;
+  }
+
   .kj-collection-grid {
-    flex-grow: 1;
-  }
-
-  .kj-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px 20px;
+    gap: 26px 20px;
   }
 
-  /* Reusing product card CSS from slider */
-  .kj-product-card-link {
-    text-decoration: none;
-    display: block;
-    color: inherit;
-  }
-
-  .kj-product-image-wrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 3/4;
-    background-color: #f4f4f4;
-    overflow: hidden;
-    margin-bottom: 15px;
-  }
-
-  .kj-product-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.4s ease;
-  }
-
-  .kj-product-placeholder {
-    width: 100%;
-    height: 100%;
-    fill: #ccc;
-  }
-
-  .kj-img-secondary {
-    opacity: 0;
-  }
-
-  .kj-product-card-link:hover .kj-img-secondary {
-    opacity: 1;
-  }
-  
-  .kj-product-card-link:hover .kj-img-primary {
-    opacity: 0;
-  }
-
-  .kj-vto-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: #000;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    padding: 4px 8px;
-    z-index: 2;
-  }
-
-  .kj-quick-add-wrap {
-    position: absolute;
-    bottom: -50px;
-    left: 0;
-    width: 100%;
-    padding: 10px;
-    transition: bottom 0.3s ease;
-    z-index: 2;
-  }
-
-  .kj-product-card-link:hover .kj-quick-add-wrap {
-    bottom: 0;
-  }
-
-  .kj-quick-add-btn {
-    width: 100%;
-    background-color: #000;
-    color: #fff;
-    border: none;
-    padding: 12px;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-  }
-
-  .kj-quick-add-btn:hover {
-    background-color: #333;
-  }
-
-  .kj-product-info {
+  .kj-no-products {
     text-align: center;
-  }
-
-  .kj-product-title {
     font-size: 14px;
-    font-weight: 600;
-    margin: 0 0 5px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .kj-product-price {
-    font-size: 14px;
-    margin-bottom: 5px;
-  }
-  
-  .kj-price-compare {
-    color: #999;
-    margin-right: 5px;
-  }
-
-  .kj-product-shades {
-    font-size: 12px;
     color: #666;
-    margin: 0;
-    text-transform: uppercase;
+    padding: 60px 0;
   }
 
   .kj-pagination {
-    margin-top: 60px;
-    text-align: center;
-    font-size: 14px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-top: 50px;
   }
-  .kj-pagination a, .kj-pagination span {
-    padding: 0 10px;
-    color: #000;
+
+  .kj-page-num,
+  .kj-page-arrow {
+    font-size: 13px;
+    color: #333;
     text-decoration: none;
+    text-transform: lowercase;
+    padding: 6px 10px;
   }
-  .kj-pagination .current {
-    font-weight: bold;
+
+  .kj-page-current {
+    background: #000;
+    color: #fff;
+    border-radius: 100px;
+  }
+
+  a.kj-page-num:hover,
+  a.kj-page-arrow:hover {
     text-decoration: underline;
   }
 
-  @media screen and (max-width: 990px) {
-    .kj-collection-content {
-      flex-direction: column;
-    }
-    .kj-collection-sidebar {
-      width: 100%;
-      margin-bottom: 20px;
-    }
-    .kj-grid {
+  @media screen and (max-width: 989px) {
+    .kj-collection-grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: 20px 10px;
     }
-    .kj-quick-add-wrap {
-      display: none;
+  }
+
+  @media screen and (max-width: 599px) {
+    .kj-collection-grid {
+      gap: 20px 12px;
+    }
+    .kj-collection-title {
+      font-size: 24px;
     }
   }
 </style>
@@ -343,24 +197,31 @@
   "tag": "section",
   "settings": [
     {
+      "type": "range",
+      "id": "products_per_page",
+      "min": 6,
+      "max": 48,
+      "step": 3,
+      "label": "Products Per Page",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#b0697a"
+    },
+    {
       "type": "color",
       "id": "bg_color",
       "label": "Background Color",
-      "default": "#ffffff"
+      "default": "#f7efef"
     },
     {
-      "type": "range",
-      "id": "products_per_page",
-      "min": 12,
-      "max": 48,
-      "step": 6,
-      "default": 24,
-      "label": "Products per page"
-    }
-  ],
-  "presets": [
-    {
-      "name": "KJ Main Collection"
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#000000"
     }
   ]
 }
