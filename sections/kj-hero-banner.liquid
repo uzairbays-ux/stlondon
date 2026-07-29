@@ -171,18 +171,35 @@
     justify-content: flex-end;
   }
 
+  /* Matches reference .action/.action--primary: #393939 on white, sharp corners, invert on hover */
   .kj-btn {
     font-family: var(--font-heading--family);
-    display: inline-block;
-    padding: 12px 26px;
-    font-size: 13px;
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 6.75rem;
+    padding: 11px 22px;
+    font-size: 0.8125rem;
+    font-weight: 500;
     text-transform: lowercase;
     letter-spacing: 0.3px;
     text-decoration: none;
-    border-radius: 2px;
-    transition: all 0.3s ease;
+    border-radius: 0;
+    transition: all 0.2s ease;
     cursor: pointer;
+  }
+
+  .kj-btn-primary {
+    background-color: #ffffff !important;
+    color: #393939 !important;
+    border: 1px solid #ffffff !important;
+  }
+
+  .kj-btn-primary:hover {
+    background-color: #393939 !important;
+    border-color: #393939 !important;
+    color: #ffffff !important;
+    opacity: 1;
   }
 
   .kj-btn-primary:hover {
