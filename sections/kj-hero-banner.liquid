@@ -48,15 +48,20 @@
 </div>
 
 <style>
+  /* Shared visuals only — per-instance height lives on the section id below,
+     because every instance emits this block and the last one would win. */
   .kj-hero-banner {
     position: relative;
     width: 100%;
-    height: {{ section.settings.desktop_height }}vh;
     min-height: 400px;
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+  #kj-hero-{{ section.id }} {
+    height: {{ section.settings.desktop_height }}vh;
   }
 
   {%- if section.settings.height_mode == 'adapt' and section.settings.image_desktop != blank %}
@@ -211,7 +216,7 @@
   }
 
   @media screen and (max-width: 767px) {
-    .kj-hero-banner {
+    #kj-hero-{{ section.id }} {
       height: {{ section.settings.mobile_height }}vh;
     }
     .kj-hero-buttons {
