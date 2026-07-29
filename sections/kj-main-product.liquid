@@ -179,12 +179,15 @@
 
   .kj-pdp-gallery {
     display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 14px;
+    align-content: start;
   }
 
   .kj-pdp-media {
     position: relative;
     background: #ffffff;
+    border: 1px solid #ece4e4;
     border-radius: 6px;
     overflow: hidden;
   }
@@ -369,6 +372,7 @@
       position: static;
     }
     .kj-pdp-gallery {
+      grid-template-columns: none;
       grid-auto-flow: column;
       grid-auto-columns: 85%;
       overflow-x: auto;

@@ -27,20 +27,23 @@
     </div>
 
     {%- if tab_blocks.size > 0 -%}
-      <div class="kj-slider-tabs" role="tablist">
-        {%- for block in tab_blocks -%}
-          <button
-            type="button"
-            class="kj-slider-tab{% if forloop.first %} kj-tab-active{% endif %}"
-            role="tab"
-            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
-            data-kj-tab="{{ forloop.index0 }}"
-            {{ block.shopify_attributes }}
-          >
-            {{ block.settings.label }}
-          </button>
-        {%- endfor -%}
-      </div>
+      {%- comment -%} A single tab is pointless UI — show the pills only when there's a real choice. {%- endcomment -%}
+      {%- if tab_blocks.size > 1 -%}
+        <div class="kj-slider-tabs" role="tablist">
+          {%- for block in tab_blocks -%}
+            <button
+              type="button"
+              class="kj-slider-tab{% if forloop.first %} kj-tab-active{% endif %}"
+              role="tab"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              data-kj-tab="{{ forloop.index0 }}"
+              {{ block.shopify_attributes }}
+            >
+              {{ block.settings.label }}
+            </button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
 
       {%- for block in tab_blocks -%}
         <div class="kj-slider-track-wrap{% unless forloop.first %} kj-track-hidden{% endunless %}" data-kj-panel="{{ forloop.index0 }}">

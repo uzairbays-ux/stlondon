@@ -10,9 +10,9 @@
           <a href="{{ block.settings.collection.url | default: '#' }}" class="kj-category-link">
             <div class="kj-category-image-wrap">
               {%- if block.settings.image != blank -%}
-                <img src="{{ block.settings.image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image" width="300" height="300">
+                <img src="{{ block.settings.image | image_url: width: 700, height: 700, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image" width="700" height="700">
               {%- elsif block.settings.collection.image != blank -%}
-                <img src="{{ block.settings.collection.image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image" width="300" height="300">
+                <img src="{{ block.settings.collection.image | image_url: width: 700, height: 700, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image" width="700" height="700">
               {%- else -%}
                 <div class="kj-category-placeholder">{{ 'collection-1' | placeholder_svg_tag }}</div>
               {%- endif -%}
@@ -46,8 +46,8 @@
 
   .kj-category-list {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 16px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
   }
 
   .kj-category-item {
@@ -100,7 +100,7 @@
 
   @media screen and (max-width: 767px) {
     .kj-category-list {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 12px;
     }
   }
