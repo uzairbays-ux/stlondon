@@ -6,7 +6,7 @@
         {%- if section.settings.image_mobile != blank -%}
           <source media="(max-width: 767px)" srcset="{{ section.settings.image_mobile | image_url: width: 800 }}">
         {%- endif -%}
-        <img src="{{ section.settings.image_desktop | image_url: width: 2000 }}" alt="{{ section.settings.heading | escape }}" loading="eager" class="kj-hero-img">
+        <img src="{{ section.settings.image_desktop | image_url: width: 2000 }}" alt="{{ section.settings.heading | escape }}" loading="eager" class="kj-hero-img" width="2000" height="{{ 2000 | divided_by: section.settings.image_desktop.aspect_ratio | round }}">
       </picture>
     {%- else -%}
       {{ 'lifestyle-2' | placeholder_svg_tag: 'kj-hero-placeholder' }}
@@ -19,6 +19,9 @@
   <!-- Content -->
   <div class="kj-hero-content-wrapper kj-hero-align-{{ section.settings.text_alignment }}">
     <div class="kj-hero-content" style="color: {{ section.settings.text_color }};">
+      {%- if section.settings.eyebrow != blank -%}
+        <p class="kj-hero-eyebrow">{{ section.settings.eyebrow }}</p>
+      {%- endif -%}
       {%- if section.settings.heading != blank -%}
         <h1 class="kj-hero-heading">{{ section.settings.heading }}</h1>
       {%- endif -%}
@@ -56,6 +59,28 @@
     justify-content: center;
   }
 
+  {%- if section.settings.height_mode == 'adapt' and section.settings.image_desktop != blank %}
+  /* Adapt: banner takes the image's natural ratio like the reference site */
+  #kj-hero-{{ section.id }} {
+    height: auto;
+    min-height: 0;
+    aspect-ratio: {{ section.settings.image_desktop.aspect_ratio }};
+  }
+  @media screen and (max-width: 767px) {
+    #kj-hero-{{ section.id }} {
+      height: auto !important;
+      min-height: 0;
+      aspect-ratio: {{ section.settings.image_mobile.aspect_ratio | default: section.settings.image_desktop.aspect_ratio }};
+    }
+  }
+  {%- endif %}
+
+  .shopify-section:has(> .kj-hero-banner) {
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+  }
+
   .kj-hero-media {
     position: absolute;
     top: 0;
@@ -90,9 +115,18 @@
     position: relative;
     z-index: 3;
     width: 100%;
-    max-width: 1200px;
-    padding: 0 20px;
+    padding: 0 48px;
     display: flex;
+  }
+
+  .kj-hero-eyebrow {
+    font-family: var(--font-heading--family);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 6px 0;
+    color: inherit;
   }
 
   .kj-hero-align-left { justify-content: flex-start; text-align: left; }
@@ -104,20 +138,24 @@
   }
 
   .kj-hero-heading {
-    font-size: clamp(32px, 5vw, 64px);
+    font-family: var(--font-heading--family);
+    font-size: clamp(24px, 2.8vw, 40px);
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin: 0 0 15px 0;
-    line-height: 1.1;
+    letter-spacing: 0.5px;
+    margin: 0 0 12px 0;
+    line-height: 1.15;
     color: inherit;
+    max-width: 420px;
   }
 
   .kj-hero-subheading {
-    font-size: clamp(14px, 2vw, 18px);
-    margin: 0 0 30px 0;
-    letter-spacing: 0.5px;
+    font-size: 14px;
+    margin: 0 0 22px 0;
+    letter-spacing: 0.2px;
+    line-height: 1.5;
     color: inherit;
+    max-width: 340px;
   }
 
   .kj-hero-buttons {
@@ -134,13 +172,15 @@
   }
 
   .kj-btn {
+    font-family: var(--font-heading--family);
     display: inline-block;
-    padding: 14px 32px;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
+    padding: 9px 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
     text-decoration: none;
+    border-radius: 2px;
     transition: all 0.3s ease;
     cursor: pointer;
   }
@@ -183,6 +223,16 @@
       "type": "image_picker",
       "id": "image_mobile",
       "label": "Mobile Background Image (Optional)"
+    },
+    {
+      "type": "select",
+      "id": "height_mode",
+      "label": "Height Mode",
+      "options": [
+        { "value": "adapt", "label": "Adapt to image" },
+        { "value": "vh", "label": "Viewport height" }
+      ],
+      "default": "adapt"
     },
     {
       "type": "range",
@@ -233,6 +283,11 @@
       "id": "text_color",
       "label": "Text Color",
       "default": "#ffffff"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow (small text above heading)"
     },
     {
       "type": "text",

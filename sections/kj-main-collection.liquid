@@ -44,9 +44,9 @@
                 <a href="{{ product.url }}" class="kj-product-card-link">
                   <div class="kj-product-image-wrap">
                     {%- if product.featured_image != blank -%}
-                      <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-primary" loading="lazy">
+                      <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-primary" loading="lazy" width="600" height="{{ 600 | divided_by: product.featured_image.aspect_ratio | round }}">
                       {%- if product.images[1] != blank -%}
-                        <img src="{{ product.images[1] | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-secondary" loading="lazy">
+                        <img src="{{ product.images[1] | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-secondary" loading="lazy" width="600" height="{{ 600 | divided_by: product.images[1].aspect_ratio | round }}">
                       {%- endif -%}
                     {%- else -%}
                       {{ 'product-1' | placeholder_svg_tag: 'kj-product-placeholder' }}

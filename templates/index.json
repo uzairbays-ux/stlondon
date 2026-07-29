@@ -13,27 +13,76 @@
       "type": "kj-hero-banner",
       "name": "KJ Hero Banner",
       "settings": {
-        "image_desktop": "shopify://shop_images/v7a_Primer-Powder-Brush_Launch_HP_desktop.webp",
+        "image_desktop": "shopify://shop_images/kj-hero-desktop.jpg",
+        "image_mobile": "shopify://shop_images/kj-hero-mobile.jpg",
         "desktop_height": 100,
-        "mobile_height": 70,
+        "mobile_height": 100,
         "overlay_color": "#000000",
         "overlay_opacity": 0,
         "text_alignment": "left",
         "text_color": "#ffffff",
-        "heading": "NEW COLLECTION",
-        "subheading": "Shop the latest arrivals.",
+        "eyebrow": "COMING JULY 30",
+        "heading": "MOOD STONES",
+        "subheading": "the new fragrance trio.",
         "button_bg_color": "#ffffff",
         "button_text_color": "#000000",
-        "button_1_text": "SHOP NOW",
-        "button_1_link": "",
+        "button_1_text": "get notified",
+        "button_1_link": "/",
         "button_2_text": "",
         "button_2_link": ""
       }
     },
-    "kj_main_product_t8i9hm": {
-      "type": "kj-main-product",
-      "name": "KJ Main Product",
-      "settings": {}
+    "kj_split_editorial_1": {
+      "type": "kj-split-editorial",
+      "name": "KJ Split Editorial",
+      "settings": {
+        "heading": "THE SUMMER LOOK",
+        "heading_color": "#b0697a",
+        "text": "<p>recreate this flushed and contoured summer look featuring our best-selling blush and lip liner.</p>",
+        "button_text": "shop now",
+        "button_link": "/",
+        "image": "shopify://shop_images/kj-ig-1.jpg",
+        "media_side": "right",
+        "bg_color": "#f7efef",
+        "card_bg": "#ffffff",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "kj_featured_product_1": {
+      "type": "kj-featured-product",
+      "name": "KJ Featured Product",
+      "settings": {
+        "heading": "SHOP THE EDIT",
+        "heading_color": "#b0697a",
+        "product": "",
+        "fallback_collection": "best-seller",
+        "bg_color": "#f7efef",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "kj_hero_spotlight_1": {
+      "type": "kj-hero-banner",
+      "name": "KJ Spotlight Hero",
+      "settings": {
+        "image_desktop": "shopify://shop_images/kj-spotlight-1.jpg",
+        "desktop_height": 70,
+        "mobile_height": 60,
+        "overlay_color": "#000000",
+        "overlay_opacity": 0,
+        "text_alignment": "left",
+        "text_color": "#b0697a",
+        "eyebrow": "",
+        "heading": "SUMMER FAVES",
+        "subheading": "discover the go-tos this summer.",
+        "button_bg_color": "#ffffff",
+        "button_text_color": "#000000",
+        "button_1_text": "shop now",
+        "button_1_link": "/",
+        "button_2_text": "",
+        "button_2_link": ""
+      }
     },
     "kj_product_slider_y7xFYq": {
       "type": "kj-product-slider",
@@ -44,7 +93,82 @@
         "shop_all_link": "",
         "product_limit": 8,
         "show_secondary_image": true,
+        "bg_color": "#f7efef",
+        "heading_color": "#b0697a",
+        "text_color": "#000000",
+        "padding_top": 60,
+        "padding_bottom": 60
+      }
+    },
+    "kj_hero_spotlight_2": {
+      "type": "kj-hero-banner",
+      "name": "KJ Spotlight Hero 2",
+      "settings": {
+        "image_desktop": "shopify://shop_images/kj-spotlight-2.jpg",
+        "desktop_height": 70,
+        "mobile_height": 60,
+        "overlay_color": "#000000",
+        "overlay_opacity": 0,
+        "text_alignment": "left",
+        "text_color": "#ffffff",
+        "eyebrow": "",
+        "heading": "THE SCENT OF THE SUMMER",
+        "subheading": "a warm floral scent, perfect for summer.",
+        "button_bg_color": "#ffffff",
+        "button_text_color": "#000000",
+        "button_1_text": "shop now",
+        "button_1_link": "/",
+        "button_2_text": "",
+        "button_2_link": ""
+      }
+    },
+    "kj_video_carousel_1": {
+      "type": "kj-video-carousel",
+      "blocks": {
+        "video_1": {
+          "type": "video",
+          "settings": {
+            "product": ""
+          }
+        },
+        "video_2": {
+          "type": "video",
+          "settings": {
+            "product": ""
+          }
+        },
+        "video_3": {
+          "type": "video",
+          "settings": {
+            "product": ""
+          }
+        },
+        "video_4": {
+          "type": "video",
+          "settings": {
+            "product": ""
+          }
+        },
+        "video_XyHPQG": {
+          "type": "video",
+          "settings": {
+            "product": ""
+          }
+        }
+      },
+      "block_order": [
+        "video_1",
+        "video_2",
+        "video_3",
+        "video_4",
+        "video_XyHPQG"
+      ],
+      "name": "KJ Video Carousel",
+      "settings": {
+        "heading": "AS SEEN ON SOCIAL",
+        "subheading": "",
         "bg_color": "#ffffff",
+        "heading_color": "#b0697a",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -57,28 +181,48 @@
           "type": "category",
           "settings": {
             "collection": "",
-            "title": ""
+            "image": "shopify://shop_images/kj-cat-1.jpg",
+            "title": "lips"
           }
         },
         "category_rD4wC9": {
           "type": "category",
           "settings": {
             "collection": "",
-            "title": ""
+            "image": "shopify://shop_images/kj-cat-2.jpg",
+            "title": "face"
           }
         },
         "category_VMTJ7r": {
           "type": "category",
           "settings": {
             "collection": "",
-            "title": ""
+            "image": "shopify://shop_images/kj-cat-3.jpg",
+            "title": "eyes"
           }
         },
         "category_dPeP99": {
           "type": "category",
           "settings": {
             "collection": "",
-            "title": ""
+            "image": "shopify://shop_images/kj-cat-4.jpg",
+            "title": "lip care"
+          }
+        },
+        "category_kj5": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "image": "shopify://shop_images/kj-ig-4.jpg",
+            "title": "skin"
+          }
+        },
+        "category_kj6": {
+          "type": "category",
+          "settings": {
+            "collection": "",
+            "image": "shopify://shop_images/kj-ig-2.jpg",
+            "title": "fragrance"
           }
         }
       },
@@ -86,12 +230,15 @@
         "category_a4tDkj",
         "category_rD4wC9",
         "category_VMTJ7r",
-        "category_dPeP99"
+        "category_dPeP99",
+        "category_kj5",
+        "category_kj6"
       ],
       "name": "KJ Shop by Category",
       "settings": {
         "heading": "SHOP BY CATEGORY",
-        "bg_color": "#ffffff",
+        "bg_color": "#f7efef",
+        "heading_color": "#b0697a",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -104,16 +251,87 @@
         "heading": "Try It On Virtually",
         "subtext": "See how this looks on you in real-time.",
         "button_text": "Launch Camera",
-        "default_color_hex": "#FF69B4",
+        "default_color_hex": "#ff69b4",
         "default_color_name": "Hot Pink"
+      }
+    },
+    "kj_instagram_grid_1": {
+      "type": "kj-instagram-grid",
+      "blocks": {
+        "post_1": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-1.jpg",
+            "link": ""
+          }
+        },
+        "post_2": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-2.jpg",
+            "link": ""
+          }
+        },
+        "post_3": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-3.jpg",
+            "link": ""
+          }
+        },
+        "post_4": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-4.jpg",
+            "link": ""
+          }
+        },
+        "post_5": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-5.jpg",
+            "link": ""
+          }
+        },
+        "post_6": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-6.jpg",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "post_1",
+        "post_2",
+        "post_3",
+        "post_4",
+        "post_5",
+        "post_6"
+      ],
+      "name": "KJ Instagram Grid",
+      "settings": {
+        "heading": "SHOP OUR IG",
+        "handle_text": "@stlondon",
+        "handle_link": "",
+        "bg_color": "#f7efef",
+        "heading_color": "#b0697a",
+        "text_color": "#000000",
+        "padding_top": 60,
+        "padding_bottom": 60
       }
     }
   },
   "order": [
     "kj_hero_banner_LqQPrr",
-    "kj_main_product_t8i9hm",
+    "kj_split_editorial_1",
+    "kj_featured_product_1",
+    "kj_hero_spotlight_1",
     "kj_product_slider_y7xFYq",
+    "kj_hero_spotlight_2",
+    "kj_video_carousel_1",
     "kj_shop_by_category_rnENN9",
-    "kj_virtual_try_on_cYPN3T"
+    "kj_virtual_try_on_cYPN3T",
+    "kj_instagram_grid_1"
   ]
 }

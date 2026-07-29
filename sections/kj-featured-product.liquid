@@ -1,0 +1,297 @@
+{%- assign fp = section.settings.product -%}
+{%- if fp == blank and section.settings.fallback_collection != blank -%}
+  {%- assign fp = section.settings.fallback_collection.products.first -%}
+{%- endif -%}
+
+<div class="kj-featured-product" id="kj-fp-{{ section.id }}" style="background-color: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;">
+  <div class="kj-fp-container">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="kj-fp-section-heading" style="color: {{ section.settings.heading_color }};">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+
+    {%- if fp != blank -%}
+      <div class="kj-fp-card">
+        <div class="kj-fp-media">
+          <img
+            src="{{ fp.featured_image | image_url: width: 900 }}"
+            alt="{{ fp.title | escape }}"
+            class="kj-fp-img"
+            data-kj-fp-img
+            width="900"
+            height="{{ 900 | divided_by: fp.featured_image.aspect_ratio | round }}"
+            loading="lazy"
+          >
+        </div>
+
+        <div class="kj-fp-details">
+          <h3 class="kj-fp-title">{{ fp.title }}</h3>
+
+          {%- assign rating = fp.metafields.reviews.rating.value.rating -%}
+          {%- assign rating_count = fp.metafields.reviews.rating_count -%}
+          <div class="kj-stars" aria-hidden="true">
+            {%- assign filled = rating | default: 5 | round -%}
+            {%- for i in (1..5) -%}
+              <span class="kj-star{% if i <= filled %} kj-star--filled{% endif %}">&#9733;</span>
+            {%- endfor -%}
+            {%- if rating_count != blank -%}
+              <span class="kj-star-count">({{ rating_count }})</span>
+            {%- endif -%}
+          </div>
+
+          <p class="kj-fp-price" data-kj-fp-price>{{ fp.price | money }}</p>
+
+          {%- if fp.variants.size > 1 -%}
+            <p class="kj-fp-shade-label">
+              shade: <span data-kj-fp-shade>{{ fp.variants.first.title }}</span>
+            </p>
+            <div class="kj-fp-swatches">
+              {%- for variant in fp.variants limit: 14 -%}
+                <button
+                  type="button"
+                  class="kj-fp-swatch{% if forloop.first %} kj-fp-swatch--active{% endif %}"
+                  data-kj-fp-swatch
+                  data-image="{% if variant.featured_image != blank %}{{ variant.featured_image | image_url: width: 900 }}{% endif %}"
+                  data-price="{{ variant.price | money }}"
+                  data-shade="{{ variant.title | escape }}"
+                  aria-label="{{ variant.title | escape }}"
+                >
+                  {%- if variant.featured_image != blank -%}
+                    <img src="{{ variant.featured_image | image_url: width: 60, height: 60, crop: 'center' }}" alt="" width="60" height="60" loading="lazy">
+                  {%- else -%}
+                    <span class="kj-fp-swatch-blank"></span>
+                  {%- endif -%}
+                </button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          <a href="{{ fp.url }}" class="kj-fp-add">add to bag</a>
+        </div>
+      </div>
+    {%- else -%}
+      <div class="kj-fp-card">
+        <div class="kj-fp-media">{{ 'product-1' | placeholder_svg_tag: 'kj-fp-placeholder' }}</div>
+        <div class="kj-fp-details">
+          <h3 class="kj-fp-title">Sample Product</h3>
+          <p class="kj-fp-price">£24.00</p>
+        </div>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+  (function () {
+    if (window.__kjFpDelegated) return;
+    window.__kjFpDelegated = true;
+    document.addEventListener('click', function (e) {
+      var swatch = e.target.closest('[data-kj-fp-swatch]');
+      if (!swatch) return;
+      var root = swatch.closest('.kj-featured-product');
+      root.querySelectorAll('[data-kj-fp-swatch]').forEach(function (s) {
+        s.classList.toggle('kj-fp-swatch--active', s === swatch);
+      });
+      var img = root.querySelector('[data-kj-fp-img]');
+      if (img && swatch.dataset.image) img.src = swatch.dataset.image;
+      var price = root.querySelector('[data-kj-fp-price]');
+      if (price && swatch.dataset.price) price.textContent = swatch.dataset.price;
+      var shade = root.querySelector('[data-kj-fp-shade]');
+      if (shade && swatch.dataset.shade) shade.textContent = swatch.dataset.shade;
+    });
+  })();
+</script>
+
+<style>
+  .kj-fp-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .kj-fp-section-heading {
+    font-family: var(--font-heading--family);
+    font-size: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0 0 30px 0;
+  }
+
+  .kj-fp-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .kj-fp-media {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: #faf6f4;
+  }
+
+  .kj-fp-img,
+  .kj-fp-placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .kj-fp-placeholder { fill: #ccc; }
+
+  .kj-fp-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 50px;
+  }
+
+  .kj-fp-title {
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 8px 0;
+  }
+
+  .kj-fp-price {
+    font-size: 16px;
+    margin: 8px 0 20px 0;
+  }
+
+  .kj-fp-shade-label {
+    font-size: 12px;
+    text-transform: lowercase;
+    color: #555;
+    margin: 0 0 10px 0;
+  }
+
+  .kj-fp-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 26px;
+  }
+
+  .kj-fp-swatch {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #ddd;
+    padding: 2px;
+    background: #fff;
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+
+  .kj-fp-swatch img,
+  .kj-fp-swatch-blank {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eee;
+  }
+
+  .kj-fp-swatch--active {
+    border-color: #000;
+    border-width: 2px;
+  }
+
+  .kj-fp-add {
+    font-family: var(--font-heading--family);
+    display: inline-block;
+    align-self: flex-start;
+    background: #000;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    padding: 14px 40px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .kj-fp-add:hover { opacity: 0.8; }
+
+  @media screen and (max-width: 767px) {
+    .kj-fp-card {
+      grid-template-columns: 1fr;
+    }
+    .kj-fp-details {
+      padding: 28px 20px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Featured Product",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "SHOP THE EDIT"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#b0697a"
+    },
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "collection",
+      "id": "fallback_collection",
+      "label": "Fallback Collection (first product used if no product set)"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f7efef"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "KJ Featured Product"
+    }
+  ]
+}
+{% endschema %}

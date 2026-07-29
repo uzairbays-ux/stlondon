@@ -1,0 +1,76 @@
+{%- comment -%}
+  Renders a KJ-style product card.
+
+  Accepts:
+  - product: {Object} Product Liquid object
+  - show_secondary_image: {Boolean} show second image on hover
+  - text_color: {String} CSS color for the info text
+
+  Usage:
+  {% render 'kj-product-card', product: product, show_secondary_image: true, text_color: '#000000' %}
+{%- endcomment -%}
+
+<div class="kj-product-card">
+  <a href="{{ product.url }}" class="kj-product-card-link">
+    <div class="kj-product-image-wrap">
+      {%- if product.featured_image != blank -%}
+        <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-primary" loading="lazy" width="600" height="{{ 600 | divided_by: product.featured_image.aspect_ratio | round }}">
+        {%- if product.images[1] != blank and show_secondary_image -%}
+          <img src="{{ product.images[1] | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-secondary" loading="lazy" width="600" height="{{ 600 | divided_by: product.images[1].aspect_ratio | round }}">
+        {%- endif -%}
+      {%- else -%}
+        {{ 'product-1' | placeholder_svg_tag: 'kj-product-placeholder' }}
+      {%- endif -%}
+
+      {%- if product.tags contains 'AR' or product.tags contains 'Virtual Try On' -%}
+        <div class="kj-vto-badge">Try It On</div>
+      {%- endif -%}
+
+      {%- if product.variants.size > 1 -%}
+        <span class="kj-shades-inline">+{{ product.variants.size }} shades</span>
+      {%- endif -%}
+
+      <div class="kj-quick-add-wrap">
+        <button type="button" class="kj-quick-add-btn">Add to Bag</button>
+      </div>
+    </div>
+
+    {%- if product.variants.size > 1 -%}
+      {%- assign swatch_count = 0 -%}
+      <div class="kj-swatch-row">
+        {%- for variant in product.variants -%}
+          {%- if variant.featured_image != blank and swatch_count < 8 -%}
+            <img src="{{ variant.featured_image | image_url: width: 40, height: 40, crop: 'center' }}" alt="{{ variant.title | escape }}" class="kj-swatch" width="40" height="40" loading="lazy">
+            {%- assign swatch_count = swatch_count | plus: 1 -%}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- if product.variants.size > swatch_count and swatch_count > 0 -%}
+          <span class="kj-swatch-more">+{{ product.variants.size | minus: swatch_count }}</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="kj-product-info" style="color: {{ text_color }};">
+      <div class="kj-product-title-row">
+        <h3 class="kj-product-title">{{ product.title }}</h3>
+        <div class="kj-product-price">
+          {%- if product.compare_at_price > product.price -%}
+            <s class="kj-price-compare">{{ product.compare_at_price | money }}</s>
+          {%- endif -%}
+          <span class="kj-price-regular">{{ product.price | money }}</span>
+        </div>
+      </div>
+      {%- assign rating = product.metafields.reviews.rating.value.rating -%}
+      {%- assign rating_count = product.metafields.reviews.rating_count -%}
+      <div class="kj-stars{% if rating == blank %} kj-stars--placeholder{% endif %}" aria-hidden="true">
+        {%- assign filled = rating | default: 5 | round -%}
+        {%- for i in (1..5) -%}
+          <span class="kj-star{% if i <= filled %} kj-star--filled{% endif %}">&#9733;</span>
+        {%- endfor -%}
+        {%- if rating_count != blank -%}
+          <span class="kj-star-count">({{ rating_count }})</span>
+        {%- endif -%}
+      </div>
+    </div>
+  </a>
+</div>

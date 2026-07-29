@@ -1,0 +1,17 @@
+# Next.js prototype (not part of the Shopify theme)
+node_modules/
+.next/
+app/
+components/
+context/
+public/
+package.json
+package-lock.json
+next.config.ts
+next-env.d.ts
+tsconfig.json
+tsconfig.tsbuildinfo
+postcss.config.mjs
+eslint.config.mjs
+# Saved reference capture (Kylie site, large + copyrighted)
+reference/

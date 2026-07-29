@@ -31,7 +31,7 @@
     <div class="kj-header-logo">
       <a href="{{ routes.root_url }}">
         {%- if section.settings.logo != blank -%}
-          <img src="{{ section.settings.logo | image_url: width: 400 }}" alt="{{ shop.name }}" width="{{ section.settings.logo_width }}">
+          <img src="{{ section.settings.logo | image_url: width: 400 }}" alt="{{ shop.name }}" width="{{ section.settings.logo_width }}" height="{{ section.settings.logo_width | divided_by: section.settings.logo.aspect_ratio | round }}">
         {%- else -%}
           <span class="kj-h1">{{ shop.name }}</span>
         {%- endif -%}

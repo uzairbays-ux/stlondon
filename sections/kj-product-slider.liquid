@@ -1,79 +1,130 @@
-<div class="kj-product-slider" style="background-color: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;">
+{%- assign tab_blocks = section.blocks | where: 'type', 'tab' -%}
+
+<div class="kj-product-slider" id="kj-slider-{{ section.id }}" style="background-color: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;">
   <div class="kj-slider-container">
-    
+
     <div class="kj-slider-header">
       {%- if section.settings.heading != blank -%}
-        <h2 class="kj-slider-heading" style="color: {{ section.settings.text_color }};">{{ section.settings.heading }}</h2>
+        <h2 class="kj-slider-heading" style="color: {{ section.settings.heading_color | default: section.settings.text_color }};">{{ section.settings.heading }}</h2>
       {%- endif -%}
-      {%- if section.settings.shop_all_link != blank -%}
-        <a href="{{ section.settings.shop_all_link }}" class="kj-slider-shop-all" style="color: {{ section.settings.text_color }};">Shop All</a>
-      {%- endif -%}
-    </div>
-
-    <div class="kj-slider-track-wrap">
-      <div class="kj-slider-track">
-        {%- assign collection = section.settings.collection -%}
-        {%- if collection != blank and collection.products_count > 0 -%}
-          {%- for product in collection.products limit: section.settings.product_limit -%}
-            
-            <div class="kj-product-card">
-              <a href="{{ product.url }}" class="kj-product-card-link">
-                <div class="kj-product-image-wrap">
-                  {%- if product.featured_image != blank -%}
-                    <img src="{{ product.featured_image | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-primary" loading="lazy">
-                    {%- if product.images[1] != blank and section.settings.show_secondary_image -%}
-                      <img src="{{ product.images[1] | image_url: width: 600 }}" alt="{{ product.title | escape }}" class="kj-product-image kj-img-secondary" loading="lazy">
-                    {%- endif -%}
-                  {%- else -%}
-                    {{ 'product-1' | placeholder_svg_tag: 'kj-product-placeholder' }}
-                  {%- endif -%}
-                  
-                  <!-- Virtual Try On Badge / Trigger -->
-                  {%- if product.tags contains 'AR' or product.tags contains 'Virtual Try On' -%}
-                    <div class="kj-vto-badge">Try It On</div>
-                  {%- endif -%}
-
-                  <!-- Quick Add Button (Hover) -->
-                  <div class="kj-quick-add-wrap">
-                    <button type="button" class="kj-quick-add-btn">Add to Bag</button>
-                  </div>
-                </div>
-                
-                <div class="kj-product-info" style="color: {{ section.settings.text_color }};">
-                  <h3 class="kj-product-title">{{ product.title }}</h3>
-                  <div class="kj-product-price">
-                    {%- if product.compare_at_price > product.price -%}
-                      <s class="kj-price-compare">{{ product.compare_at_price | money }}</s>
-                    {%- endif -%}
-                    <span class="kj-price-regular">{{ product.price | money }}</span>
-                  </div>
-                  {%- if product.variants.size > 1 -%}
-                    <p class="kj-product-shades">{{ product.variants.size }} Shades</p>
-                  {%- endif -%}
-                </div>
-              </a>
-            </div>
-
-          {%- endfor -%}
-        {%- else -%}
-          <!-- Placeholder Products -->
-          {%- for i in (1..4) -%}
-            <div class="kj-product-card">
-              <div class="kj-product-image-wrap">
-                {{ 'product-' | append: i | placeholder_svg_tag: 'kj-product-placeholder' }}
-              </div>
-              <div class="kj-product-info" style="color: {{ section.settings.text_color }};">
-                <h3 class="kj-product-title">Sample Product</h3>
-                <div class="kj-product-price"><span class="kj-price-regular">$24.00</span></div>
-              </div>
-            </div>
-          {%- endfor -%}
+      <div class="kj-slider-header-actions">
+        {%- if section.settings.shop_all_link != blank -%}
+          <a href="{{ section.settings.shop_all_link }}" class="kj-slider-shop-all" style="color: {{ section.settings.text_color }};">Shop All</a>
         {%- endif -%}
+        <div class="kj-slider-arrows">
+          <button type="button" class="kj-slider-arrow" data-kj-prev aria-label="Previous products">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button type="button" class="kj-slider-arrow" data-kj-next aria-label="Next products">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+          </button>
+        </div>
       </div>
     </div>
-    
+
+    {%- if tab_blocks.size > 0 -%}
+      <div class="kj-slider-tabs" role="tablist">
+        {%- for block in tab_blocks -%}
+          <button
+            type="button"
+            class="kj-slider-tab{% if forloop.first %} kj-tab-active{% endif %}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            data-kj-tab="{{ forloop.index0 }}"
+            {{ block.shopify_attributes }}
+          >
+            {{ block.settings.label }}
+          </button>
+        {%- endfor -%}
+      </div>
+
+      {%- for block in tab_blocks -%}
+        <div class="kj-slider-track-wrap{% unless forloop.first %} kj-track-hidden{% endunless %}" data-kj-panel="{{ forloop.index0 }}">
+          <div class="kj-slider-track">
+            {%- assign tab_collection = block.settings.collection -%}
+            {%- if tab_collection != blank and tab_collection.products_count > 0 -%}
+              {%- for product in tab_collection.products limit: section.settings.product_limit -%}
+                {% render 'kj-product-card', product: product, show_secondary_image: section.settings.show_secondary_image, text_color: section.settings.text_color %}
+              {%- endfor -%}
+            {%- else -%}
+              {%- for i in (1..4) -%}
+                <div class="kj-product-card">
+                  <div class="kj-product-image-wrap">
+                    {{ 'product-' | append: i | placeholder_svg_tag: 'kj-product-placeholder' }}
+                  </div>
+                  <div class="kj-product-info" style="color: {{ section.settings.text_color }};">
+                    <h3 class="kj-product-title">Sample Product</h3>
+                    <div class="kj-product-price"><span class="kj-price-regular">$24.00</span></div>
+                  </div>
+                </div>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      <div class="kj-slider-track-wrap">
+        <div class="kj-slider-track">
+          {%- assign collection = section.settings.collection -%}
+          {%- if collection != blank and collection.products_count > 0 -%}
+            {%- for product in collection.products limit: section.settings.product_limit -%}
+              {% render 'kj-product-card', product: product, show_secondary_image: section.settings.show_secondary_image, text_color: section.settings.text_color %}
+            {%- endfor -%}
+          {%- else -%}
+            {%- for i in (1..4) -%}
+              <div class="kj-product-card">
+                <div class="kj-product-image-wrap">
+                  {{ 'product-' | append: i | placeholder_svg_tag: 'kj-product-placeholder' }}
+                </div>
+                <div class="kj-product-info" style="color: {{ section.settings.text_color }};">
+                  <h3 class="kj-product-title">Sample Product</h3>
+                  <div class="kj-product-price"><span class="kj-price-regular">$24.00</span></div>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
   </div>
 </div>
+
+<script>
+  (function () {
+    /* Delegated once at document level: survives theme DOM morphing,
+       which destroys listeners bound directly to section nodes. */
+    if (window.__kjSliderDelegated) return;
+    window.__kjSliderDelegated = true;
+
+    document.addEventListener('click', function (e) {
+      var tab = e.target.closest('[data-kj-tab]');
+      if (tab) {
+        var root = tab.closest('.kj-product-slider');
+        var index = tab.getAttribute('data-kj-tab');
+        root.querySelectorAll('[data-kj-tab]').forEach(function (t) {
+          t.classList.toggle('kj-tab-active', t === tab);
+          t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+        });
+        root.querySelectorAll('[data-kj-panel]').forEach(function (p) {
+          p.classList.toggle('kj-track-hidden', p.getAttribute('data-kj-panel') !== index);
+        });
+        return;
+      }
+
+      var arrow = e.target.closest('[data-kj-prev], [data-kj-next]');
+      if (arrow) {
+        var slider = arrow.closest('.kj-product-slider');
+        var track = slider.querySelector('.kj-slider-track-wrap:not(.kj-track-hidden)');
+        if (!track) return;
+        var card = track.querySelector('.kj-product-card');
+        var step = card ? card.getBoundingClientRect().width + 20 : 300;
+        var dir = arrow.hasAttribute('data-kj-prev') ? -1 : 1;
+        track.scrollBy({ left: dir * step, behavior: 'smooth' });
+      }
+    });
+  })();
+</script>
 
 <style>
   .kj-slider-container {
@@ -92,6 +143,7 @@
   }
 
   .kj-slider-heading {
+    font-family: var(--font-heading--family);
     font-size: 24px;
     font-weight: 700;
     text-transform: uppercase;
@@ -105,6 +157,77 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     text-decoration: underline;
+  }
+
+  .kj-slider-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .kj-slider-arrows {
+    display: flex;
+    gap: 8px;
+  }
+
+  .kj-slider-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #000;
+    background: transparent;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .kj-slider-arrow:hover {
+    background: #000;
+    color: #fff;
+  }
+
+  @media screen and (max-width: 767px) {
+    .kj-slider-arrows {
+      display: none;
+    }
+  }
+
+  .kj-slider-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+  }
+
+  .kj-slider-tab {
+    font-family: var(--font-heading--family);
+    background: transparent;
+    border: 1px solid #000;
+    color: #000;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 8px 20px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .kj-slider-tab:hover {
+    background: #f4f4f4;
+  }
+
+  .kj-slider-tab.kj-tab-active {
+    background: #000;
+    color: #fff;
+  }
+
+  .kj-track-hidden {
+    display: none;
   }
 
   .kj-slider-track-wrap {
@@ -135,10 +258,11 @@
   .kj-product-image-wrap {
     position: relative;
     width: 100%;
-    aspect-ratio: 3/4;
-    background-color: #f4f4f4;
+    aspect-ratio: 1 / 1.1;
+    background-color: #ffffff;
+    border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
   }
 
   .kj-product-image {
@@ -164,9 +288,68 @@
   .kj-product-card:hover .kj-img-secondary {
     opacity: 1;
   }
-  
+
   .kj-product-card:hover .kj-img-primary {
     opacity: 0;
+  }
+
+  .kj-shades-inline {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    z-index: 2;
+    font-size: 11px;
+    color: #333;
+    text-transform: lowercase;
+    letter-spacing: 0.2px;
+  }
+
+  .kj-swatch-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0 0 8px 0;
+    min-height: 16px;
+  }
+
+  .kj-swatch {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #e2d5d5;
+  }
+
+  .kj-swatch-more {
+    font-size: 10px;
+    color: #666;
+  }
+
+  .kj-stars {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    margin-top: 4px;
+    line-height: 1;
+  }
+
+  .kj-star {
+    font-size: 11px;
+    color: #d8c8c8;
+  }
+
+  .kj-star--filled {
+    color: #000;
+  }
+
+  .kj-stars--placeholder .kj-star--filled {
+    color: #333;
+  }
+
+  .kj-star-count {
+    font-size: 10px;
+    color: #666;
+    margin-left: 4px;
   }
 
   .kj-vto-badge {
@@ -198,6 +381,7 @@
   }
 
   .kj-quick-add-btn {
+    font-family: var(--font-heading--family);
     width: 100%;
     background-color: #000;
     color: #fff;
@@ -215,32 +399,41 @@
   }
 
   .kj-product-info {
-    text-align: center;
+    text-align: left;
+  }
+
+  .kj-product-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
   }
 
   .kj-product-title {
-    font-size: 14px;
-    font-weight: 600;
+    font-family: var(--font-heading--family);
+    font-size: 13px;
+    font-weight: 700;
     margin: 0 0 5px 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-transform: lowercase;
+    letter-spacing: 0.2px;
   }
 
   .kj-product-price {
-    font-size: 14px;
+    font-size: 13px;
     margin-bottom: 5px;
+    white-space: nowrap;
   }
-  
+
   .kj-price-compare {
     color: #999;
     margin-right: 5px;
   }
 
   .kj-product-shades {
-    font-size: 12px;
+    font-size: 11px;
     color: #666;
     margin: 0;
-    text-transform: uppercase;
+    text-transform: lowercase;
   }
 
   @media screen and (max-width: 767px) {
@@ -272,7 +465,8 @@
     {
       "type": "collection",
       "id": "collection",
-      "label": "Collection"
+      "label": "Collection",
+      "info": "Used when no tabs are added below."
     },
     {
       "type": "url",
@@ -302,6 +496,12 @@
     },
     {
       "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#b0697a"
+    },
+    {
+      "type": "color",
       "id": "text_color",
       "label": "Text Color",
       "default": "#000000"
@@ -327,6 +527,26 @@
       "default": 60
     }
   ],
+  "blocks": [
+    {
+      "type": "tab",
+      "name": "Collection Tab",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tab Label",
+          "default": "All"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 6,
   "presets": [
     {
       "name": "KJ Product Slider"

@@ -1,0 +1,298 @@
+<footer class="kj-footer">
+  <div class="kj-footer-container">
+
+    <!-- Newsletter -->
+    <div class="kj-footer-newsletter">
+      <h2 class="kj-footer-heading">{{ section.settings.newsletter_heading }}</h2>
+      {% form 'customer', class: 'kj-footer-form' %}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="kj-footer-input-row">
+          <input
+            type="email"
+            name="contact[email]"
+            class="kj-footer-input"
+            placeholder="{{ section.settings.input_placeholder }}"
+            aria-label="Email address"
+            autocomplete="email"
+            required
+          >
+          <button type="submit" class="kj-footer-submit">{{ section.settings.submit_label }}</button>
+        </div>
+        {%- if form.posted_successfully? -%}
+          <p class="kj-footer-form-msg">thanks for subscribing!</p>
+        {%- endif -%}
+      {% endform %}
+    </div>
+
+    <!-- Social icons -->
+    <ul class="kj-footer-socials">
+      {%- if section.settings.instagram_url != blank -%}
+        <li><a href="{{ section.settings.instagram_url }}" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="19" height="19" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/></svg>
+        </a></li>
+      {%- endif -%}
+      {%- if section.settings.tiktok_url != blank -%}
+        <li><a href="{{ section.settings.tiktok_url }}" target="_blank" rel="noopener" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16.6 3c.4 2.1 1.8 3.6 3.9 3.9v3c-1.5 0-2.8-.5-3.9-1.3v6.1c0 3.4-2.4 5.8-5.7 5.8-3.1 0-5.4-2.3-5.4-5.3 0-3 2.4-5.3 5.5-5.2.3 0 .7 0 1 .1v3.1c-.3-.1-.7-.2-1-.2-1.4 0-2.4 1-2.4 2.3 0 1.3 1 2.3 2.3 2.3 1.5 0 2.6-1.1 2.6-2.8V3h3.1z"/></svg>
+        </a></li>
+      {%- endif -%}
+      {%- if section.settings.facebook_url != blank -%}
+        <li><a href="{{ section.settings.facebook_url }}" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M13.5 21v-7.5h2.5l.5-3h-3V8.6c0-.9.3-1.5 1.6-1.5H16.6V4.4c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.4H8.2v3h2.5V21h2.8z"/></svg>
+        </a></li>
+      {%- endif -%}
+      {%- if section.settings.youtube_url != blank -%}
+        <li><a href="{{ section.settings.youtube_url }}" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21.6 7.2c-.2-.9-.9-1.6-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4c-.9.2-1.6.9-1.8 1.8C2 8.8 2 12 2 12s0 3.2.4 4.8c.2.9.9 1.6 1.8 1.8 1.6.4 7.8.4 7.8.4s6.2 0 7.8-.4c.9-.2 1.6-.9 1.8-1.8.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3L10 15z"/></svg>
+        </a></li>
+      {%- endif -%}
+    </ul>
+
+    <!-- Menu links -->
+    {%- assign footer_menu = section.settings.menu -%}
+    {%- if footer_menu != blank -%}
+      <ul class="kj-footer-menu">
+        {%- for link in footer_menu.links -%}
+          <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+
+    <!-- Legal + copyright -->
+    <div class="kj-footer-legal">
+      <ul class="kj-footer-legal-links">
+        {%- for policy in shop.policies -%}
+          {%- if policy != blank -%}
+            <li><a href="{{ policy.url }}">{{ policy.title }}</a></li>
+          {%- endif -%}
+        {%- endfor -%}
+      </ul>
+      <p class="kj-footer-copyright">&copy; {{ 'now' | date: '%Y' }} {{ shop.name | downcase }}, all rights reserved</p>
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  .kj-footer {
+    background: {{ section.settings.bg_color }};
+    color: #000;
+  }
+
+  .kj-footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 50px 20px 30px;
+    text-align: center;
+  }
+
+  .kj-footer-newsletter {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .kj-footer-heading {
+    font-family: var(--font-heading--family);
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+    margin: 0 0 18px 0;
+  }
+
+  .kj-footer-input-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+  }
+
+  .kj-footer-input {
+    flex: 1;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none;
+    border-bottom: 1px solid #000;
+    border-radius: 0;
+    padding: 10px 0;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: #000;
+    outline: none;
+  }
+
+  .kj-footer-input::placeholder {
+    color: #666;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  .kj-footer-submit {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #000;
+    border-radius: 0;
+    padding: 10px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: #000;
+  }
+
+  .kj-footer-form-msg {
+    font-size: 12px;
+    margin-top: 10px;
+    color: #4a7a4a;
+  }
+
+  .kj-footer-socials {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    list-style: none;
+    margin: 44px auto 0;
+    padding: 0;
+  }
+
+  .kj-footer-socials a {
+    color: #000;
+    display: block;
+    transition: opacity 0.2s ease;
+  }
+
+  .kj-footer-socials a:hover {
+    opacity: 0.6;
+  }
+
+  .kj-footer-menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px 26px;
+    list-style: none;
+    margin: 26px auto 0;
+    padding: 0;
+  }
+
+  .kj-footer-menu a {
+    font-size: 13px;
+    color: #000;
+    text-decoration: none;
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
+  }
+
+  .kj-footer-menu a:hover {
+    text-decoration: underline;
+  }
+
+  .kj-footer-legal {
+    margin-top: 44px;
+  }
+
+  .kj-footer-legal-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 18px;
+    list-style: none;
+    margin: 0 0 12px 0;
+    padding: 0;
+  }
+
+  .kj-footer-legal-links a {
+    font-size: 11px;
+    color: #393939;
+    text-decoration: none;
+    text-transform: lowercase;
+  }
+
+  .kj-footer-legal-links a:hover {
+    text-decoration: underline;
+  }
+
+  .kj-footer-copyright {
+    font-size: 11px;
+    color: #393939;
+    text-transform: lowercase;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 599px) {
+    .kj-footer-container {
+      padding: 40px 16px 24px;
+    }
+    .kj-footer-socials {
+      gap: 22px;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Footer",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Newsletter Heading",
+      "default": "sign up for updates:"
+    },
+    {
+      "type": "text",
+      "id": "input_placeholder",
+      "label": "Input Placeholder",
+      "default": "EMAIL ADDRESS"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit Label",
+      "default": "submit"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Footer Menu",
+      "default": "footer"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "tiktok_url",
+      "label": "TikTok URL"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "youtube_url",
+      "label": "YouTube URL"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#f8f1f4"
+    }
+  ],
+  "enabled_on": {
+    "groups": ["footer"]
+  },
+  "presets": [
+    {
+      "name": "KJ Footer"
+    }
+  ]
+}
+{% endschema %}

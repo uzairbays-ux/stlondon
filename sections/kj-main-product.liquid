@@ -7,7 +7,7 @@
         {%- for media in product.media -%}
           <div class="kj-pdp-media">
             {%- if media.media_type == 'image' -%}
-              <img src="{{ media | image_url: width: 1200 }}" alt="{{ media.alt | escape }}" class="kj-pdp-img">
+              <img src="{{ media | image_url: width: 1200 }}" alt="{{ media.alt | escape }}" class="kj-pdp-img" width="1200" height="{{ 1200 | divided_by: media.aspect_ratio | round }}">
             {%- else -%}
               <!-- Handle video/3d models here if needed -->
               {{ media | media_tag }}

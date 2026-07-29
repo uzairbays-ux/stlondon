@@ -1,7 +1,7 @@
 <div class="kj-shop-category" style="background-color: {{ section.settings.bg_color }}; padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;">
   <div class="kj-category-container">
     {%- if section.settings.heading != blank -%}
-      <h2 class="kj-category-heading" style="color: {{ section.settings.text_color }};">{{ section.settings.heading }}</h2>
+      <h2 class="kj-category-heading" style="color: {{ section.settings.heading_color | default: section.settings.text_color }};">{{ section.settings.heading }}</h2>
     {%- endif -%}
 
     <div class="kj-category-list">
@@ -10,9 +10,9 @@
           <a href="{{ block.settings.collection.url | default: '#' }}" class="kj-category-link">
             <div class="kj-category-image-wrap">
               {%- if block.settings.image != blank -%}
-                <img src="{{ block.settings.image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image">
+                <img src="{{ block.settings.image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image" width="300" height="300">
               {%- elsif block.settings.collection.image != blank -%}
-                <img src="{{ block.settings.collection.image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image">
+                <img src="{{ block.settings.collection.image | image_url: width: 300, height: 300, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image" width="300" height="300">
               {%- else -%}
                 <div class="kj-category-placeholder">{{ 'collection-1' | placeholder_svg_tag }}</div>
               {%- endif -%}
@@ -36,6 +36,7 @@
   }
 
   .kj-category-heading {
+    font-family: var(--font-heading--family);
     font-size: 24px;
     font-weight: 600;
     text-transform: uppercase;
@@ -44,17 +45,13 @@
   }
 
   .kj-category-list {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
   }
 
   .kj-category-item {
-    width: 140px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    width: 100%;
   }
 
   .kj-category-link {
@@ -66,25 +63,25 @@
   }
 
   .kj-category-image-wrap {
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 15px;
-    transition: transform 0.3s ease;
-    background: #f4f4f4;
-  }
-  
-  .kj-category-link:hover .kj-category-image-wrap {
-    transform: scale(1.05);
+    margin-bottom: 12px;
+    background: #ffffff;
   }
 
   .kj-category-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.4s ease;
   }
-  
+
+  .kj-category-link:hover .kj-category-image {
+    transform: scale(1.05);
+  }
+
   .kj-category-placeholder svg {
     width: 100%;
     height: 100%;
@@ -92,38 +89,19 @@
   }
 
   .kj-category-title {
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-family: var(--font-heading--family);
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
     text-align: center;
     display: block;
   }
 
   @media screen and (max-width: 767px) {
     .kj-category-list {
-      justify-content: flex-start;
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      padding-bottom: 20px;
-      gap: 20px;
-      -webkit-overflow-scrolling: touch;
-      /* Hide scrollbar */
-      scrollbar-width: none;
-    }
-    .kj-category-list::-webkit-scrollbar {
-      display: none;
-    }
-    .kj-category-item {
-      scroll-snap-align: start;
-      flex: 0 0 auto;
-      width: 100px;
-    }
-    .kj-category-image-wrap {
-      width: 100px;
-      height: 100px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
     }
   }
 </style>
@@ -144,6 +122,12 @@
       "id": "bg_color",
       "label": "Background Color",
       "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#b0697a"
     },
     {
       "type": "color",
