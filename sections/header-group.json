@@ -117,13 +117,13 @@
         "bubble_text_color": "",
         "enable_transparent_header_home": true,
         "home_inverse_logo": false,
-        "text_color_transparent_home": "#ffffff",
+        "text_color_transparent_home": "#000000",
         "enable_transparent_header_product": false,
         "product_inverse_logo": false,
         "text_color_transparent_product": "",
-        "enable_transparent_header_collection": false,
+        "enable_transparent_header_collection": true,
         "collection_inverse_logo": false,
-        "text_color_transparent_collection": ""
+        "text_color_transparent_collection": "#000000"
       }
     }
   },

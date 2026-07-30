@@ -2,12 +2,39 @@
 
 <div class="kj-collection-page" style="background-color: {{ section.settings.bg_color }};">
 
-  <div class="kj-collection-header">
-    <h1 class="kj-collection-title" style="color: {{ section.settings.heading_color }};">{{ collection.title }}</h1>
-    {%- if collection.description != blank -%}
-      <div class="kj-collection-description">{{ collection.description }}</div>
-    {%- endif -%}
-  </div>
+  {%- assign banner = section.settings.banner_image | default: collection.image -%}
+  {%- if banner != blank -%}
+    <div class="kj-collection-banner" style="background-image: url('{{ banner | image_url: width: 2400 }}');">
+      <h1 class="kj-collection-banner-title">{{ collection.title }}</h1>
+    </div>
+  {%- else -%}
+    <div class="kj-collection-header">
+      <h1 class="kj-collection-title" style="color: {{ section.settings.heading_color }};">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}
+        <div class="kj-collection-description">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="kj-collection-subnav-row">
+      <div class="kj-collection-subnav">
+        {%- for block in section.blocks -%}
+          <a href="{{ block.settings.link | default: '#' }}" class="kj-subcat" {{ block.shopify_attributes }}>
+            <span class="kj-subcat-img">
+              {%- if block.settings.image != blank -%}
+                <img src="{{ block.settings.image | image_url: width: 240, height: 240, crop: 'center' }}" alt="{{ block.settings.label | escape }}" width="96" height="96" loading="lazy">
+              {%- endif -%}
+            </span>
+            <span class="kj-subcat-label">{{ block.settings.label }}</span>
+          </a>
+        {%- endfor -%}
+      </div>
+      <nav class="kj-collection-breadcrumbs">
+        <a href="{{ routes.root_url }}">home</a> / <span>{{ collection.title | downcase }}</span>
+      </nav>
+    </div>
+  {%- endif -%}
 
   {% paginate collection.products by section.settings.products_per_page %}
 
@@ -102,8 +129,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #DDD2C8;
-    border-bottom: 1px solid #DDD2C8;
     padding: 12px 0;
     margin-bottom: 28px;
   }
@@ -134,9 +159,95 @@
     outline: none;
   }
 
+  .kj-collection-banner {
+    position: relative;
+    min-height: 380px;
+    background-size: cover;
+    background-position: center;
+    background-color: #E8DED2;
+    display: flex;
+    align-items: flex-end;
+    padding: 40px 5vw;
+    margin-bottom: 0;
+  }
+
+  .kj-collection-banner-title {
+    font-family: var(--font-heading--family);
+    color: #ffffff;
+    font-size: clamp(28px, 3vw, 44px);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  .kj-collection-subnav-row {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 26px 20px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .kj-collection-subnav {
+    display: flex;
+    gap: 26px;
+    flex-wrap: wrap;
+  }
+
+  .kj-subcat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .kj-subcat-img {
+    display: block;
+    width: 96px;
+    height: 96px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #DDD2C8;
+  }
+
+  .kj-subcat-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .kj-subcat-label {
+    font-family: var(--font-heading--family);
+    font-size: 13px;
+    font-weight: 600;
+    color: #91715B;
+    text-transform: lowercase;
+  }
+
+  .kj-collection-breadcrumbs {
+    font-size: 12px;
+    color: #777;
+    text-transform: lowercase;
+    white-space: nowrap;
+    padding-top: 8px;
+  }
+
+  .kj-collection-breadcrumbs a {
+    color: #777;
+    text-decoration: none;
+  }
+
+  .kj-collection-breadcrumbs a:hover { text-decoration: underline; }
+
   .kj-collection-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 26px 20px;
   }
 
@@ -179,6 +290,12 @@
     .kj-collection-grid {
       grid-template-columns: repeat(2, 1fr);
     }
+    .kj-collection-subnav-row {
+      flex-direction: column;
+    }
+    .kj-collection-banner {
+      min-height: 240px;
+    }
   }
 
   @media screen and (max-width: 599px) {
@@ -196,6 +313,11 @@
   "name": "KJ Main Collection",
   "tag": "section",
   "settings": [
+    {
+      "type": "image_picker",
+      "id": "banner_image",
+      "label": "Banner Image (fallback: collection image)"
+    },
     {
       "type": "range",
       "id": "products_per_page",
@@ -223,6 +345,18 @@
       "label": "Text Color",
       "default": "#000000"
     }
-  ]
+  ],
+  "blocks": [
+    {
+      "type": "subcat",
+      "name": "Sub-collection",
+      "settings": [
+        { "type": "text", "id": "label", "label": "Label" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "image_picker", "id": "image", "label": "Image" }
+      ]
+    }
+  ],
+  "max_blocks": 8
 }
 {% endschema %}

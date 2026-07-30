@@ -1,0 +1,15 @@
+{%- comment -%}
+  Master shade → hex map for ST London variants (plus the KJ demo shades).
+  Outputs the 7-char hex for a known shade name, or nothing if unmapped.
+  Lookup is O(1) via string contains — every entry is ;name:#RRGGBB.
+
+  Usage:
+  {%- capture hex -%}{% render 'kj-shade-hex', shade: variant.title %}{%- endcapture -%}
+{%- endcomment -%}
+{%- assign kj_key = shade | downcase | strip -%}
+{%- capture kj_map -%};scandal maker:#A65E44;show stopper:#C21E56;ruby red:#9B111E;flirty lips:#C4626B;pink punch:#E75480;chocolate stain:#6B3A2A;iced cocoa:#8B5A45;attention seeker:#B03A4A;berry bites:#8E3A59;wild kiss:#B5485D;ferrari red:#CE2029;urban love:#A45A79;vibrant plum:#701C4D;burgundy:#6D2932;redwood:#A45A52;ruby:#9B111E;coral pink:#F88379;red chocolate:#7B3F00;nude cream:#D9B49A;rose:#C08081;maroon:#800000;nude:#C8A288;raspberry pink:#D25380;aussie blower:#E8747C;chilli red:#C0392B;spice nude:#B07A5E;salmon way:#F08E7D;pixy nude:#D8A090;murmor:#B26E6A;death by red:#8C1C13;divine cocoa:#7A4A32;pin me pink:#E48FB0;burgundy hue:#77313C;berry buzz:#A34467;latte:#C29B7C;soft glow:#F3D9B1;strobe:#F7E7CE;blossom:#F4C2C2;beige gold:#D4AF7A;halo:#EFD9C1;moon glow:#F2E8DC;champagne pearl:#F1DDC9;cherry:#B93B4B;satin peach:#F2A488;gold:#D4AF37;pink:#E8A0A8;rust:#B7410E;brick:#8B3A2E;brown:#6F4E37;peach:#F2A488;taupe:#8B8589;grey:#808080;copper:#B87333;rose gold:#B76E79;peachy keen:#F5B895;icicle:#EAF2F4;fizz:#EFE0B9;frosty pink:#F2C1D1;nude pink:#E5B7A5;olive:#708238;cocoa:#6E4433;bronze:#CD7F32;pink freeze:#F6C6D8;gold mine:#D9A441;rose metallic:#C97F8F;moon dust:#CBC3BA;opal dust:#E6E1F0;24k:#E0AF2B;moon flicks:#D6D3DE;carbon matte:#2F2F2F;salmon:#FA8072;sea mist:#A8C6BE;pigeon:#7A7D80;copper rose:#AD6F69;aura:#DCC6E0;show time:#A87CA0;mystery matte:#514052;beige:#E3C6A8;turquoise blue:#2FA8A0;coffee brown:#5C4033;chocolate brown:#4B302A;light copper:#CC9166;matte olive:#6E6E3C;metallic brown:#7C5433;silver grey:#B0AFAF;black:#000000;white:#FFFFFF;deep black:#0A0A0A;ultra white:#FFFFFF;ivory:#F3E0CE;honey:#DBA877;dark cocoa:#6A4632;fair:#F6E3D2;sand:#E2BB92;tan:#C99A72;natural:#EDD2B7;butternut:#C99560;clay:#B6814F;chestnut:#8E5C3B;be 1:#EFD3B4;be 2:#E7C6A2;be 3:#DDB58C;satin 1:#F0D6BC;1w:#F1D5B3;3w:#E0BF98;bisque:#F0CFB4;fair olive:#E9CDA5;fs 36:#EDCFAB;fs 38:#E5C29A;fs 45:#D3A87B;f38:#E5C29A;porcelain fair:#F7E8DA;nataural fair:#F2DCC4;natural fair:#F2DCC4;hc 132:#F2DBC0;hc 133:#EBCFAF;hc 134:#E2C09B;hc 135:#D6AF87;hc 136:#C89C73;hc 137:#B78760;ie 01:#F3DDC2;ie 02:#EDD2B2;ie 03:#E6C6A1;ie 04:#DDB88E;ie 05:#D2A97C;ie 06:#C4976A;ie 07:#B3835A;ie 08:#9F6F4B;kylie:#C98A78;blushing babe:#D08D86;rendezvous:#B85042;fire sign:#BB2E22;an apple a day:#A4362C;koko k:#DA9A90;summer somewhere:#CB7360;irreplaceable:#B4654C;up to no good:#93303A;you could never:#85424C;work mode:#AC7562;here for it:#C4745F{%- endcapture -%}
+{%- assign kj_probe = ';' | append: kj_key | append: ':' -%}
+{%- if kj_map contains kj_probe -%}
+  {%- assign kj_after = kj_map | split: kj_probe | last -%}
+  {{- kj_after | slice: 0, 7 -}}
+{%- endif -%}

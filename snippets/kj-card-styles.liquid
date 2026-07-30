@@ -103,9 +103,16 @@
     display: block;
     width: 20px;
     height: 20px;
+    padding: 0;
+    background: none;
     border-radius: 50%;
     overflow: hidden;
     border: 1px solid #DDD2C8;
+    cursor: pointer;
+  }
+
+  .kj-swatch--active {
+    border: 2px solid #222222;
   }
 
   .kj-swatch img {
@@ -268,3 +275,25 @@
     }
   }
 </style>
+
+<script>
+  (function () {
+    /* Card shade dots: click swaps the card image to that variant (delegated). */
+    if (window.__kjCardDots) return;
+    window.__kjCardDots = true;
+    document.addEventListener('click', function (e) {
+      var dot = e.target.closest('[data-kj-dot]');
+      if (!dot) return;
+      var card = dot.closest('.kj-product-card');
+      if (!card || !dot.dataset.image) return;
+      card.querySelectorAll('.kj-swatch--active').forEach(function (d) {
+        d.classList.remove('kj-swatch--active');
+      });
+      dot.classList.add('kj-swatch--active');
+      var primary = card.querySelector('.kj-img-primary');
+      var secondary = card.querySelector('.kj-img-secondary');
+      if (primary) primary.src = dot.dataset.image;
+      if (secondary) secondary.src = dot.dataset.image;
+    });
+  })();
+</script>

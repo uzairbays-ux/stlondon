@@ -3,6 +3,11 @@
 
     <!-- Newsletter -->
     <div class="kj-footer-newsletter">
+      {%- if settings.logo != blank -%}
+        <a href="{{ routes.root_url }}" class="kj-footer-logo">
+          <img src="{{ settings.logo | image_url: width: 280 }}" alt="{{ shop.name | escape }}" width="140" loading="lazy">
+        </a>
+      {%- endif -%}
       <h2 class="kj-footer-heading">{{ section.settings.newsletter_heading }}</h2>
       {% form 'customer', class: 'kj-footer-form' %}
         <input type="hidden" name="contact[tags]" value="newsletter">
@@ -89,6 +94,18 @@
   .kj-footer-newsletter {
     max-width: 480px;
     margin: 0 auto;
+    text-align: center;
+  }
+
+  .kj-footer-logo {
+    display: inline-block;
+    margin-bottom: 18px;
+  }
+
+  .kj-footer-logo img {
+    display: block;
+    width: 140px;
+    height: auto;
   }
 
   .kj-footer-heading {

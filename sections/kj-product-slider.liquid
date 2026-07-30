@@ -238,6 +238,9 @@
   .kj-slider-track-wrap {
     width: 100%;
     overflow-x: auto;
+    /* the hover panel's slide-in offset (translateY 16px) counts as vertical
+       overflow — clip it or the container grows a scrollbar */
+    overflow-y: hidden;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }

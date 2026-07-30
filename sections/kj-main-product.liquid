@@ -116,9 +116,12 @@
               {%- endif -%}
             {%- endif -%}
           {%- endfor -%}
+          {%- capture cur_hex -%}{% render 'kj-shade-hex', shade: current_variant.title %}{%- endcapture -%}
           <div class="kj-pdp-dropdown">
             <span class="kj-pdp-dropdown-chip">
-              {%- if current_chip != blank -%}
+              {%- if cur_hex != blank -%}
+                <span class="kj-pdp-swatch-blank" style="background: {{ cur_hex }}; width: 28px; height: 28px; display: block; border-radius: 50%;"></span>
+              {%- elsif current_chip != blank -%}
                 <img src="{{ current_chip | image_url: width: 56, height: 56, crop: 'center' }}" alt="" width="28" height="28" data-kj-pdp-chip>
               {%- endif -%}
             </span>
@@ -169,6 +172,7 @@
                   {%- endif -%}
                 {%- endif -%}
               {%- endfor -%}
+              {%- capture v_hex -%}{% render 'kj-shade-hex', shade: variant.title %}{%- endcapture -%}
               <button
                 type="button"
                 class="kj-pdp-swatch{% if variant == current_variant %} kj-pdp-swatch--active{% endif %}"
@@ -183,7 +187,9 @@
                 aria-label="{{ variant.title | escape }}"
                 {% unless variant.available %}data-soldout="true"{% endunless %}
               >
-                {%- if v_chip != blank -%}
+                {%- if v_hex != blank -%}
+                  <span class="kj-pdp-swatch-blank" style="background: {{ v_hex }};"></span>
+                {%- elsif v_chip != blank -%}
                   <img src="{{ v_chip | image_url: width: 56, height: 56, crop: 'center' }}" alt="" width="28" height="28" loading="lazy">
                 {%- else -%}
                   <span class="kj-pdp-swatch-blank"></span>
