@@ -118,19 +118,8 @@
     transform: scale(5); /* deep zoom → dot reads as a solid shade color like the reference */
   }
 
-  /* Dots collapsed at rest; expand between image and stars on hover (reference behavior) */
-  .kj-card-dots {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    margin: 0;
-    transition: max-height 0.18s ease, opacity 0.18s ease, margin 0.18s ease;
-  }
-
-  .kj-product-card:hover .kj-card-dots {
-    max-height: 26px;
-    opacity: 1;
-    margin: 0 0 8px;
+  .kj-swatch-row {
+    margin-bottom: 8px;
   }
 
   .kj-swatch-more {
@@ -138,28 +127,38 @@
     color: #666;
   }
 
-  /* Reference hover behavior: bottom panel expands out of the card with dots + add button */
-  .kj-card-reveal {
+  /* Reference hover: card height is FIXED; this panel overlays the info area
+     (anchored at image bottom via margin-top:110% of card width, since the
+     image is locked to aspect 1/1.1) and expands downward over what follows. */
+  .kj-card-hover-panel {
     position: absolute;
-    top: 100%;
+    top: 0;
     left: -1px;
     right: -1px;
+    margin-top: 110%;
     background: #ffffff;
     border: 1px solid #ece4e4;
     border-top: none;
     border-radius: 0 0 8px 8px;
-    padding: 2px 14px 14px;
-    box-shadow: 0 14px 22px rgba(0, 0, 0, 0.07);
+    padding: 12px 14px 14px;
+    box-shadow: 0 16px 24px rgba(0, 0, 0, 0.08);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease;
     z-index: 15;
   }
 
-  .kj-product-card:hover .kj-card-reveal,
-  .kj-card-reveal:focus-within {
+  .kj-product-card:hover .kj-card-hover-panel,
+  .kj-card-hover-panel:focus-within {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  .kj-card-panel-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 12px;
   }
 
   .kj-card-add-form {
@@ -254,22 +253,21 @@
   }
 
   @media screen and (max-width: 767px) {
-    .kj-card-reveal {
+    /* No hover on touch: hide the duplicate at-rest info, show the full panel in flow */
+    .kj-product-card .kj-product-info {
+      display: none;
+    }
+    .kj-card-hover-panel {
       position: static;
+      margin-top: 0;
       opacity: 1;
       pointer-events: auto;
       border: none;
       box-shadow: none;
       border-radius: 0 0 8px 8px;
-      padding: 0 14px 14px;
     }
     .kj-product-card:hover {
       border-radius: 8px;
-    }
-    .kj-card-dots {
-      max-height: 26px;
-      opacity: 1;
-      margin: 0 0 8px;
     }
   }
 </style>
