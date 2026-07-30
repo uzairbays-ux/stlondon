@@ -1,0 +1,289 @@
+<div class="kj-reviews" id="kj-reviews-{{ section.id }}">
+  <div class="kj-reviews-container">
+
+    <h2 class="kj-reviews-heading">{{ section.settings.heading }}</h2>
+
+    <div class="kj-reviews-summary">
+      <span class="kj-stars" aria-hidden="true">
+        {%- assign filled = section.settings.average | round -%}
+        {%- for i in (1..5) -%}
+          <span class="kj-star{% if i <= filled %} kj-star--filled{% endif %}">&#9733;</span>
+        {%- endfor -%}
+      </span>
+      <span class="kj-reviews-count">({{ section.settings.count }})</span>
+    </div>
+
+    <div class="kj-reviews-cta">
+      <button type="button" class="kj-reviews-write">write a review</button>
+    </div>
+
+    <div class="kj-reviews-toolbar">
+      <div class="kj-reviews-search">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="search" placeholder="search" aria-label="Search reviews">
+      </div>
+      <div class="kj-reviews-sort">
+        <select aria-label="Sort by"><option>sort by</option><option>newest</option><option>highest rating</option><option>lowest rating</option></select>
+      </div>
+    </div>
+
+    <div class="kj-reviews-filters">
+      <select aria-label="Age"><option>age</option><option>under 20</option><option>20-29</option><option>30-39</option><option>40+</option></select>
+      <select aria-label="Images and videos"><option>images/videos</option><option>with media</option></select>
+      <select aria-label="Rating"><option>rating</option><option>5 stars</option><option>4 stars</option><option>3 stars</option><option>2 stars</option><option>1 star</option></select>
+    </div>
+
+    <div class="kj-reviews-list">
+      {%- for block in section.blocks -%}
+        <article class="kj-review" {{ block.shopify_attributes }}>
+          <div class="kj-stars" aria-hidden="true">
+            {%- assign r = block.settings.rating -%}
+            {%- for i in (1..5) -%}
+              <span class="kj-star{% if i <= r %} kj-star--filled{% endif %}">&#9733;</span>
+            {%- endfor -%}
+          </div>
+          <h3 class="kj-review-title">{{ block.settings.title }}</h3>
+          <p class="kj-review-body">{{ block.settings.body }}</p>
+          <p class="kj-review-date">{{ block.settings.date }}</p>
+          <p class="kj-review-author">
+            {{ block.settings.author }}
+            <svg class="kj-review-verified" viewBox="0 0 24 24" width="14" height="14" fill="#91715B"><path d="M12 2l2.4 2.4 3.4-.5 1 3.3 3.2 1.6-1.3 3.2 1.3 3.2-3.2 1.6-1 3.3-3.4-.5L12 22l-2.4-2.4-3.4.5-1-3.3L2 15.2l1.3-3.2L2 8.8l3.2-1.6 1-3.3 3.4.5z"/><path fill="#fff" d="M10.6 14.6l-2.1-2.1-1.1 1.1 3.2 3.2 5.6-5.6-1.1-1.1z"/></svg>
+            <span class="kj-review-verified-label">verified purchaser</span>
+          </p>
+          {%- if block.settings.shade != blank -%}
+            <p class="kj-review-shade">shade: {{ block.settings.shade | downcase }}</p>
+          {%- endif -%}
+          <div class="kj-review-votes">
+            <span>0 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3zm0 0l4-7a2 2 0 0 1 2 2v4h5a2 2 0 0 1 2 2.3l-1 5A2 2 0 0 1 17 19h-7a3 3 0 0 1-3-3"/></svg></span>
+            <span>0 <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" style="transform: rotate(180deg)"><path d="M7 11v9H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3zm0 0l4-7a2 2 0 0 1 2 2v4h5a2 2 0 0 1 2 2.3l-1 5A2 2 0 0 1 17 19h-7a3 3 0 0 1-3-3"/></svg></span>
+          </div>
+        </article>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .kj-reviews {
+    background: #F8F5F2;
+    padding: 70px 0;
+  }
+
+  .kj-reviews-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .kj-reviews-heading {
+    font-family: var(--font-heading--family);
+    color: #91715B;
+    font-size: 30px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+    margin: 0 0 10px;
+  }
+
+  .kj-reviews-summary {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kj-reviews-summary .kj-star { font-size: 18px; }
+  .kj-reviews-count { font-size: 14px; color: #5F5F5F; }
+
+  .kj-reviews-cta {
+    text-align: center;
+    margin: 16px 0 36px;
+  }
+
+  .kj-reviews-write {
+    background: transparent;
+    border: 1px solid #91715B;
+    color: #91715B;
+    font-size: 13px;
+    text-transform: lowercase;
+    padding: 10px 22px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .kj-reviews-write:hover {
+    background: #91715B;
+    color: #fff;
+  }
+
+  .kj-reviews-toolbar {
+    display: flex;
+    gap: 18px;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .kj-reviews-search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #DDD2C8;
+    border-radius: 4px;
+    padding: 9px 12px;
+    color: #8C8C8C;
+  }
+
+  .kj-reviews-search input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 13px;
+    text-transform: lowercase;
+  }
+
+  .kj-reviews-sort select,
+  .kj-reviews-filters select {
+    appearance: none;
+    -webkit-appearance: none;
+    background: #fff url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+    border: 1px solid #DDD2C8;
+    border-radius: 4px;
+    padding: 9px 34px 9px 12px;
+    font-size: 13px;
+    text-transform: lowercase;
+    color: #444;
+    cursor: pointer;
+    outline: none;
+  }
+
+  .kj-reviews-sort select { min-width: 150px; }
+
+  .kj-reviews-filters {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 30px;
+  }
+
+  .kj-review {
+    border-bottom: 1px solid #DDD2C8;
+    padding: 26px 0;
+  }
+
+  .kj-review .kj-star { font-size: 13px; }
+
+  .kj-review-title {
+    font-family: var(--font-heading--family);
+    font-style: italic;
+    color: #91715B;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 8px 0 8px;
+    text-transform: lowercase;
+  }
+
+  .kj-review-body {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.65;
+    margin: 0 0 14px;
+  }
+
+  .kj-review-date {
+    font-size: 13px;
+    color: #8C8C8C;
+    margin: 0 0 2px;
+  }
+
+  .kj-review-author {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #444;
+    margin: 0 0 8px;
+  }
+
+  .kj-review-verified-label {
+    color: #8C8C8C;
+  }
+
+  .kj-review-shade {
+    font-size: 13px;
+    color: #91715B;
+    text-transform: lowercase;
+    margin: 0 0 10px;
+  }
+
+  .kj-review-votes {
+    display: flex;
+    gap: 18px;
+    font-size: 13px;
+    color: #666;
+  }
+
+  .kj-review-votes span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  @media screen and (max-width: 767px) {
+    .kj-reviews-toolbar { flex-direction: column; }
+    .kj-reviews-filters { grid-template-columns: 1fr; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Reviews",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "REVIEWS"
+    },
+    {
+      "type": "range",
+      "id": "average",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Average Rating",
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "count",
+      "label": "Review Count",
+      "default": "346"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        { "type": "range", "id": "rating", "min": 1, "max": 5, "step": 1, "label": "Stars", "default": 5 },
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "body", "label": "Body" },
+        { "type": "text", "id": "date", "label": "Date" },
+        { "type": "text", "id": "author", "label": "Author" },
+        { "type": "text", "id": "shade", "label": "Shade" }
+      ]
+    }
+  ],
+  "max_blocks": 20,
+  "presets": [
+    { "name": "KJ Reviews" }
+  ]
+}
+{% endschema %}

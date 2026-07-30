@@ -284,6 +284,55 @@
         "padding_top": 60,
         "padding_bottom": 60
       }
+    },
+    "kj_reviews": {
+      "type": "kj-reviews",
+      "blocks": {
+        "rv1": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "loveee",
+            "body": "my lipstick got ran over and it was my holy grail to give that sabrina carpenter lipstick vibe but i had to replace it",
+            "date": "4/2/2026",
+            "author": "karla",
+            "shade": "dusty rose"
+          }
+        },
+        "rv2": {
+          "type": "review",
+          "settings": {
+            "rating": 5,
+            "title": "my favorite shade!",
+            "body": "Koko K is such a pretty shade. I would wear it everyday if I had to pick one. This lipstick is creamier than a liquid matte, like an in-between. Love it.",
+            "date": "3/15/2026",
+            "author": "stacie",
+            "shade": "koko k"
+          }
+        },
+        "rv3": {
+          "type": "review",
+          "settings": {
+            "rating": 4,
+            "title": "soft matte perfection",
+            "body": "goes on smooth and lasts through coffee. wish there were more nude options but the formula is unmatched.",
+            "date": "2/28/2026",
+            "author": "amelia",
+            "shade": "kylie"
+          }
+        }
+      },
+      "block_order": [
+        "rv1",
+        "rv2",
+        "rv3"
+      ],
+      "name": "KJ Reviews",
+      "settings": {
+        "heading": "REVIEWS",
+        "average": 4,
+        "count": "346"
+      }
     }
   },
   "order": [
@@ -293,6 +342,7 @@
     "story_routine",
     "story_results",
     "kj_recs",
+    "kj_reviews",
     "kj_ig"
   ]
 }
