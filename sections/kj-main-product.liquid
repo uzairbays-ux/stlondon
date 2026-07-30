@@ -40,6 +40,21 @@
     </div>
 
     <!-- Main image -->
+    {%- assign vto_shade_count = 0 -%}
+    {%- assign vto_pairs = '' -%}
+    {%- for variant in product.variants -%}
+      {%- capture vv_hex -%}{% render 'kj-shade-hex', shade: variant.title %}{%- endcapture -%}
+      {%- if vv_hex != blank -%}
+        {%- capture vv_pair -%}"{{ variant.title | downcase | replace: '"', '' }}":"{{ vv_hex }}"{%- endcapture -%}
+        {%- if vto_pairs == '' -%}
+          {%- assign vto_pairs = vv_pair -%}
+        {%- else -%}
+          {%- assign vto_pairs = vto_pairs | append: ',' | append: vv_pair -%}
+        {%- endif -%}
+        {%- assign vto_shade_count = vto_shade_count | plus: 1 -%}
+      {%- endif -%}
+    {%- endfor -%}
+
     <div class="kj-pdp-main-media">
       {%- assign main_media = product.featured_image -%}
       {%- if has_shade_media -%}
@@ -52,41 +67,62 @@
       {%- else -%}
         {{ 'product-1' | placeholder_svg_tag: 'kj-pdp-placeholder' }}
       {%- endif -%}
-    </div>
 
-    {%- assign vto_swatch_count = 0 -%}
-    {%- capture vto_swatches -%}
-      {%- for variant in product.variants -%}
-        {%- capture vv_hex -%}{% render 'kj-shade-hex', shade: variant.title %}{%- endcapture -%}
-        {%- if vv_hex != blank -%}
-          <button type="button" class="kj-pdpvto-swatch{% if vto_swatch_count == 0 %} active{% endif %}" data-kj-vto-color="{{ vv_hex }}" data-kj-vto-name="{{ variant.title | escape }}" style="background-color: {{ vv_hex }};" aria-label="{{ variant.title | escape }}"></button>
-          {%- assign vto_swatch_count = vto_swatch_count | plus: 1 -%}
-        {%- endif -%}
-      {%- endfor -%}
-    {%- endcapture -%}
+      {%- if vto_shade_count > 0 -%}
+        <!-- Virtual try-on runs INSIDE the gallery view (reference behavior):
+             consent card -> getting ready -> live camera with close / save / compare -->
+        <div class="kj-pdpvto-stage" data-kj-vto-stage hidden>
 
-    {%- if vto_swatch_count > 0 -%}
-      <button type="button" class="kj-pdpvto-open" data-kj-vto-open>
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        virtual try-on
-      </button>
-
-      <div class="kj-pdpvto-modal" data-kj-vto-modal>
-        <div class="kj-pdpvto-content">
-          <button type="button" class="kj-pdpvto-close" data-kj-vto-close aria-label="Close">&times;</button>
-          <div class="kj-pdpvto-video-wrap">
-            <video data-kj-vto-video class="kj-pdpvto-video" playsinline></video>
-            <canvas data-kj-vto-canvas class="kj-pdpvto-canvas"></canvas>
-            <div data-kj-vto-loading class="kj-pdpvto-loading">INITIALIZING CAMERA...</div>
-          </div>
-          <div class="kj-pdpvto-controls">
-            <p>shade: <strong data-kj-vto-shadename>&nbsp;</strong></p>
-            <div class="kj-pdpvto-swatches">
-              {{ vto_swatches }}
+          <div class="kj-pdpvto-consent" data-kj-vto-consent hidden>
+            <div class="kj-pdpvto-card">
+              <button type="button" class="kj-pdpvto-card-x" data-kj-vto-close aria-label="Close">&times;</button>
+              <h4>privacy policy</h4>
+              <p>by clicking &quot;i agree&quot;, i consent to my device camera being used for the <strong>virtual try-on</strong> experience. camera frames are processed in real time on this device to render shades and are never stored or uploaded.</p>
+              <p>close the try-on at any time to turn the camera off.</p>
+              <label class="kj-pdpvto-agree-row"><input type="checkbox" data-kj-vto-check> i agree</label>
+              <button type="button" class="kj-pdpvto-agree" data-kj-vto-agree disabled>agree</button>
+              <button type="button" class="kj-pdpvto-nothanks" data-kj-vto-close>no thanks</button>
             </div>
           </div>
+
+          <div class="kj-pdpvto-ready" data-kj-vto-ready hidden>
+            <span class="kj-pdpvto-spinner" aria-hidden="true"></span>
+            <span data-kj-vto-ready-label>getting ready</span>
+          </div>
+
+          <div class="kj-pdpvto-live" data-kj-vto-live hidden>
+            <video data-kj-vto-video playsinline muted></video>
+            <canvas data-kj-vto-canvas></canvas>
+            <div class="kj-pdpvto-divider" data-kj-vto-divider hidden>
+              <span class="kj-pdpvto-handle" data-kj-vto-handle>
+                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 1 2 5l4 4"/></svg>
+                <svg width="7" height="10" viewBox="0 0 7 10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4-4 4"/></svg>
+              </span>
+            </div>
+            <button type="button" class="kj-pdpvto-x" data-kj-vto-close aria-label="Close try-on">&times;</button>
+            <div class="kj-pdpvto-tools">
+              <button type="button" class="kj-pdpvto-tool" data-kj-vto-snap aria-label="Save photo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              </button>
+              <button type="button" class="kj-pdpvto-tool" data-kj-vto-compare aria-label="Compare before and after">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><line x1="12" y1="4.5" x2="12" y2="19.5"/></svg>
+              </button>
+            </div>
+            <div class="kj-pdpvto-flash" data-kj-vto-flash></div>
+          </div>
+
         </div>
+      {%- endif -%}
+    </div>
+
+    {%- if vto_shade_count > 0 -%}
+      <div class="kj-pdpvto-openrow">
+        <button type="button" class="kj-pdpvto-open" data-kj-vto-open>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          try me on
+        </button>
       </div>
+      <script type="application/json" data-kj-vto-map>{ {{ vto_pairs }} }</script>
     {%- endif -%}
 
     </div>
@@ -349,6 +385,7 @@
       var url = new URL(window.location.href);
       url.searchParams.set('variant', data.id);
       window.history.replaceState({}, '', url.toString());
+      document.dispatchEvent(new CustomEvent('kj:shade', { detail: { title: data.title || '' } }));
     }
 
     document.addEventListener('click', function (e) {
@@ -401,22 +438,53 @@
   })();
 
   (function () {
-    /* PDP Virtual Try-On: camera + MediaPipe face mesh, lazy-loaded on first
-       open only. Lip fill uses the active variant's mapped shade color. */
+    /* PDP Virtual Try-On — runs INSIDE the gallery view (reference behavior):
+       try me on -> privacy consent -> getting ready -> live camera with lip
+       tint, close, snapshot save, and a draggable before/after compare split.
+       Shade comes from the PDP's own chips/dropdown via the kj:shade event.
+       MediaPipe is lazy-loaded on first agree only. */
     if (window.__kjPdpVto) return;
-    window.__kjPdpVto = { camera: null, faceMesh: null, color: null, loading: false };
+    window.__kjPdpVto = { camera: null, faceMesh: null, color: null, loading: false, agreed: false, compare: false, split: 0.5, drag: false, map: null };
     var S = window.__kjPdpVto;
 
     function els() {
-      var modal = document.querySelector('[data-kj-vto-modal]');
-      if (!modal) return null;
+      var stage = document.querySelector('[data-kj-vto-stage]');
+      if (!stage) return null;
       return {
-        modal: modal,
-        video: modal.querySelector('[data-kj-vto-video]'),
-        canvas: modal.querySelector('[data-kj-vto-canvas]'),
-        loading: modal.querySelector('[data-kj-vto-loading]'),
-        shadeName: modal.querySelector('[data-kj-vto-shadename]')
+        stage: stage,
+        consent: stage.querySelector('[data-kj-vto-consent]'),
+        ready: stage.querySelector('[data-kj-vto-ready]'),
+        readyLabel: stage.querySelector('[data-kj-vto-ready-label]'),
+        live: stage.querySelector('[data-kj-vto-live]'),
+        video: stage.querySelector('[data-kj-vto-video]'),
+        canvas: stage.querySelector('[data-kj-vto-canvas]'),
+        divider: stage.querySelector('[data-kj-vto-divider]'),
+        flash: stage.querySelector('[data-kj-vto-flash]')
       };
+    }
+
+    function shadeMap() {
+      if (S.map) return S.map;
+      var tag = document.querySelector('[data-kj-vto-map]');
+      try { S.map = JSON.parse(tag.textContent); } catch (err) { S.map = {}; }
+      return S.map;
+    }
+
+    function currentShadeColor() {
+      var map = shadeMap();
+      var label = document.querySelector('[data-kj-pdp-shade]');
+      var key = label ? label.textContent.trim().toLowerCase() : '';
+      if (map[key]) return map[key];
+      for (var k in map) return map[k];
+      return '#C98A78';
+    }
+
+    function setState(name) {
+      var e = els();
+      if (!e) return;
+      e.consent.hidden = name !== 'consent';
+      e.ready.hidden = name !== 'ready';
+      e.live.hidden = name !== 'live';
     }
 
     function loadScript(src) {
@@ -432,10 +500,10 @@
 
     function onResults(results) {
       var e = els();
-      if (!e) return;
+      if (!e || e.stage.hidden) return;
+      if (!e.ready.hidden) setState('live');
       var canvas = e.canvas, ctx = canvas.getContext('2d');
-      e.loading.style.display = 'none';
-      if (canvas.width !== e.video.videoWidth) {
+      if (canvas.width !== e.video.videoWidth && e.video.videoWidth) {
         canvas.width = e.video.videoWidth;
         canvas.height = e.video.videoHeight;
       }
@@ -446,6 +514,12 @@
         var lm = results.multiFaceLandmarks[0];
         var outer = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185, 61];
         var inner = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 80, 191, 78];
+        if (S.compare) {
+          /* canvas is CSS-mirrored: right of the on-screen divider = left of the bitmap */
+          ctx.beginPath();
+          ctx.rect(0, 0, canvas.width * (1 - S.split), canvas.height);
+          ctx.clip();
+        }
         ctx.globalCompositeOperation = 'multiply';
         ctx.fillStyle = (S.color || '#C98A78') + '80';
         ctx.beginPath();
@@ -465,6 +539,11 @@
       ctx.restore();
     }
 
+    function cameraFail() {
+      var e = els();
+      if (e && e.readyLabel) e.readyLabel.textContent = 'camera unavailable — please allow camera access';
+    }
+
     function startAR() {
       var e = els();
       if (!e || S.loading) return;
@@ -479,7 +558,8 @@
             height: 640
           });
         }
-        S.camera.start();
+        var p = S.camera.start();
+        if (p && p.catch) p.catch(cameraFail);
       };
       if (window.FaceMesh && window.Camera) { boot(); return; }
       S.loading = true;
@@ -487,42 +567,97 @@
         loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js'),
         loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js')
       ]).then(function () { S.loading = false; boot(); })
-        .catch(function () { S.loading = false; if (e.loading) e.loading.textContent = 'CAMERA UNAVAILABLE'; });
+        .catch(function () { S.loading = false; cameraFail(); });
+    }
+
+    function closeVto() {
+      var e = els();
+      if (!e) return;
+      e.stage.hidden = true;
+      setState('none');
+      S.compare = false;
+      if (e.divider) e.divider.hidden = true;
+      var cmp = e.stage.querySelector('[data-kj-vto-compare]');
+      if (cmp) cmp.classList.remove('active');
+      if (S.camera) S.camera.stop();
     }
 
     document.addEventListener('click', function (ev) {
       var open = ev.target.closest('[data-kj-vto-open]');
       if (open) {
         var e = els();
-        if (!e) return;
-        e.modal.classList.add('active');
-        e.loading.style.display = 'block';
-        var first = e.modal.querySelector('.kj-pdpvto-swatch.active') || e.modal.querySelector('.kj-pdpvto-swatch');
-        if (first) {
-          S.color = first.dataset.kjVtoColor;
-          if (e.shadeName) e.shadeName.textContent = (first.dataset.kjVtoName || '').toLowerCase();
-        }
+        if (!e || !e.stage.hidden) return;
+        S.color = currentShadeColor();
+        if (e.readyLabel) e.readyLabel.textContent = 'getting ready';
+        e.stage.hidden = false;
+        if (S.agreed) { setState('ready'); startAR(); }
+        else { setState('consent'); }
+        return;
+      }
+      if (ev.target.closest('[data-kj-vto-close]')) { closeVto(); return; }
+      var agree = ev.target.closest('[data-kj-vto-agree]');
+      if (agree && !agree.disabled) {
+        S.agreed = true;
+        setState('ready');
         startAR();
         return;
       }
-      var close = ev.target.closest('[data-kj-vto-close]');
-      var backdrop = ev.target.matches && ev.target.matches('[data-kj-vto-modal]');
-      if (close || backdrop) {
+      var snap = ev.target.closest('[data-kj-vto-snap]');
+      if (snap) {
         var e2 = els();
-        if (!e2) return;
-        e2.modal.classList.remove('active');
-        if (S.camera) S.camera.stop();
+        if (!e2 || !e2.canvas.width) return;
+        var a = document.createElement('a');
+        a.download = 'st-london-try-on.png';
+        a.href = e2.canvas.toDataURL('image/png');
+        a.click();
+        if (e2.flash) {
+          e2.flash.classList.remove('on');
+          void e2.flash.offsetWidth;
+          e2.flash.classList.add('on');
+        }
         return;
       }
-      var sw = ev.target.closest('.kj-pdpvto-swatch');
-      if (sw) {
+      var cmp = ev.target.closest('[data-kj-vto-compare]');
+      if (cmp) {
         var e3 = els();
-        e3.modal.querySelectorAll('.kj-pdpvto-swatch').forEach(function (x) { x.classList.remove('active'); });
-        sw.classList.add('active');
-        S.color = sw.dataset.kjVtoColor;
-        if (e3.shadeName) e3.shadeName.textContent = (sw.dataset.kjVtoName || '').toLowerCase();
+        if (!e3) return;
+        S.compare = !S.compare;
+        S.split = 0.5;
+        e3.divider.hidden = !S.compare;
+        e3.divider.style.left = '50%';
+        cmp.classList.toggle('active', S.compare);
       }
     });
+
+    document.addEventListener('change', function (ev) {
+      var check = ev.target.closest('[data-kj-vto-check]');
+      if (!check) return;
+      var agree = document.querySelector('[data-kj-vto-agree]');
+      if (agree) agree.disabled = !check.checked;
+    });
+
+    /* live shade sync: PDP chip/dropdown selection retints the try-on */
+    document.addEventListener('kj:shade', function (ev) {
+      var map = shadeMap();
+      var key = ((ev.detail && ev.detail.title) || '').toLowerCase().trim();
+      if (map[key]) S.color = map[key];
+    });
+
+    /* compare divider drag */
+    document.addEventListener('pointerdown', function (ev) {
+      if (!ev.target.closest('[data-kj-vto-handle]')) return;
+      ev.preventDefault();
+      S.drag = true;
+    });
+    document.addEventListener('pointermove', function (ev) {
+      if (!S.drag) return;
+      var e = els();
+      if (!e) return;
+      var r = e.stage.getBoundingClientRect();
+      S.split = Math.min(0.88, Math.max(0.12, (ev.clientX - r.left) / r.width));
+      e.divider.style.left = (S.split * 100) + '%';
+    });
+    document.addEventListener('pointerup', function () { S.drag = false; });
   })();
 </script>
 
@@ -551,135 +686,267 @@
     top: 90px;
   }
 
-  .kj-pdpvto-open {
-    font-family: var(--font-heading--family);
+  /* "try me on" — small pill centered under the gallery image (reference) */
+  .kj-pdpvto-openrow {
     flex-basis: 100%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    background: transparent;
-    border: 1px solid #91715B;
-    color: #91715B;
-    border-radius: 4px;
-    padding: 12px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: lowercase;
-    letter-spacing: 0.4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .kj-pdpvto-open:hover {
-    background: #91715B;
-    color: #fff;
-  }
-
-  .kj-pdpvto-modal {
-    display: none;
-    position: fixed;
-    z-index: 999999;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .kj-pdpvto-modal.active {
     display: flex;
     justify-content: center;
+    padding-left: 86px; /* thumb rail 72px + 14px gap: center under the image */
+  }
+
+  .kj-pdpvto-open {
+    display: inline-flex;
     align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    border: 1px solid #d7d2cc;
+    color: #222;
+    border-radius: 4px;
+    padding: 9px 16px;
+    font-size: 13px;
+    text-transform: lowercase;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
   }
 
-  .kj-pdpvto-content {
-    background: #111;
-    padding: 16px;
-    border-radius: 12px;
-    position: relative;
-    width: 95%;
-    max-width: 480px;
-    text-align: center;
-    color: #fff;
-  }
+  .kj-pdpvto-open:hover { border-color: #222; }
 
-  .kj-pdpvto-close {
+  /* The try-on stage overlays the gallery view */
+  .kj-pdpvto-stage {
     position: absolute;
-    top: -42px;
-    right: 0;
-    font-size: 32px;
-    color: #fff;
+    inset: 0;
+    z-index: 6;
+  }
+
+  /* display:flex on the state layers must not defeat the hidden attribute */
+  .kj-pdpvto-stage[hidden],
+  .kj-pdpvto-stage [hidden] {
+    display: none !important;
+  }
+
+  /* State 1: privacy consent card over the product image */
+  .kj-pdpvto-consent {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .kj-pdpvto-card {
+    position: relative;
+    width: min(400px, 92%);
+    background: #ffffff;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.2);
+    padding: 24px 26px;
+    text-align: left;
+  }
+
+  .kj-pdpvto-card h4 {
+    font-family: var(--font-heading--family);
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin: 0 0 12px;
+  }
+
+  .kj-pdpvto-card p {
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: #444;
+    margin: 0 0 10px;
+  }
+
+  .kj-pdpvto-card-x {
+    position: absolute;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
+    font-size: 20px;
+    line-height: 1;
+    color: #222;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .kj-pdpvto-agree-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: #222;
+    margin: 14px 0;
     cursor: pointer;
   }
 
-  .kj-pdpvto-video-wrap {
-    position: relative;
+  .kj-pdpvto-agree-row input { accent-color: #222; }
+
+  .kj-pdpvto-agree {
+    display: block;
     width: 100%;
-    aspect-ratio: 3 / 4;
+    background: #ffffff;
+    border: 1px solid #222;
+    padding: 10px 16px;
+    font-size: 13px;
+    text-transform: lowercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .kj-pdpvto-agree:disabled { border-color: #c9c9c9; color: #a5a5a5; cursor: not-allowed; }
+  .kj-pdpvto-agree:not(:disabled):hover { background: #222; color: #fff; }
+
+  .kj-pdpvto-nothanks {
+    display: block;
+    margin: 12px auto 0;
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #222;
+    text-decoration: underline;
+    text-transform: lowercase;
+    cursor: pointer;
+  }
+
+  /* State 2: GETTING READY */
+  .kj-pdpvto-ready {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: #FBF1EE;
+    color: #D98A93;
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .kj-pdpvto-spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px dotted #E4B4B9;
+    animation: kj-vto-spin 1.2s linear infinite;
+  }
+
+  @keyframes kj-vto-spin { to { transform: rotate(360deg); } }
+
+  /* State 3: live camera in the gallery frame */
+  .kj-pdpvto-live {
+    position: absolute;
+    inset: 0;
     background: #000;
-    border-radius: 8px;
     overflow: hidden;
   }
 
-  .kj-pdpvto-video { display: none; }
+  .kj-pdpvto-live video { display: none; }
 
-  .kj-pdpvto-canvas {
+  .kj-pdpvto-live canvas {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1);
+    transform: scaleX(-1); /* selfie mirror */
   }
 
-  .kj-pdpvto-loading {
+  .kj-pdpvto-x {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: #fff;
-    font-weight: bold;
-    letter-spacing: 2px;
-    font-size: 12px;
-  }
-
-  .kj-pdpvto-controls {
-    margin-top: 16px;
-  }
-
-  .kj-pdpvto-controls p {
-    font-size: 13px;
-    text-transform: lowercase;
-    letter-spacing: 0.5px;
-    margin: 0 0 10px;
-  }
-
-  .kj-pdpvto-swatches {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    max-height: 96px;
-    overflow-y: auto;
-  }
-
-  .kj-pdpvto-swatch {
-    width: 30px;
-    height: 30px;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.88);
+    border: none;
+    color: #222;
+    font-size: 19px;
+    line-height: 1;
     cursor: pointer;
-    transition: transform 0.15s ease;
-    padding: 0;
   }
 
-  .kj-pdpvto-swatch:hover { transform: scale(1.1); }
+  .kj-pdpvto-tools {
+    position: absolute;
+    right: 12px;
+    bottom: 14px;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-  .kj-pdpvto-swatch.active {
-    border-color: #fff;
-    box-shadow: 0 0 0 2px #111 inset;
+  .kj-pdpvto-tool {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #222;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  }
+
+  .kj-pdpvto-tool.active { outline: 2px solid #222; }
+
+  .kj-pdpvto-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: #fff;
+    z-index: 3;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+  }
+
+  .kj-pdpvto-handle {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 62px;
+    height: 32px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #222;
+    cursor: ew-resize;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .kj-pdpvto-flash {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .kj-pdpvto-flash.on { animation: kj-vto-flash 0.45s ease-out; }
+
+  @keyframes kj-vto-flash {
+    0% { opacity: 0.9; }
+    100% { opacity: 0; }
   }
 
   .kj-pdp-gallery-group .kj-pdp-main-media {
@@ -1074,6 +1341,10 @@
     .kj-pdp-main-media {
       order: 1;
       width: 100%;
+    }
+    .kj-pdpvto-openrow {
+      order: 3;
+      padding-left: 0;
     }
   }
 </style>
