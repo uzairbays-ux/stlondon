@@ -235,17 +235,23 @@
       <!-- Benefits icons -->
       {%- if section.settings.benefits != blank -%}
         {%- assign benefit_items = section.settings.benefits | split: ',' -%}
+        {%- assign benefit_icons = section.settings.benefit_icons | split: ',' -%}
         <div class="kj-pdp-benefits">
           {%- for b in benefit_items -%}
-            {%- assign icon_index = forloop.index0 | modulo: 3 -%}
             <div class="kj-pdp-benefit">
-              <span class="kj-pdp-benefit-icon">
-                {%- if icon_index == 0 -%}
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
-                {%- elsif icon_index == 1 -%}
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c4 4.5 6 7.5 6 10.5a6 6 0 1 1-12 0C6 10.5 8 7.5 12 3z"/></svg>
+              <span class="kj-pdp-benefit-icon{% if section.settings.benefit_icons != blank %} kj-pdp-benefit-icon--img{% endif %}">
+                {%- if benefit_icons.size > 0 and section.settings.benefit_icons != blank -%}
+                  {%- assign icon_index = forloop.index0 | modulo: benefit_icons.size -%}
+                  <img src="{{ benefit_icons[icon_index] | strip }}" alt="" width="52" height="52" loading="lazy">
                 {%- else -%}
-                  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 14c4-1 6-3 7-7 3 1 7 4 7 8a7 7 0 0 1-14 0z"/><path d="M5 21c2-3 4-4 7-5"/></svg>
+                  {%- assign glyph = forloop.index0 | modulo: 3 -%}
+                  {%- if glyph == 0 -%}
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg>
+                  {%- elsif glyph == 1 -%}
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3c4 4.5 6 7.5 6 10.5a6 6 0 1 1-12 0C6 10.5 8 7.5 12 3z"/></svg>
+                  {%- else -%}
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 14c4-1 6-3 7-7 3 1 7 4 7 8a7 7 0 0 1-14 0z"/><path d="M5 21c2-3 4-4 7-5"/></svg>
+                  {%- endif -%}
                 {%- endif -%}
               </span>
               <span class="kj-pdp-benefit-label">{{ b | strip | downcase }}</span>
@@ -352,7 +358,8 @@
 
 <style>
   .kj-pdp {
-    background: {{ section.settings.bg_color }};
+    /* Brand premium gradient from the ST London palette */
+    background: linear-gradient(180deg, #FCFAF8 0%, #F8F5F2 40%, #F2ECE5 100%);
   }
 
   .kj-pdp-container {
@@ -360,7 +367,8 @@
     margin: 0 auto;
     padding: 30px 20px 70px;
     display: grid;
-    grid-template-columns: 84px minmax(0, 1fr) minmax(0, 480px);
+    /* 50/50: main image column equals the info column */
+    grid-template-columns: 84px minmax(0, 1fr) minmax(0, 1fr);
     gap: 28px;
     align-items: start;
   }
@@ -630,7 +638,7 @@
   .kj-pdp-add {
     font-family: var(--font-heading--family);
     flex: 1;
-    background: #91715B;
+    background: #222222; /* palette charcoal */
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -643,7 +651,7 @@
     transition: background 0.2s ease;
   }
 
-  .kj-pdp-add:hover:not(:disabled) { background: #6F5545; }
+  .kj-pdp-add:hover:not(:disabled) { background: #000000; }
   .kj-pdp-add:disabled { background: #999; cursor: not-allowed; }
 
   .kj-pdp-accordions {
@@ -698,12 +706,32 @@
   .kj-pdp-benefit-icon {
     width: 52px;
     height: 52px;
-    border: 1px solid #999;
+    border: 1px solid #B69378;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #444;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .kj-pdp-benefit-icon img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Icon PNGs that include their own circle: no double ring */
+  .kj-pdp-benefit-icon--img {
+    border: none;
+    background: transparent;
+  }
+
+  .kj-pdp-benefit-icon--img img {
+    width: 52px;
+    height: 52px;
   }
 
   .kj-pdp-benefit-label {
@@ -757,6 +785,11 @@
       "id": "benefits",
       "label": "Benefit icons (comma separated)",
       "default": "clean, cruelty free, high pigmented, non-drying, paraben free, smudge-resistant, vegan"
+    },
+    {
+      "type": "textarea",
+      "id": "benefit_icons",
+      "label": "Benefit icon image URLs (comma separated, cycled; blank = built-in glyphs)"
     },
     {
       "type": "richtext",

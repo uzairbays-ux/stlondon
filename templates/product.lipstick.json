@@ -17,7 +17,201 @@
         "subtitle": "0.12 oz | soft-matte finish",
         "shade_families": "nudes: Kylie, Blushing Babe, Koko K, An Apple A Day, Summer Somewhere, Irreplaceable, Work Mode, Here For It\nreds: Rendezvous, Fire Sign, Up To No Good, You Could Never",
         "benefits": "clean, cruelty free, high pigmented, non-drying, paraben free, smudge-resistant, vegan",
+        "benefit_icons": "https://kyliecosmetics.com/cdn/shop/files/Circle_KC_Icons_-_Clean.png, https://kyliecosmetics.com/cdn/shop/files/Circle_KC_Icons_-_Cruelty_Free.png, https://kyliecosmetics.com/cdn/shop/files/highly_pigmented_41fb9799-730a-49f1-9958-40c28a9e78ed.png, https://kyliecosmetics.com/cdn/shop/files/non-drying_2c782c5b-a59c-40ae-9deb-686b413c7747.png, https://kyliecosmetics.com/cdn/shop/files/Circle_KC_Icons_-_Paraben_Free.png, https://kyliecosmetics.com/cdn/shop/files/smudge-resistant-2_5618ebea-f5b8-4cbb-a5d4-713e2a19aa32.png, https://kyliecosmetics.com/cdn/shop/files/Circle_KC_Icons_-_Vegan.png",
         "shipping_text": "<p>free uk shipping on orders over £40. easy returns within 30 days.</p>"
+      }
+    },
+    "story_quote": {
+      "type": "kj-pdp-story",
+      "name": "Story: quote + how to",
+      "settings": {
+        "layout": "quote_howto",
+        "label": "from kylie",
+        "heading": "THE MOST COMFORTABLE AND LIGHTWEIGHT MATTE LIPSTICK",
+        "subheading": "how to use",
+        "text": "<p>apply to lips for a highly pigmented, soft-matte finish.</p>",
+        "image_1": "https://www.kyliecosmetics.com/cdn/shop/files/Matte-Lipstick_from-kylie_ee45c229-e7b1-4871-904b-ed4a58e48338.jpg",
+        "image_2": "https://www.kyliecosmetics.com/cdn/shop/files/custom_resized_f0815380-e63d-4899-bcf9-a5dfd43f7992.jpg",
+        "image_3": "https://www.kyliecosmetics.com/cdn/shop/files/custom_resized_f9d5d840-8650-42a8-a304-6c0e548e7fc6.jpg"
+      }
+    },
+    "story_benefits": {
+      "type": "kj-pdp-story",
+      "blocks": {
+        "b1": {
+          "type": "item",
+          "settings": {
+            "title": "highly pigmented formula",
+            "text": "delivers one-swipe color payoff."
+          }
+        },
+        "b2": {
+          "type": "item",
+          "settings": {
+            "title": "silky, non-drying texture",
+            "text": "effortlessly glides on the lips and evenly applies."
+          }
+        },
+        "b3": {
+          "type": "item",
+          "settings": {
+            "title": "hydrates lips for 8 hours",
+            "text": "formulated with hyaluronic acid (sodium hyaluronate)."
+          }
+        },
+        "b4": {
+          "type": "item",
+          "settings": {
+            "title": "soft-matte finish",
+            "text": "weightless and comfortable."
+          }
+        },
+        "b5": {
+          "type": "item",
+          "settings": {
+            "title": "color stays put",
+            "text": "doesn't settle into lines, feather or bleed."
+          }
+        }
+      },
+      "block_order": [
+        "b1",
+        "b2",
+        "b3",
+        "b4",
+        "b5"
+      ],
+      "name": "Story: why we love it",
+      "settings": {
+        "layout": "benefits",
+        "heading": "why we love it",
+        "image_1": "https://www.kyliecosmetics.com/cdn/shop/files/KJC_MATTE_AND_CREME_23_CP_Mix_08-res.jpg"
+      }
+    },
+    "story_routine": {
+      "type": "kj-pdp-story",
+      "blocks": {
+        "r1": {
+          "type": "item",
+          "settings": {
+            "title": "imperfection eraser",
+            "text": "high coverage + transfer-proof",
+            "product": "st-london-imperfection-eraser"
+          }
+        },
+        "r2": {
+          "type": "item",
+          "settings": {
+            "title": "dual wet & dry compact powder",
+            "text": "wet + dry application in one",
+            "product": "st-london-dual-wet-dry-compact-powder"
+          }
+        },
+        "r3": {
+          "type": "item",
+          "settings": {
+            "title": "sensual lips",
+            "text": "ultra pigmented + weightless feel",
+            "product": "st-london-sensual-lips"
+          }
+        },
+        "r4": {
+          "type": "item",
+          "settings": {
+            "title": "silk effect foundation",
+            "text": "satin finish + soft-focus effect",
+            "product": "st-london-silk-effect-foundation"
+          }
+        }
+      },
+      "block_order": [
+        "r1",
+        "r2",
+        "r3",
+        "r4"
+      ],
+      "name": "Story: build a routine",
+      "settings": {
+        "layout": "routine",
+        "heading": "build a routine"
+      }
+    },
+    "story_results": {
+      "type": "kj-pdp-story",
+      "blocks": {
+        "s1": {
+          "type": "item",
+          "settings": {
+            "title": "100% agree",
+            "text": "that the formula applies evenly on the lips."
+          }
+        },
+        "s2": {
+          "type": "item",
+          "settings": {
+            "title": "95% agree",
+            "text": "that the product has a silky feeling on the lips."
+          }
+        },
+        "s3": {
+          "type": "item",
+          "settings": {
+            "title": "100% agree",
+            "text": "that the texture is lightweight on the lips."
+          }
+        },
+        "s4": {
+          "type": "item",
+          "settings": {
+            "title": "95% agree",
+            "text": "that the lips appear softer."
+          }
+        },
+        "s5": {
+          "type": "item",
+          "settings": {
+            "title": "100% agree",
+            "text": "that the formula does not bleed."
+          }
+        },
+        "s6": {
+          "type": "item",
+          "settings": {
+            "title": "91% agree",
+            "text": "that the product is comfortable to wear."
+          }
+        },
+        "s7": {
+          "type": "item",
+          "settings": {
+            "title": "96% agree",
+            "text": "that the product provides full coverage on lips."
+          }
+        },
+        "s8": {
+          "type": "item",
+          "settings": {
+            "title": "82% agree",
+            "text": "that the product blurs the fine lines of the lips."
+          }
+        }
+      },
+      "block_order": [
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5",
+        "s6",
+        "s7",
+        "s8"
+      ],
+      "name": "Story: real results",
+      "settings": {
+        "layout": "results",
+        "heading": "REAL RESULTS",
+        "text": "<p>*use test conducted with 22 women between 20 and 39 years. product use for 3 weeks.</p>",
+        "image_1": "https://www.kyliecosmetics.com/cdn/shop/files/KJC_MATTE_23_Model_Blushing_Babe_02_WS.jpg"
       }
     },
     "kj_recs": {
@@ -35,14 +229,51 @@
     "kj_ig": {
       "type": "kj-instagram-grid",
       "blocks": {
-        "post_1": { "type": "post", "settings": { "image": "shopify://shop_images/kj-ig-1.jpg" } },
-        "post_2": { "type": "post", "settings": { "image": "shopify://shop_images/kj-ig-2.jpg" } },
-        "post_3": { "type": "post", "settings": { "image": "shopify://shop_images/kj-ig-3.jpg" } },
-        "post_4": { "type": "post", "settings": { "image": "shopify://shop_images/kj-ig-4.jpg" } },
-        "post_5": { "type": "post", "settings": { "image": "shopify://shop_images/kj-ig-5.jpg" } },
-        "post_6": { "type": "post", "settings": { "image": "shopify://shop_images/kj-ig-6.jpg" } }
+        "post_1": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-1.jpg"
+          }
+        },
+        "post_2": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-2.jpg"
+          }
+        },
+        "post_3": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-3.jpg"
+          }
+        },
+        "post_4": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-4.jpg"
+          }
+        },
+        "post_5": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-5.jpg"
+          }
+        },
+        "post_6": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-6.jpg"
+          }
+        }
       },
-      "block_order": ["post_1", "post_2", "post_3", "post_4", "post_5", "post_6"],
+      "block_order": [
+        "post_1",
+        "post_2",
+        "post_3",
+        "post_4",
+        "post_5",
+        "post_6"
+      ],
       "name": "KJ Instagram Grid",
       "settings": {
         "heading": "SHOP OUR IG",
@@ -57,6 +288,10 @@
   },
   "order": [
     "main",
+    "story_quote",
+    "story_benefits",
+    "story_routine",
+    "story_results",
     "kj_recs",
     "kj_ig"
   ]

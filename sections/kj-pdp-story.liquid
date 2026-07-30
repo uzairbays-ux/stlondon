@@ -1,0 +1,401 @@
+{%- comment -%}
+  Kylie-style PDP story cards. One section, four layouts:
+  - quote_howto: banner image with label + big quote | card with 2 images + how-to text
+  - benefits:    card with titled feature list | image
+  - routine:     card with 2x2 product cross-sell rows
+  - results:     band with image + "N% agree" stat grid
+{%- endcomment -%}
+
+{%- assign layout = section.settings.layout -%}
+
+<div class="kj-story kj-story--{{ layout }}" id="kj-story-{{ section.id }}">
+  <div class="kj-story-container">
+
+    {%- if layout == 'quote_howto' -%}
+      <div class="kj-story-split kj-story-split--40-60">
+        <div class="kj-story-banner" {% if section.settings.image_1 != blank %}style="background-image: url('{{ section.settings.image_1 }}');"{% endif %}>
+          {%- if section.settings.label != blank -%}
+            <span class="kj-story-label">{{ section.settings.label }}</span>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="kj-story-quote">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+        </div>
+        <div class="kj-story-card">
+          <div class="kj-story-imgpair">
+            {%- if section.settings.image_2 != blank -%}<img src="{{ section.settings.image_2 }}" alt="" loading="lazy">{%- endif -%}
+            {%- if section.settings.image_3 != blank -%}<img src="{{ section.settings.image_3 }}" alt="" loading="lazy">{%- endif -%}
+          </div>
+          {%- if section.settings.subheading != blank -%}
+            <h3 class="kj-story-heading">{{ section.settings.subheading }}</h3>
+          {%- endif -%}
+          {%- if section.settings.text != blank -%}
+            <div class="kj-story-text">{{ section.settings.text }}</div>
+          {%- endif -%}
+        </div>
+      </div>
+
+    {%- elsif layout == 'benefits' -%}
+      <div class="kj-story-split kj-story-split--50-50">
+        <div class="kj-story-card">
+          {%- if section.settings.heading != blank -%}
+            <h3 class="kj-story-heading">{{ section.settings.heading }}</h3>
+          {%- endif -%}
+          <div class="kj-story-benefits">
+            {%- for block in section.blocks -%}
+              <div class="kj-story-benefit" {{ block.shopify_attributes }}>
+                <h4>{{ block.settings.title }}</h4>
+                {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+        <div class="kj-story-media">
+          {%- if section.settings.image_1 != blank -%}
+            <img src="{{ section.settings.image_1 }}" alt="" loading="lazy">
+          {%- endif -%}
+        </div>
+      </div>
+
+    {%- elsif layout == 'routine' -%}
+      <div class="kj-story-card kj-story-card--full">
+        {%- if section.settings.heading != blank -%}
+          <h3 class="kj-story-heading">{{ section.settings.heading }}</h3>
+        {%- endif -%}
+        <div class="kj-story-routine">
+          {%- for block in section.blocks -%}
+            {%- assign rp = block.settings.product -%}
+            <div class="kj-story-routine-item" {{ block.shopify_attributes }}>
+              <div class="kj-story-routine-img">
+                {%- if rp.featured_image != blank -%}
+                  <img src="{{ rp.featured_image | image_url: width: 300 }}" alt="{{ rp.title | escape }}" loading="lazy">
+                {%- elsif block.settings.image_url != blank -%}
+                  <img src="{{ block.settings.image_url }}" alt="" loading="lazy">
+                {%- endif -%}
+              </div>
+              <div class="kj-story-routine-info">
+                <h4>{{ block.settings.title | default: rp.title | downcase }}</h4>
+                {%- if block.settings.text != blank -%}<p>{{ block.settings.text }}</p>{%- endif -%}
+                <a href="{{ rp.url | default: '#' }}" class="kj-story-outline-btn">select shade</a>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+    {%- elsif layout == 'results' -%}
+      <div class="kj-story-results">
+        {%- if section.settings.heading != blank -%}
+          <h2 class="kj-story-results-heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        <div class="kj-story-split kj-story-split--50-50">
+          <div class="kj-story-media">
+            {%- if section.settings.image_1 != blank -%}
+              <img src="{{ section.settings.image_1 }}" alt="" loading="lazy">
+            {%- endif -%}
+          </div>
+          <div class="kj-story-stats">
+            {%- for block in section.blocks -%}
+              <div class="kj-story-stat" {{ block.shopify_attributes }}>
+                <h4>{{ block.settings.title }}</h4>
+                <p>{{ block.settings.text }}</p>
+              </div>
+            {%- endfor -%}
+            {%- if section.settings.text != blank -%}
+              <div class="kj-story-footnote">{{ section.settings.text }}</div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<style>
+  .kj-story {
+    background: #F8F5F2;
+    padding: 14px 0;
+  }
+
+  .kj-story-container {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .kj-story-split {
+    display: grid;
+    gap: 18px;
+    align-items: stretch;
+  }
+
+  .kj-story-split--40-60 { grid-template-columns: 1fr 1.4fr; }
+  .kj-story-split--50-50 { grid-template-columns: 1fr 1fr; }
+
+  .kj-story-banner {
+    border-radius: 10px;
+    background-size: cover;
+    background-position: center;
+    background-color: #E8DED2;
+    min-height: 420px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .kj-story-label {
+    color: #fff;
+    font-weight: 600;
+    text-transform: lowercase;
+    font-size: 15px;
+  }
+
+  .kj-story-quote {
+    font-family: var(--font-heading--family);
+    color: #fff;
+    font-size: clamp(24px, 2.6vw, 38px);
+    font-weight: 700;
+    text-transform: uppercase;
+    line-height: 1.15;
+    margin: 0;
+    max-width: 420px;
+  }
+
+  .kj-story-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 26px;
+  }
+
+  .kj-story-card--full { width: 100%; }
+
+  .kj-story-imgpair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .kj-story-imgpair img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .kj-story-heading {
+    font-family: var(--font-heading--family);
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin: 0 0 10px;
+    color: #222222;
+  }
+
+  .kj-story-text {
+    font-size: 14px;
+    color: #5F5F5F;
+    line-height: 1.6;
+  }
+
+  .kj-story-benefits {
+    margin-top: 18px;
+  }
+
+  .kj-story-benefit { margin-bottom: 18px; }
+
+  .kj-story-benefit h4 {
+    font-family: var(--font-heading--family);
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin: 0 0 4px;
+    color: #222222;
+  }
+
+  .kj-story-benefit p {
+    font-size: 13px;
+    color: #5F5F5F;
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .kj-story-media {
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .kj-story-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .kj-story-routine {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px 46px;
+    margin-top: 18px;
+  }
+
+  .kj-story-routine-item {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .kj-story-routine-img {
+    width: 150px;
+    flex: 0 0 150px;
+    aspect-ratio: 1 / 1;
+    background: #F0EDEA;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .kj-story-routine-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .kj-story-routine-info h4 {
+    font-family: var(--font-heading--family);
+    font-size: 17px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin: 4px 0 6px;
+    color: #222222;
+  }
+
+  .kj-story-routine-info p {
+    font-size: 13px;
+    color: #5F5F5F;
+    margin: 0 0 16px;
+  }
+
+  .kj-story-outline-btn {
+    display: inline-block;
+    border: 1px solid #91715B;
+    color: #91715B;
+    background: transparent;
+    font-size: 13px;
+    text-transform: lowercase;
+    text-decoration: none;
+    padding: 9px 20px;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .kj-story-outline-btn:hover {
+    background: #91715B;
+    color: #fff;
+  }
+
+  .kj-story-results {
+    background: #E8DED2;
+    border-radius: 10px;
+    padding: 34px;
+  }
+
+  .kj-story-results-heading {
+    font-family: var(--font-heading--family);
+    color: #91715B;
+    font-size: 26px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 0 22px;
+  }
+
+  .kj-story-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 40px;
+    align-content: center;
+  }
+
+  .kj-story-stat {
+    border-bottom: 1px solid #DDD2C8;
+    padding: 10px 0 12px;
+  }
+
+  .kj-story-stat h4 {
+    font-family: var(--font-heading--family);
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0 0 3px;
+    color: #222222;
+  }
+
+  .kj-story-stat p {
+    font-size: 13px;
+    color: #5F5F5F;
+    margin: 0;
+  }
+
+  .kj-story-footnote {
+    grid-column: 1 / -1;
+    font-size: 11px;
+    color: #8C8C8C;
+    padding-top: 10px;
+  }
+
+  @media screen and (max-width: 899px) {
+    .kj-story-split--40-60,
+    .kj-story-split--50-50,
+    .kj-story-routine,
+    .kj-story-stats {
+      grid-template-columns: 1fr;
+    }
+    .kj-story-banner { min-height: 300px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ PDP Story",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "quote_howto", "label": "Quote banner + how to use" },
+        { "value": "benefits", "label": "Benefits list + image" },
+        { "value": "routine", "label": "Build a routine" },
+        { "value": "results", "label": "Real results stats" }
+      ],
+      "default": "benefits"
+    },
+    { "type": "text", "id": "label", "label": "Small Label (quote layout)" },
+    { "type": "text", "id": "heading", "label": "Heading / Quote" },
+    { "type": "text", "id": "subheading", "label": "Subheading (quote layout right card)" },
+    { "type": "richtext", "id": "text", "label": "Text / Footnote" },
+    { "type": "text", "id": "image_1", "label": "Image 1 URL (banner / side image)" },
+    { "type": "text", "id": "image_2", "label": "Image 2 URL (how-to left)" },
+    { "type": "text", "id": "image_3", "label": "Image 3 URL (how-to right)" }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title / Percent" },
+        { "type": "text", "id": "text", "label": "Text" },
+        { "type": "product", "id": "product", "label": "Product (routine layout)" },
+        { "type": "text", "id": "image_url", "label": "Image URL fallback (routine layout)" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    { "name": "KJ PDP Story" }
+  ]
+}
+{% endschema %}
