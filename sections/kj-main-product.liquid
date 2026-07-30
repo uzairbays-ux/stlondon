@@ -101,10 +101,21 @@
           </p>
 
           <!-- Shade dropdown -->
+          {%- comment -%} Chip shows the real shade color: center-crop of the shade's swatch-smear photo when one exists. {%- endcomment -%}
+          {%- assign current_chip = current_variant.featured_image -%}
+          {%- for media in product.media -%}
+            {%- if media.media_type == 'image' and media.alt == current_variant.title -%}
+              {%- assign msrc = media.preview_image.src | default: '' -%}
+              {%- if msrc contains 'LipMacro' or msrc contains 'lipmacro' -%}
+                {%- assign current_chip = media.preview_image -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
           <div class="kj-pdp-dropdown">
             <span class="kj-pdp-dropdown-chip">
-              {%- if current_variant.featured_image != blank -%}
-                <img src="{{ current_variant.featured_image | image_url: width: 56, height: 56, crop: 'center' }}" alt="" width="28" height="28" data-kj-pdp-chip>
+              {%- if current_chip != blank -%}
+                <img src="{{ current_chip | image_url: width: 56, height: 56, crop: 'center' }}" alt="" width="28" height="28" data-kj-pdp-chip>
               {%- endif -%}
             </span>
             <select data-kj-pdp-select aria-label="{{ product.options.first | escape }}">
@@ -144,6 +155,16 @@
                   {%- endfor -%}
                 {%- endif -%}
               {%- endfor -%}
+              {%- assign v_chip = variant.featured_image -%}
+              {%- for media in product.media -%}
+                {%- if media.media_type == 'image' and media.alt == variant.title -%}
+                  {%- assign msrc = media.preview_image.src | default: '' -%}
+                  {%- if msrc contains 'LipMacro' or msrc contains 'lipmacro' -%}
+                    {%- assign v_chip = media.preview_image -%}
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
               <button
                 type="button"
                 class="kj-pdp-swatch{% if variant == current_variant %} kj-pdp-swatch--active{% endif %}"
@@ -153,12 +174,13 @@
                 data-price="{{ variant.price | money }}"
                 data-available="{{ variant.available }}"
                 data-family="{{ v_family }}"
-                {% if variant.featured_image != blank %}data-image="{{ variant.featured_image | image_url: width: 1400 }}" data-chip="{{ variant.featured_image | image_url: width: 56, height: 56, crop: 'center' }}"{% endif %}
+                {% if variant.featured_image != blank %}data-image="{{ variant.featured_image | image_url: width: 1400 }}"{% endif %}
+                {% if v_chip != blank %}data-chip="{{ v_chip | image_url: width: 56, height: 56, crop: 'center' }}"{% endif %}
                 aria-label="{{ variant.title | escape }}"
                 {% unless variant.available %}data-soldout="true"{% endunless %}
               >
-                {%- if variant.featured_image != blank -%}
-                  <img src="{{ variant.featured_image | image_url: width: 56, height: 56, crop: 'center' }}" alt="" width="28" height="28" loading="lazy">
+                {%- if v_chip != blank -%}
+                  <img src="{{ v_chip | image_url: width: 56, height: 56, crop: 'center' }}" alt="" width="28" height="28" loading="lazy">
                 {%- else -%}
                   <span class="kj-pdp-swatch-blank"></span>
                 {%- endif -%}
@@ -547,6 +569,17 @@
     border-radius: 50%;
     object-fit: cover;
     background: #eee;
+    transform: scale(1.8); /* zoom into the lip center so the chip reads as pure shade color */
+  }
+
+  .kj-pdp-dropdown-chip img {
+    transform: scale(1.8);
+  }
+
+  .kj-pdp-swatch,
+  .kj-pdp-dropdown-chip {
+    overflow: hidden;
+    border-radius: 50%;
   }
 
   .kj-pdp-swatch--active {

@@ -21,8 +21,21 @@
                   <svg class="kj-icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                   <svg class="kj-icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
                 </button>
+              {%- elsif block.settings.external_video_url != blank -%}
+                <video
+                  class="kj-video-el"
+                  src="{{ block.settings.external_video_url }}"
+                  {% if block.settings.external_poster_url != blank %}poster="{{ block.settings.external_poster_url }}"{% endif %}
+                  loop muted playsinline preload="metadata"
+                ></video>
+                <button type="button" class="kj-video-play" aria-label="Play video">
+                  <svg class="kj-icon-play" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                  <svg class="kj-icon-pause" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+                </button>
               {%- elsif block.settings.cover_image != blank -%}
                 <img src="{{ block.settings.cover_image | image_url: width: 600 }}" alt="{{ block.settings.cover_image.alt | escape }}" class="kj-video-el" loading="lazy" width="600" height="{{ 600 | divided_by: block.settings.cover_image.aspect_ratio | round }}">
+              {%- elsif block.settings.external_poster_url != blank -%}
+                <img src="{{ block.settings.external_poster_url }}" alt="" class="kj-video-el" loading="lazy" width="600" height="1000">
               {%- else -%}
                 {{ 'lifestyle-1' | placeholder_svg_tag: 'kj-video-placeholder' }}
               {%- endif -%}
@@ -303,6 +316,16 @@
           "type": "video",
           "id": "video",
           "label": "Video"
+        },
+        {
+          "type": "text",
+          "id": "external_video_url",
+          "label": "External Video URL (mp4)"
+        },
+        {
+          "type": "text",
+          "id": "external_poster_url",
+          "label": "External Poster URL"
         },
         {
           "type": "image_picker",

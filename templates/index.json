@@ -145,30 +145,40 @@
         "video_1": {
           "type": "video",
           "settings": {
+            "external_video_url": "https://cdn.shopify.com/videos/c/o/v/4ce4d8dfde4943389c2dc976ce0ccf95.mp4",
+            "external_poster_url": "",
             "product": ""
           }
         },
         "video_2": {
           "type": "video",
           "settings": {
+            "external_video_url": "",
+            "external_poster_url": "https://cdn6.fireworktv.com/medias/2025/4/2/1743623565-aridzock/transcoded/720x1200/bellakrys_cosmic2_paid.jpg.62.webp",
             "product": ""
           }
         },
         "video_3": {
           "type": "video",
           "settings": {
+            "external_video_url": "",
+            "external_poster_url": "https://cdn6.fireworktv.com/medias/2024/4/25/1714061420-rhjincyx/transcoded/720x1200/carolinemstern_COSMIC-1714061505758.jpg.62.webp",
             "product": ""
           }
         },
         "video_4": {
           "type": "video",
           "settings": {
+            "external_video_url": "",
+            "external_poster_url": "https://cdn4.fireworktv.com/medias/2025/4/2/1743623847-irhmjsdz/transcoded/720x1200/mirandawillcry_cosmic2_ugc_paid.jpg.62.webp",
             "product": ""
           }
         },
         "video_XyHPQG": {
           "type": "video",
           "settings": {
+            "external_video_url": "",
+            "external_poster_url": "https://cdn3.fireworktv.com/medias/2025/2/26/1740614069-lsbnmazt/transcoded/720x1200/cosmic_2.0_vvmanley.jpg.62.webp",
             "product": ""
           }
         }
