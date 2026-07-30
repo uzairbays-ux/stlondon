@@ -8,6 +8,14 @@
       {%- if section.settings.subheading != blank -%}
         <p class="kj-videos-subheading" style="color: {{ section.settings.text_color }};">{{ section.settings.subheading }}</p>
       {%- endif -%}
+      <div class="kj-videos-arrows">
+        <button type="button" class="kj-video-arrow" data-kj-vprev aria-label="Previous videos">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button type="button" class="kj-video-arrow" data-kj-vnext aria-label="Next videos">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
     </div>
 
     <div class="kj-videos-track-wrap">
@@ -73,13 +81,17 @@
 
 <script>
   (function () {
-    var root = document.getElementById('kj-videos-{{ section.id }}');
-    if (!root) return;
-    root.querySelectorAll('.kj-video-card').forEach(function (card) {
-      var video = card.querySelector('video');
-      var btn = card.querySelector('.kj-video-play');
-      if (!video || !btn) return;
-      btn.addEventListener('click', function () {
+    /* Delegated at document level: survives theme DOM morphing. */
+    if (window.__kjVideosDelegated) return;
+    window.__kjVideosDelegated = true;
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.kj-video-play');
+      if (btn) {
+        var card = btn.closest('.kj-video-card');
+        var root = btn.closest('.kj-video-carousel');
+        var video = card.querySelector('video');
+        if (!video) return;
         if (video.paused) {
           root.querySelectorAll('video').forEach(function (v) {
             if (v !== video) { v.pause(); v.closest('.kj-video-card').classList.remove('kj-video-playing'); }
@@ -90,7 +102,19 @@
           video.pause();
           card.classList.remove('kj-video-playing');
         }
-      });
+        return;
+      }
+
+      var arrow = e.target.closest('[data-kj-vprev], [data-kj-vnext]');
+      if (arrow) {
+        var carousel = arrow.closest('.kj-video-carousel');
+        var track = carousel.querySelector('.kj-videos-track-wrap');
+        if (!track) return;
+        var firstCard = track.querySelector('.kj-video-card');
+        var step = firstCard ? firstCard.getBoundingClientRect().width + 16 : 260;
+        var dir = arrow.hasAttribute('data-kj-vprev') ? -1 : 1;
+        track.scrollBy({ left: dir * step, behavior: 'smooth' });
+      }
     });
   })();
 </script>
@@ -103,8 +127,43 @@
   }
 
   .kj-videos-header {
+    position: relative;
     text-align: center;
     margin-bottom: 30px;
+  }
+
+  .kj-videos-arrows {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 8px;
+  }
+
+  .kj-video-arrow {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #000;
+    background: transparent;
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .kj-video-arrow:hover {
+    background: #000;
+    color: #fff;
+  }
+
+  @media screen and (max-width: 767px) {
+    .kj-videos-arrows {
+      display: none;
+    }
   }
 
   .kj-videos-heading {
