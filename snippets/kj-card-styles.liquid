@@ -278,6 +278,51 @@
 
 <script>
   (function () {
+    /* AJAX add-to-cart for kj forms: add via /cart/add with a rendered
+       cart-drawer section, swap it in, and open the drawer — instead of
+       the native POST that hard-redirects to the cart page. */
+    if (!window.__kjAjaxCart) {
+      window.__kjAjaxCart = true;
+      document.addEventListener('submit', function (e) {
+        var form = e.target.closest('form.kj-card-add-form, form#kj-product-form');
+        if (!form) return;
+        e.preventDefault();
+        var btn = form.querySelector('button[type="submit"]');
+        var label = btn ? btn.innerHTML : '';
+        if (btn) { btn.disabled = true; btn.innerHTML = 'adding…'; }
+        var fd = new FormData(form);
+        fd.append('sections', 'cart-drawer-section');
+        fetch('/cart/add', {
+          method: 'POST',
+          body: fd,
+          headers: { 'Accept': 'application/javascript', 'X-Requested-With': 'XMLHttpRequest' }
+        })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            if (data.status) throw new Error(data.description || 'add failed');
+            var holder = document.getElementById('shopify-section-cart-drawer-section');
+            if (data.sections && data.sections['cart-drawer-section'] && holder) {
+              holder.outerHTML = data.sections['cart-drawer-section'];
+            }
+            var drawer = document.querySelector('#shopify-section-cart-drawer-section theme-drawer') ||
+                         document.querySelector('cart-drawer-component theme-drawer');
+            if (drawer && typeof drawer.open === 'function') {
+              drawer.open();
+            } else if (drawer) {
+              drawer.setAttribute('open', '');
+            }
+          })
+          .catch(function () {
+            /* fall back to the native flow so the add still happens */
+            form.removeAttribute('data-kj-ajax');
+            form.submit();
+          })
+          .finally(function () {
+            if (btn) { btn.disabled = false; btn.innerHTML = label; }
+          });
+      });
+    }
+
     /* Card shade dots: click swaps the card image to that variant (delegated). */
     if (window.__kjCardDots) return;
     window.__kjCardDots = true;
