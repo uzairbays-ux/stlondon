@@ -45,10 +45,10 @@
     <div class="kj-product-info" style="color: {{ text_color }};">
       {%- if product.variants.size > 1 -%}
         {%- assign dot_count = 0 -%}
-        <div class="kj-swatch-row">
+        <div class="kj-swatch-row kj-card-dots">
           {%- for variant in product.variants -%}
             {%- if variant.featured_image != blank and dot_count < 5 -%}
-              <span class="kj-swatch"><img src="{{ variant.featured_image | image_url: width: 40, height: 40, crop: 'center' }}" alt="" width="20" height="20" loading="lazy"></span>
+              <span class="kj-swatch"><img src="{{ variant.featured_image | image_url: width: 60, height: 60, crop: 'center' }}" alt="" width="20" height="20" loading="lazy"></span>
               {%- assign dot_count = dot_count | plus: 1 -%}
             {%- endif -%}
           {%- endfor -%}
@@ -85,14 +85,16 @@
     </div>
   </a>
 
-  <form action="{{ routes.cart_add_url }}" method="post" class="kj-card-add-form">
-    <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
-    <button type="submit" class="kj-card-add" {% unless product.available %}disabled{% endunless %}>
-      {%- if product.available -%}
-        add to cart - {{ product.price | money }}
-      {%- else -%}
-        sold out
-      {%- endif -%}
-    </button>
-  </form>
+  <div class="kj-card-reveal">
+    <form action="{{ routes.cart_add_url }}" method="post" class="kj-card-add-form">
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+      <button type="submit" class="kj-card-add" {% unless product.available %}disabled{% endunless %}>
+        {%- if product.available -%}
+          add to cart - {{ product.price | money }}
+        {%- else -%}
+          sold out
+        {%- endif -%}
+      </button>
+    </form>
+  </div>
 </div>

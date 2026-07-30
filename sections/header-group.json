@@ -94,7 +94,7 @@
         "show_language": true,
         "localization_font": "heading",
         "localization_font_size": "1rem",
-        "localization_position": "right",
+        "localization_position": "left",
         "localization_row": "top",
         "section_width": "full-width",
         "section_height": "standard",
