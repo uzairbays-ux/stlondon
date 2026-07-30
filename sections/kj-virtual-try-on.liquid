@@ -1,3 +1,12 @@
+<style>
+  .kj-vto-wrapper {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    background: transparent !important;
+  }
+</style>
 <div class="virtual-try-on-section" id="vto-section-{{ section.id }}" style="text-align: center; margin: 0; padding: 70px 20px; background-color: {{ section.settings.bg_color | default: '#f7efef' }};">
   {% if section.settings.heading != blank %}
     <h2 class="h2">{{ section.settings.heading }}</h2>
@@ -336,7 +345,7 @@
 {
   "name": "KJ Virtual Try-On",
   "tag": "section",
-  "class": "section",
+  "class": "kj-vto-wrapper",
   "settings": [
     {
       "type": "color",
