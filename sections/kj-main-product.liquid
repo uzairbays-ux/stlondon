@@ -17,7 +17,9 @@
 <div class="kj-pdp" id="kj-pdp-{{ section.id }}" data-has-shade-media="{{ has_shade_media }}">
   <div class="kj-pdp-container">
 
-    <!-- Thumbnail rail -->
+    <!-- Gallery group: thumbnail rail + main image as one unit -->
+    <div class="kj-pdp-gallery-group">
+
     <div class="kj-pdp-thumbs" data-kj-thumbs>
       {%- for media in product.media -%}
         {%- if media.media_type == 'image' -%}
@@ -50,6 +52,8 @@
       {%- else -%}
         {{ 'product-1' | placeholder_svg_tag: 'kj-pdp-placeholder' }}
       {%- endif -%}
+    </div>
+
     </div>
 
     <!-- Info rail -->
@@ -358,8 +362,8 @@
 
 <style>
   .kj-pdp {
-    /* Brand premium gradient from the ST London palette */
-    background: linear-gradient(180deg, #FCFAF8 0%, #F8F5F2 40%, #F2ECE5 100%);
+    /* Brand premium gradient from the ST London palette (reversed: sand at top) */
+    background: linear-gradient(180deg, #F2ECE5 0%, #F8F5F2 60%, #FCFAF8 100%);
   }
 
   .kj-pdp-container {
@@ -367,10 +371,20 @@
     margin: 0 auto;
     padding: 30px 20px 70px;
     display: grid;
-    /* 50/50: main image column equals the info column */
-    grid-template-columns: 84px minmax(0, 1fr) minmax(0, 1fr);
+    /* 50/50: gallery group | info */
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 28px;
     align-items: start;
+  }
+
+  .kj-pdp-gallery-group {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .kj-pdp-gallery-group .kj-pdp-main-media {
+    flex: 1;
   }
 
   .kj-pdp-thumbs {
@@ -748,14 +762,20 @@
       gap: 20px;
       padding-top: 12px;
     }
+    .kj-pdp-gallery-group {
+      flex-direction: column;
+    }
     .kj-pdp-thumbs {
       order: 2;
       flex-direction: row;
       max-height: none;
       overflow-x: auto;
+      width: 100%;
     }
-    .kj-pdp-main-media { order: 1; }
-    .kj-pdp-info { order: 3; }
+    .kj-pdp-main-media {
+      order: 1;
+      width: 100%;
+    }
   }
 </style>
 
@@ -789,7 +809,7 @@
     {
       "type": "textarea",
       "id": "benefit_icons",
-      "label": "Benefit icon image URLs (comma separated, cycled; blank = built-in glyphs)"
+      "label": "Benefit icon URLs (comma separated; blank = built-in)"
     },
     {
       "type": "richtext",
