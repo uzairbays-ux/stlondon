@@ -25,9 +25,9 @@
       "name": "KJ Recommendations",
       "settings": {
         "heading": "YOU MAY ALSO LIKE",
-        "heading_color": "#b0697a",
+        "heading_color": "#91715B",
         "limit": 4,
-        "bg_color": "#f7efef",
+        "bg_color": "#F8F5F2",
         "padding_top": 60,
         "padding_bottom": 60
       }

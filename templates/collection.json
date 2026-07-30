@@ -14,8 +14,8 @@
       "name": "KJ Main Collection",
       "settings": {
         "products_per_page": 24,
-        "heading_color": "#b0697a",
-        "bg_color": "#f7efef",
+        "heading_color": "#91715B",
+        "bg_color": "#F8F5F2",
         "text_color": "#000000"
       }
     }

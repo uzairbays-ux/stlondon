@@ -7,7 +7,7 @@
   .kj-product-card {
     position: relative;
     background: #ffffff;
-    border: 1px solid #ece4e4;
+    border: 1px solid #DDD2C8;
     border-radius: 8px;
   }
 
@@ -107,7 +107,7 @@
     height: 20px;
     border-radius: 50%;
     overflow: hidden;
-    border: 1px solid #e2d5d5;
+    border: 1px solid #DDD2C8;
   }
 
   .kj-swatch img {
@@ -115,7 +115,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(5); /* deep zoom → dot reads as a solid shade color like the reference */
+    transform: scale(2.4); /* zoom toward product color; scale(5) hit blank white on product-on-white shots */
   }
 
   .kj-swatch-row {
@@ -128,16 +128,16 @@
   }
 
   /* Reference hover: card height is FIXED; this panel overlays the info area
-     (anchored at image bottom via margin-top:110% of card width, since the
-     image is locked to aspect 1/1.1) and expands downward over what follows. */
+     (anchored at image bottom via margin-top:100% of card width, since the
+     image is locked to aspect 1/1) and expands downward over what follows. */
   .kj-card-hover-panel {
     position: absolute;
     top: 0;
     left: -1px;
     right: -1px;
-    margin-top: 110%;
+    margin-top: 100%;
     background: #ffffff;
-    border: 1px solid #ece4e4;
+    border: 1px solid #DDD2C8;
     border-top: none;
     border-radius: 0 0 8px 8px;
     padding: 12px 14px 14px;
@@ -168,7 +168,7 @@
   .kj-card-add {
     font-family: var(--font-heading--family);
     width: 100%;
-    background: #3a3a3a;
+    background: #91715B;
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -181,7 +181,7 @@
     transition: background 0.2s ease;
   }
 
-  .kj-card-add:hover:not(:disabled) { background: #191919; }
+  .kj-card-add:hover:not(:disabled) { background: #6F5545; }
   .kj-card-add:disabled { background: #999; cursor: not-allowed; }
 
   .kj-product-info {
@@ -200,7 +200,7 @@
 
   .kj-star {
     font-size: 12px;
-    color: #d8c8c8;
+    color: #DDD2C8;
   }
 
   .kj-star--filled {

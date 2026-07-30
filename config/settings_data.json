@@ -81,11 +81,11 @@
     "popover_border": "none",
     "content_for_index": [],
     "color_palette": {
-      "background": "#ffffff",
-      "foreground": "#000000",
-      "color1": "#333333",
-      "color2": "#fce1e8",
-      "color3": "#DFDFDF"
+      "background": "#F8F5F2",
+      "foreground": "#222222",
+      "color1": "#91715B",
+      "color2": "#E8DED2",
+      "color3": "#DDD2C8"
     }
   },
   "presets": {

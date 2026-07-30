@@ -38,13 +38,13 @@
       "name": "KJ Split Editorial",
       "settings": {
         "heading": "THE SUMMER LOOK",
-        "heading_color": "#b0697a",
+        "heading_color": "#91715B",
         "text": "<p>recreate this flushed and contoured summer look featuring our best-selling blush and lip liner.</p>",
         "button_text": "shop now",
         "button_link": "/",
         "image": "shopify://shop_images/kj-ig-1.jpg",
         "media_side": "right",
-        "bg_color": "#f7efef",
+        "bg_color": "#F8F5F2",
         "card_bg": "#ffffff",
         "padding_top": 40,
         "padding_bottom": 40
@@ -72,8 +72,8 @@
         "shop_all_link": "/collections/best-seller",
         "product_limit": 4,
         "show_secondary_image": true,
-        "bg_color": "#f7efef",
-        "heading_color": "#b0697a",
+        "bg_color": "#F8F5F2",
+        "heading_color": "#91715B",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -89,7 +89,7 @@
         "overlay_color": "#000000",
         "overlay_opacity": 0,
         "text_alignment": "left",
-        "text_color": "#b0697a",
+        "text_color": "#91715B",
         "eyebrow": "",
         "heading": "SUMMER FAVES",
         "subheading": "discover the go-tos this summer.",
@@ -110,8 +110,8 @@
         "shop_all_link": "",
         "product_limit": 8,
         "show_secondary_image": true,
-        "bg_color": "#f7efef",
-        "heading_color": "#b0697a",
+        "bg_color": "#F8F5F2",
+        "heading_color": "#91715B",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -195,7 +195,7 @@
         "heading": "AS SEEN ON SOCIAL",
         "subheading": "",
         "bg_color": "#ffffff",
-        "heading_color": "#b0697a",
+        "heading_color": "#91715B",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -264,8 +264,8 @@
       "name": "KJ Shop by Category",
       "settings": {
         "heading": "SHOP BY CATEGORY",
-        "bg_color": "#f7efef",
-        "heading_color": "#b0697a",
+        "bg_color": "#F8F5F2",
+        "heading_color": "#91715B",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -342,8 +342,8 @@
         "heading": "SHOP OUR IG",
         "handle_text": "@stlondon",
         "handle_link": "",
-        "bg_color": "#f7efef",
-        "heading_color": "#b0697a",
+        "bg_color": "#F8F5F2",
+        "heading_color": "#91715B",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
