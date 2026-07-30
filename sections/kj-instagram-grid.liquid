@@ -19,7 +19,9 @@
           {{ block.shopify_attributes }}
         >
           {%- if block.settings.image != blank -%}
-            <img src="{{ block.settings.image | image_url: width: 600 }}" alt="{{ block.settings.image.alt | escape }}" class="kj-ig-img" loading="lazy" width="600" height="{{ 600 | divided_by: block.settings.image.aspect_ratio | round }}">
+            <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.image.alt | escape }}" class="kj-ig-img" loading="lazy" width="800" height="{{ 800 | divided_by: block.settings.image.aspect_ratio | round }}">
+          {%- elsif block.settings.external_image_url != blank -%}
+            <img src="{{ block.settings.external_image_url }}" alt="" class="kj-ig-img" loading="lazy">
           {%- else -%}
             {{ 'image' | placeholder_svg_tag: 'kj-ig-placeholder' }}
           {%- endif -%}
@@ -69,10 +71,10 @@
     text-decoration: underline;
   }
 
-  /* Mosaic like the reference: first tile spans 2x2, smaller squares pack around it */
+  /* Mosaic like the reference: 5 columns, big 2x2 top-left and bottom-right */
   .kj-ig-tiles {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     grid-auto-flow: dense;
     gap: 12px;
   }
@@ -86,7 +88,8 @@
     border-radius: 6px;
   }
 
-  .kj-ig-tile:first-child {
+  .kj-ig-tile:first-child,
+  .kj-ig-tile:nth-child(11) {
     grid-column: span 2;
     grid-row: span 2;
   }
@@ -204,6 +207,11 @@
           "label": "Image"
         },
         {
+          "type": "text",
+          "id": "external_image_url",
+          "label": "External Image URL (fallback)"
+        },
+        {
           "type": "url",
           "id": "link",
           "label": "Link (product or Instagram post)"
@@ -211,7 +219,7 @@
       ]
     }
   ],
-  "max_blocks": 12,
+  "max_blocks": 20,
   "presets": [
     {
       "name": "KJ Instagram Grid",

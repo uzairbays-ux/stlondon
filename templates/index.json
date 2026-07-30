@@ -286,56 +286,114 @@
     "kj_instagram_grid_1": {
       "type": "kj-instagram-grid",
       "blocks": {
-        "post_1": {
+        "p01": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/kj-ig-1.jpg",
-            "link": ""
+            "image": "shopify://shop_images/kj-spotlight-2.jpg",
+            "external_image_url": ""
           }
         },
-        "post_2": {
+        "p02": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/kj-ig-2.jpg",
-            "link": ""
+            "external_image_url": "https://cdn6.fireworktv.com/medias/2025/4/2/1743623565-aridzock/transcoded/720x1200/bellakrys_cosmic2_paid.jpg.62.webp"
           }
         },
-        "post_3": {
+        "p03": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/kj-ig-3.jpg",
-            "link": ""
+            "external_image_url": "https://cdn6.fireworktv.com/medias/2024/4/25/1714061420-rhjincyx/transcoded/720x1200/carolinemstern_COSMIC-1714061505758.jpg.62.webp"
           }
         },
-        "post_4": {
+        "p04": {
+          "type": "post",
+          "settings": {
+            "external_image_url": "https://cdn4.fireworktv.com/medias/2025/4/2/1743623847-irhmjsdz/transcoded/720x1200/mirandawillcry_cosmic2_ugc_paid.jpg.62.webp"
+          }
+        },
+        "p05": {
+          "type": "post",
+          "settings": {
+            "external_image_url": "https://cdn3.fireworktv.com/medias/2025/2/26/1740614069-lsbnmazt/transcoded/720x1200/cosmic_2.0_vvmanley.jpg.62.webp"
+          }
+        },
+        "p06": {
+          "type": "post",
+          "settings": {
+            "external_image_url": "https://cdn3.fireworktv.com/medias/2025/2/27/1740686920-goympfub/transcoded/720x1200/cosmic_2.0_valeriafride.jpg.62.webp"
+          }
+        },
+        "p07": {
+          "type": "post",
+          "settings": {
+            "external_image_url": "https://cdn1.fireworktv.com/medias/2025/4/2/1743624274-bxankmdq/transcoded/720x1200/kiyana.ebrahimi_comsic2_ugc_paid.jpg.62.webp"
+          }
+        },
+        "p08": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-4.jpg",
-            "link": ""
+            "external_image_url": ""
           }
         },
-        "post_5": {
+        "p09": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-5.jpg",
-            "link": ""
+            "external_image_url": ""
           }
         },
-        "post_6": {
+        "p10": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-6.jpg",
-            "link": ""
+            "external_image_url": ""
+          }
+        },
+        "p11": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-hero-desktop.jpg",
+            "external_image_url": ""
+          }
+        },
+        "p12": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-1.jpg",
+            "external_image_url": ""
+          }
+        },
+        "p13": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-2.jpg",
+            "external_image_url": ""
+          }
+        },
+        "p14": {
+          "type": "post",
+          "settings": {
+            "image": "shopify://shop_images/kj-ig-3.jpg",
+            "external_image_url": ""
           }
         }
       },
       "block_order": [
-        "post_1",
-        "post_2",
-        "post_3",
-        "post_4",
-        "post_5",
-        "post_6"
+        "p01",
+        "p02",
+        "p03",
+        "p04",
+        "p05",
+        "p06",
+        "p07",
+        "p08",
+        "p09",
+        "p10",
+        "p11",
+        "p12",
+        "p13",
+        "p14"
       ],
       "name": "KJ Instagram Grid",
       "settings": {
