@@ -13,7 +13,7 @@
       "type": "kj-hero-banner",
       "name": "KJ Hero Banner",
       "settings": {
-        "image_desktop": "shopify://shop_images/kj-hero-desktop.jpg",
+        "image_desktop": "shopify://shop_images/main-hero.png",
         "image_mobile": "shopify://shop_images/kj-hero-mobile.jpg",
         "height_mode": "vh",
         "desktop_height": 100,
@@ -38,13 +38,13 @@
       "name": "KJ Split Editorial",
       "settings": {
         "heading": "THE SUMMER LOOK",
-        "heading_color": "#91715B",
+        "heading_color": "#91715b",
         "text": "<p>recreate this flushed and contoured summer look featuring our best-selling blush and lip liner.</p>",
         "button_text": "shop now",
         "button_link": "/",
         "image": "shopify://shop_images/kj-ig-1.jpg",
         "media_side": "right",
-        "bg_color": "#F8F5F2",
+        "bg_color": "#f8f5f2",
         "card_bg": "#ffffff",
         "padding_top": 40,
         "padding_bottom": 40
@@ -72,8 +72,8 @@
         "shop_all_link": "/collections/best-seller",
         "product_limit": 4,
         "show_secondary_image": true,
-        "bg_color": "#F8F5F2",
-        "heading_color": "#91715B",
+        "bg_color": "#f8f5f2",
+        "heading_color": "#91715b",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -84,12 +84,13 @@
       "name": "KJ Spotlight Hero",
       "settings": {
         "image_desktop": "shopify://shop_images/kj-spotlight-1.jpg",
+        "height_mode": "adapt",
         "desktop_height": 70,
         "mobile_height": 60,
         "overlay_color": "#000000",
         "overlay_opacity": 0,
         "text_alignment": "left",
-        "text_color": "#91715B",
+        "text_color": "#91715b",
         "eyebrow": "",
         "heading": "SUMMER FAVES",
         "subheading": "discover the go-tos this summer.",
@@ -105,13 +106,14 @@
       "type": "kj-product-slider",
       "name": "KJ Product Slider",
       "settings": {
+        "layout": "slider",
         "heading": "BEST SELLERS",
         "collection": "best-seller",
         "shop_all_link": "",
         "product_limit": 8,
         "show_secondary_image": true,
-        "bg_color": "#F8F5F2",
-        "heading_color": "#91715B",
+        "bg_color": "#f8f5f2",
+        "heading_color": "#91715b",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -122,6 +124,7 @@
       "name": "KJ Spotlight Hero 2",
       "settings": {
         "image_desktop": "shopify://shop_images/kj-spotlight-2.jpg",
+        "height_mode": "adapt",
         "desktop_height": 70,
         "mobile_height": 60,
         "overlay_color": "#000000",
@@ -195,7 +198,7 @@
         "heading": "AS SEEN ON SOCIAL",
         "subheading": "",
         "bg_color": "#ffffff",
-        "heading_color": "#91715B",
+        "heading_color": "#91715b",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -264,8 +267,8 @@
       "name": "KJ Shop by Category",
       "settings": {
         "heading": "SHOP BY CATEGORY",
-        "bg_color": "#F8F5F2",
-        "heading_color": "#91715B",
+        "bg_color": "#f8f5f2",
+        "heading_color": "#91715b",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
@@ -275,6 +278,7 @@
       "type": "kj-virtual-try-on",
       "name": "Virtual Try-On",
       "settings": {
+        "bg_color": "#f8f5f2",
         "bg_image_url": "https://www.kyliecosmetics.com/cdn/shop/files/v3_July_VTO_update_desktop_3336x954.psd.jpg",
         "heading": "Try It On Virtually",
         "subtext": "See how this looks on you in real-time.",
@@ -290,92 +294,106 @@
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-spotlight-2.jpg",
-            "external_image_url": ""
+            "external_image_url": "",
+            "link": ""
           }
         },
         "p02": {
           "type": "post",
           "settings": {
-            "external_image_url": "https://cdn6.fireworktv.com/medias/2025/4/2/1743623565-aridzock/transcoded/720x1200/bellakrys_cosmic2_paid.jpg.62.webp"
+            "external_image_url": "https://cdn6.fireworktv.com/medias/2025/4/2/1743623565-aridzock/transcoded/720x1200/bellakrys_cosmic2_paid.jpg.62.webp",
+            "link": ""
           }
         },
         "p03": {
           "type": "post",
           "settings": {
-            "external_image_url": "https://cdn6.fireworktv.com/medias/2024/4/25/1714061420-rhjincyx/transcoded/720x1200/carolinemstern_COSMIC-1714061505758.jpg.62.webp"
+            "external_image_url": "https://cdn6.fireworktv.com/medias/2024/4/25/1714061420-rhjincyx/transcoded/720x1200/carolinemstern_COSMIC-1714061505758.jpg.62.webp",
+            "link": ""
           }
         },
         "p04": {
           "type": "post",
           "settings": {
-            "external_image_url": "https://cdn4.fireworktv.com/medias/2025/4/2/1743623847-irhmjsdz/transcoded/720x1200/mirandawillcry_cosmic2_ugc_paid.jpg.62.webp"
+            "external_image_url": "https://cdn4.fireworktv.com/medias/2025/4/2/1743623847-irhmjsdz/transcoded/720x1200/mirandawillcry_cosmic2_ugc_paid.jpg.62.webp",
+            "link": ""
           }
         },
         "p05": {
           "type": "post",
           "settings": {
-            "external_image_url": "https://cdn3.fireworktv.com/medias/2025/2/26/1740614069-lsbnmazt/transcoded/720x1200/cosmic_2.0_vvmanley.jpg.62.webp"
+            "external_image_url": "https://cdn3.fireworktv.com/medias/2025/2/26/1740614069-lsbnmazt/transcoded/720x1200/cosmic_2.0_vvmanley.jpg.62.webp",
+            "link": ""
           }
         },
         "p06": {
           "type": "post",
           "settings": {
-            "external_image_url": "https://cdn3.fireworktv.com/medias/2025/2/27/1740686920-goympfub/transcoded/720x1200/cosmic_2.0_valeriafride.jpg.62.webp"
+            "external_image_url": "https://cdn3.fireworktv.com/medias/2025/2/27/1740686920-goympfub/transcoded/720x1200/cosmic_2.0_valeriafride.jpg.62.webp",
+            "link": ""
           }
         },
         "p07": {
           "type": "post",
           "settings": {
-            "external_image_url": "https://cdn1.fireworktv.com/medias/2025/4/2/1743624274-bxankmdq/transcoded/720x1200/kiyana.ebrahimi_comsic2_ugc_paid.jpg.62.webp"
+            "external_image_url": "https://cdn1.fireworktv.com/medias/2025/4/2/1743624274-bxankmdq/transcoded/720x1200/kiyana.ebrahimi_comsic2_ugc_paid.jpg.62.webp",
+            "link": ""
           }
         },
         "p08": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-4.jpg",
-            "external_image_url": ""
+            "external_image_url": "",
+            "link": ""
           }
         },
         "p09": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-5.jpg",
-            "external_image_url": ""
+            "external_image_url": "",
+            "link": ""
           }
         },
         "p10": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-6.jpg",
-            "external_image_url": ""
+            "external_image_url": "",
+            "link": ""
           }
         },
         "p11": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-hero-desktop.jpg",
-            "external_image_url": ""
+            "external_image_url": "",
+            "link": ""
           }
         },
         "p12": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-1.jpg",
-            "external_image_url": ""
+            "external_image_url": "",
+            "link": ""
           }
         },
         "p13": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-2.jpg",
-            "external_image_url": ""
+            "external_image_url": "",
+            "link": ""
           }
         },
         "p14": {
           "type": "post",
           "settings": {
             "image": "shopify://shop_images/kj-ig-3.jpg",
-            "external_image_url": ""
+            "external_image_url": "",
+            "link": ""
           }
         }
       },
@@ -400,8 +418,8 @@
         "heading": "SHOP OUR IG",
         "handle_text": "@stlondon",
         "handle_link": "",
-        "bg_color": "#F8F5F2",
-        "heading_color": "#91715B",
+        "bg_color": "#f8f5f2",
+        "heading_color": "#91715b",
         "text_color": "#000000",
         "padding_top": 60,
         "padding_bottom": 60
