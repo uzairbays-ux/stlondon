@@ -442,10 +442,13 @@
        try me on -> privacy consent -> getting ready -> live camera with lip
        tint, close, snapshot save, and a draggable before/after compare split.
        Shade comes from the PDP's own chips/dropdown via the kj:shade event.
-       MediaPipe is lazy-loaded on first agree only. */
+       Engine = MediaPipe Tasks FaceLandmarker (same as the homepage studio),
+       synchronous detectForVideo in our own rAF loop, 720p camera.
+       Everything loads lazily on first agree only. */
     if (window.__kjPdpVto) return;
-    window.__kjPdpVto = { camera: null, faceMesh: null, color: null, loading: false, agreed: false, compare: false, split: 0.5, drag: false, map: null };
+    window.__kjPdpVto = { stream: null, raf: null, face: null, color: null, loading: false, agreed: false, compare: false, split: 0.5, drag: false, map: null };
     var S = window.__kjPdpVto;
+    var MP_VER = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21';
 
     function els() {
       var stage = document.querySelector('[data-kj-vto-stage]');
@@ -487,31 +490,19 @@
       e.live.hidden = name !== 'live';
     }
 
-    function loadScript(src) {
-      return new Promise(function (resolve, reject) {
-        var s = document.createElement('script');
-        s.src = src;
-        s.crossOrigin = 'anonymous';
-        s.onload = resolve;
-        s.onerror = reject;
-        document.head.appendChild(s);
-      });
-    }
-
-    function onResults(results) {
-      var e = els();
-      if (!e || e.stage.hidden) return;
+    function drawFrame(e, faceRes) {
       if (!e.ready.hidden) setState('live');
       var canvas = e.canvas, ctx = canvas.getContext('2d');
       if (canvas.width !== e.video.videoWidth && e.video.videoWidth) {
         canvas.width = e.video.videoWidth;
         canvas.height = e.video.videoHeight;
       }
+      if (!canvas.width) return;
       ctx.save();
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(results.image, 0, 0, canvas.width, canvas.height);
-      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-        var lm = results.multiFaceLandmarks[0];
+      ctx.drawImage(e.video, 0, 0, canvas.width, canvas.height);
+      if (faceRes && faceRes.faceLandmarks && faceRes.faceLandmarks.length > 0) {
+        var lm = faceRes.faceLandmarks[0];
         var outer = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185, 61];
         var inner = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 80, 191, 78];
         if (S.compare) {
@@ -544,29 +535,57 @@
       if (e && e.readyLabel) e.readyLabel.textContent = 'camera unavailable — please allow camera access';
     }
 
+    function loadFace() {
+      if (S.face) return Promise.resolve();
+      return import(MP_VER + '/vision_bundle.mjs').then(function (m) {
+        return m.FilesetResolver.forVisionTasks(MP_VER + '/wasm').then(function (fs) {
+          var make = function (delegate) {
+            return m.FaceLandmarker.createFromOptions(fs, {
+              baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task', delegate: delegate },
+              runningMode: 'VIDEO',
+              numFaces: 1
+            });
+          };
+          return make('GPU').catch(function () { return make('CPU'); })
+            .then(function (r) { S.face = r; });
+        });
+      });
+    }
+
+    function startLoop() {
+      if (S.raf) cancelAnimationFrame(S.raf);
+      var tick = function () {
+        var e = els();
+        if (!e || e.stage.hidden || !S.stream) { S.raf = null; return; }
+        if (e.video.readyState >= 2 && S.face) {
+          var faceRes = null;
+          try { faceRes = S.face.detectForVideo(e.video, performance.now()); } catch (err) {}
+          drawFrame(e, faceRes);
+        }
+        S.raf = requestAnimationFrame(tick);
+      };
+      S.raf = requestAnimationFrame(tick);
+    }
+
     function startAR() {
       var e = els();
       if (!e || S.loading) return;
-      var boot = function () {
-        if (!S.faceMesh) {
-          S.faceMesh = new window.FaceMesh({ locateFile: function (f) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/' + f; } });
-          S.faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-          S.faceMesh.onResults(onResults);
-          S.camera = new window.Camera(e.video, {
-            onFrame: function () { return S.faceMesh.send({ image: e.video }); },
-            width: 480,
-            height: 640
-          });
-        }
-        var p = S.camera.start();
-        if (p && p.catch) p.catch(cameraFail);
-      };
-      if (window.FaceMesh && window.Camera) { boot(); return; }
       S.loading = true;
-      Promise.all([
-        loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js'),
-        loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js')
-      ]).then(function () { S.loading = false; boot(); })
+      loadFace()
+        .then(function () {
+          return navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+            audio: false
+          });
+        })
+        .then(function (stream) {
+          S.loading = false;
+          S.stream = stream;
+          e.video.srcObject = stream;
+          var p = e.video.play();
+          if (p && p.catch) p.catch(function () {});
+          startLoop();
+        })
         .catch(function () { S.loading = false; cameraFail(); });
     }
 
@@ -579,7 +598,12 @@
       if (e.divider) e.divider.hidden = true;
       var cmp = e.stage.querySelector('[data-kj-vto-compare]');
       if (cmp) cmp.classList.remove('active');
-      if (S.camera) S.camera.stop();
+      if (S.raf) { cancelAnimationFrame(S.raf); S.raf = null; }
+      if (S.stream) {
+        S.stream.getTracks().forEach(function (t) { t.stop(); });
+        S.stream = null;
+      }
+      if (e.video) e.video.srcObject = null;
     }
 
     document.addEventListener('click', function (ev) {
