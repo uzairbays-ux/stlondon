@@ -294,8 +294,8 @@
         "p01": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/kj-spotlight-2.jpg",
-            "external_image_url": "",
+            "image": "",
+            "external_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_9_753534658_17981011560048388_3502701572439378753_n.jpg?v=1785499737",
             "link": ""
           }
         },
@@ -330,7 +330,7 @@
         "p06": {
           "type": "post",
           "settings": {
-            "external_image_url": "https://cdn3.fireworktv.com/medias/2025/2/27/1740686920-goympfub/transcoded/720x1200/cosmic_2.0_valeriafride.jpg.62.webp",
+            "external_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_15_504406975_17932710504048388_3829184658429699698_n.jpg?v=1785499737",
             "link": ""
           }
         },
@@ -368,16 +368,16 @@
         "p11": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/kj-hero-desktop.jpg",
-            "external_image_url": "",
+            "image": "",
+            "external_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_6_757267344_17982355113048388_9049314143122462717_n.jpg?v=1785499737",
             "link": ""
           }
         },
         "p12": {
           "type": "post",
           "settings": {
-            "image": "shopify://shop_images/kj-ig-1.jpg",
-            "external_image_url": "",
+            "image": "",
+            "external_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_7_758518282_4495127294080326_2888261835313860864_n.jpg?v=1785499737",
             "link": ""
           }
         },
