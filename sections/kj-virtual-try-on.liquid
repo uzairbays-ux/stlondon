@@ -13,357 +13,1106 @@
   id="vto-section-{{ section.id }}"
   style="text-align: center; margin: 0; padding: 70px 20px; background-color: {{ section.settings.bg_color | default: '#F8F5F2' }};{% if vto_bg != blank %} background-image: url('{{ vto_bg }}'); background-size: cover; background-position: center;{% endif %}"
 >
-  <style>
-    .vto-has-banner {
-      min-height: 46vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center !important;
-    }
-    .vto-has-banner .h2 {
-      font-family: var(--font-heading--family);
-      text-transform: lowercase;
-      letter-spacing: 0.5px;
-    }
-    @media screen and (max-width: 767px) {
-      .vto-has-banner {
-        min-height: 320px;
-      }
-    }
-  </style>
   {% if section.settings.heading != blank %}
-    <h2 class="h2">{{ section.settings.heading }}</h2>
+    <h2 class="kj-hvto-heading">{{ section.settings.heading }}</h2>
   {% endif %}
   {% if section.settings.subtext != blank %}
     <p>{{ section.settings.subtext }}</p>
   {% endif %}
 
   <div class="virtual-try-on-trigger">
-    <button type="button" class="button button--primary virtual-try-on-btn" id="vto-button-{{ section.id }}">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M2 12a10 10 0 1 0 20 0 10 10 0 0 0-20 0z"></path>
-        <path d="M12 2a10 10 0 0 1 10 10"></path>
-        <path d="M2 12a10 10 0 0 1 10-10"></path>
-      </svg>
+    <button type="button" class="kj-hvto-launch" data-kj-hvto-open>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
       {{ section.settings.button_text }}
     </button>
   </div>
+</div>
 
-  <!-- AR Modal Overlay -->
-  <div class="vto-modal" id="vto-modal-{{ section.id }}">
-    <div class="vto-modal-content">
-      <button class="vto-close-btn" id="vto-close-{{ section.id }}">&times;</button>
-      
-      <div class="vto-video-container">
-        <!-- Hidden video element to capture webcam -->
-        <video id="vto-video-{{ section.id }}" class="vto-video" autoplay playsinline></video>
-        <!-- Canvas where we draw the camera feed and the makeup overlay -->
-        <canvas id="vto-canvas-{{ section.id }}" class="vto-canvas"></canvas>
-        <div id="vto-loading-{{ section.id }}" class="vto-loading">INITIALIZING CAMERA...</div>
+{%- comment -%}
+  Homepage try-on studio (reference behavior):
+  consent card -> full-screen overlay = camera panel left (getting ready ->
+  live with close / save / compare split) + right rail flowing
+  categories -> product list (tabs) -> product detail (shades, add to cart,
+  try more). Categories map to real collections; shade dots come from
+  kj-shade-hex. MediaPipe loads lazily after "agree" only.
+{%- endcomment -%}
+
+<div class="kj-hvto-consent" data-kj-hvto-consent hidden>
+  <div class="kj-hvto-card">
+    <button type="button" class="kj-hvto-card-x" data-kj-hvto-close aria-label="Close">&times;</button>
+    <h4>privacy policy</h4>
+    <p>by clicking &quot;i agree&quot;, i consent to my device camera being used for the <strong>virtual try-on</strong> experience. camera frames are processed in real time on this device to render shades and are never stored or uploaded.</p>
+    <p>close the try-on at any time to turn the camera off.</p>
+    <label class="kj-hvto-agree-row"><input type="checkbox" data-kj-hvto-check> i agree</label>
+    <button type="button" class="kj-hvto-agree" data-kj-hvto-agree disabled>agree</button>
+    <button type="button" class="kj-hvto-nothanks" data-kj-hvto-close>no thanks</button>
+  </div>
+</div>
+
+<div class="kj-hvto-overlay" data-kj-hvto-overlay hidden>
+  <button type="button" class="kj-hvto-global-x" data-kj-hvto-close aria-label="Close try-on">&times;</button>
+
+  <!-- Camera panel -->
+  <div class="kj-hvto-cam">
+    <div class="kj-hvto-ready" data-kj-hvto-ready>
+      <span class="kj-hvto-spinner" aria-hidden="true"></span>
+      <span data-kj-hvto-ready-label>getting ready</span>
+    </div>
+    <div class="kj-hvto-live" data-kj-hvto-live hidden>
+      <video data-kj-hvto-video playsinline muted></video>
+      <canvas data-kj-hvto-canvas></canvas>
+      <div class="kj-hvto-divider" data-kj-hvto-divider hidden>
+        <span class="kj-hvto-handle" data-kj-hvto-handle>
+          <svg width="7" height="10" viewBox="0 0 7 10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 1 2 5l4 4"/></svg>
+          <svg width="7" height="10" viewBox="0 0 7 10" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M1 1l4 4-4 4"/></svg>
+        </span>
       </div>
-      
-      <div class="vto-controls">
-        <p>Color: <strong id="vto-color-name-{{ section.id }}">{{ section.settings.default_color_name }}</strong></p>
-        <div class="vto-swatches">
-          <div class="vto-swatch active" data-color="{{ section.settings.default_color_hex }}" style="background-color: {{ section.settings.default_color_hex }};"></div>
-          <!-- Additional dynamic swatches could be generated here via liquid based on product.variants -->
-          {% if product != blank and product.variants.size > 0 %}
-            {% for variant in product.variants %}
-              {% if variant.metafields.custom.hex_color != blank %}
-                <div class="vto-swatch" data-color="{{ variant.metafields.custom.hex_color }}" style="background-color: {{ variant.metafields.custom.hex_color }};" title="{{ variant.title }}"></div>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
+      <button type="button" class="kj-hvto-cam-x" data-kj-hvto-close aria-label="Close try-on">&times;</button>
+      <div class="kj-hvto-tools">
+        <button type="button" class="kj-hvto-tool" data-kj-hvto-snap aria-label="Save photo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </button>
+        <button type="button" class="kj-hvto-tool" data-kj-hvto-compare aria-label="Compare before and after">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="4.5" width="17" height="15" rx="1.5"/><line x1="12" y1="4.5" x2="12" y2="19.5"/></svg>
+        </button>
+      </div>
+      <div class="kj-hvto-flash" data-kj-hvto-flash></div>
+    </div>
+  </div>
+
+  <!-- Right rail -->
+  <div class="kj-hvto-rail">
+    {%- assign cat_ids = '1,2,3' | split: ',' -%}
+
+    <!-- State: categories -->
+    <div class="kj-hvto-cats" data-kj-hvto-cats>
+      <p class="kj-hvto-cats-label">select a category to begin:</p>
+      <div class="kj-hvto-cats-row">
+        {%- for ci in cat_ids -%}
+          {%- case ci -%}
+            {%- when '1' -%}
+              {%- assign c_label = section.settings.cat1_label | default: 'eyes' -%}
+              {%- assign c_handle = section.settings.cat1_collection | default: 'eyes-2' -%}
+              {%- assign c_img = section.settings.cat1_image_url -%}
+            {%- when '2' -%}
+              {%- assign c_label = section.settings.cat2_label | default: 'face' -%}
+              {%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
+              {%- assign c_img = section.settings.cat2_image_url -%}
+            {%- else -%}
+              {%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
+              {%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
+              {%- assign c_img = section.settings.cat3_image_url -%}
+          {%- endcase -%}
+          {%- assign c_col = collections[c_handle] -%}
+          {%- assign tile_src = c_img -%}
+          {%- if tile_src == blank and c_col.image != blank -%}
+            {%- assign tile_src = c_col.image | image_url: width: 300, height: 300, crop: 'center' -%}
+          {%- endif -%}
+          {%- if tile_src == blank and c_col.products.first.featured_image != blank -%}
+            {%- assign tile_src = c_col.products.first.featured_image | image_url: width: 300, height: 300, crop: 'center' -%}
+          {%- endif -%}
+          <button type="button" class="kj-hvto-cat-tile" data-kj-hvto-cat="{{ ci }}">
+            {%- if tile_src != blank -%}<img src="{{ tile_src }}" alt="{{ c_label | escape }}" width="100" height="100" loading="lazy">{%- endif -%}
+            <span>{{ c_label | downcase }}</span>
+          </button>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <!-- State: product list -->
+    <div class="kj-hvto-list" data-kj-hvto-list hidden>
+      <div class="kj-hvto-tabs">
+        {%- for ci in cat_ids -%}
+          {%- case ci -%}
+            {%- when '1' -%}{%- assign c_label = section.settings.cat1_label | default: 'eyes' -%}
+            {%- when '2' -%}{%- assign c_label = section.settings.cat2_label | default: 'face' -%}
+            {%- else -%}{%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
+          {%- endcase -%}
+          <button type="button" class="kj-hvto-tab" data-kj-hvto-tab="{{ ci }}">{{ c_label | downcase }}</button>
+        {%- endfor -%}
+      </div>
+      {%- for ci in cat_ids -%}
+        {%- case ci -%}
+          {%- when '1' -%}{%- assign c_handle = section.settings.cat1_collection | default: 'eyes-2' -%}
+          {%- when '2' -%}{%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
+          {%- else -%}{%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
+        {%- endcase -%}
+        {%- assign c_col = collections[c_handle] -%}
+        <div class="kj-hvto-grid" data-kj-hvto-grid="{{ ci }}" hidden>
+          {%- for product in c_col.products limit: 8 -%}
+            <button type="button" class="kj-hvto-plist-card" data-kj-hvto-open-pd="{{ ci }}-{{ forloop.index }}">
+              {%- if product.featured_image != blank -%}
+                <img src="{{ product.featured_image | image_url: width: 160, height: 160, crop: 'center' }}" alt="" width="64" height="64" loading="lazy">
+              {%- endif -%}
+              <span>{{ product.title | downcase }}</span>
+            </button>
+          {%- endfor -%}
         </div>
-      </div>
+      {%- endfor -%}
+    </div>
+
+    <!-- State: product detail -->
+    <div class="kj-hvto-detail" data-kj-hvto-detail hidden>
+      {%- for ci in cat_ids -%}
+        {%- case ci -%}
+          {%- when '1' -%}
+            {%- assign c_handle = section.settings.cat1_collection | default: 'eyes-2' -%}
+            {%- assign c_label = section.settings.cat1_label | default: 'eyes' -%}
+          {%- when '2' -%}
+            {%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
+            {%- assign c_label = section.settings.cat2_label | default: 'face' -%}
+          {%- else -%}
+            {%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
+            {%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
+        {%- endcase -%}
+        {%- assign c_mode = 'face' -%}
+        {%- assign c_label_down = c_label | downcase -%}
+        {%- if c_label_down contains 'lip' -%}{%- assign c_mode = 'lips' -%}
+        {%- elsif c_label_down contains 'eye' -%}{%- assign c_mode = 'eyes' -%}{%- endif -%}
+        {%- assign c_col = collections[c_handle] -%}
+        {%- for product in c_col.products limit: 8 -%}
+          {%- assign p_index = forloop.index -%}
+          <div class="kj-hvto-pd" data-kj-hvto-pd="{{ ci }}-{{ p_index }}" data-mode="{{ c_mode }}" data-cat="{{ ci }}" hidden>
+            <div class="kj-hvto-pd-head">
+              <h3>{{ product.title | downcase }}</h3>
+              <button type="button" class="kj-hvto-viewmore" data-kj-hvto-back="{{ ci }}">view more products</button>
+            </div>
+            {%- assign p_desc = product.description | strip_html | truncatewords: 30 -%}
+            {%- if p_desc != blank -%}<p class="kj-hvto-pd-desc">{{ p_desc | downcase }}</p>{%- endif -%}
+
+            {%- assign dot_count = 0 -%}
+            {%- capture pd_dots -%}
+              {%- for variant in product.variants -%}
+                {%- capture pv_hex -%}{% render 'kj-shade-hex', shade: variant.title %}{%- endcapture -%}
+                {%- if pv_hex != blank and dot_count < 8 -%}
+                  <button type="button" class="kj-hvto-dot{% if dot_count == 0 %} active{% endif %}" data-kj-hvto-dot data-color="{{ pv_hex }}" data-name="{{ variant.title | escape | downcase }}" data-vid="{{ variant.id }}" style="background-color: {{ pv_hex }};" aria-label="{{ variant.title | escape }}"></button>
+                  {%- if dot_count == 0 -%}
+                    {%- assign pd_first_name = variant.title | downcase -%}
+                    {%- assign pd_first_vid = variant.id -%}
+                  {%- endif -%}
+                  {%- assign dot_count = dot_count | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endcapture -%}
+            {%- if dot_count == 0 -%}
+              {%- assign pd_first_name = product.selected_or_first_available_variant.title | downcase | replace: 'default title', '' -%}
+              {%- assign pd_first_vid = product.selected_or_first_available_variant.id -%}
+            {%- endif -%}
+
+            <p class="kj-hvto-pd-shade" data-kj-hvto-shadelabel>{{ pd_first_name }}</p>
+            {%- if dot_count > 0 -%}
+              <div class="kj-hvto-dots">{{ pd_dots }}</div>
+            {%- endif -%}
+
+            <form action="{{ routes.cart_add_url }}" method="post" class="kj-card-add-form kj-hvto-add-form">
+              <input type="hidden" name="id" value="{{ pd_first_vid }}" data-kj-hvto-varid>
+              <button type="submit" class="kj-hvto-add" {% unless product.available %}disabled{% endunless %}>
+                {%- if product.available -%}add to cart - {{ product.price | money }}{%- else -%}sold out{%- endif -%}
+              </button>
+            </form>
+
+            {%- assign tm_count = 0 -%}
+            {%- capture pd_trymore -%}
+              {%- for other in c_col.products limit: 8 -%}
+                {%- unless forloop.index == p_index or tm_count >= 3 -%}
+                  <div class="kj-hvto-tm-card">
+                    {%- if other.featured_image != blank -%}
+                      <img src="{{ other.featured_image | image_url: width: 300, height: 300, crop: 'center' }}" alt="" width="130" height="130" loading="lazy">
+                    {%- endif -%}
+                    <p>{{ other.title | downcase }}</p>
+                    <span>{{ other.variants.size }} colors</span>
+                    <button type="button" class="kj-hvto-tm-try" data-kj-hvto-open-pd="{{ ci }}-{{ forloop.index }}">try me on</button>
+                  </div>
+                  {%- assign tm_count = tm_count | plus: 1 -%}
+                {%- endunless -%}
+              {%- endfor -%}
+            {%- endcapture -%}
+            {%- if tm_count > 0 -%}
+              <p class="kj-hvto-tm-label">try more:</p>
+              <div class="kj-hvto-tm-row">{{ pd_trymore }}</div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      {%- endfor -%}
     </div>
   </div>
 </div>
 
 <style>
+  .kj-hvto-heading {
+    font-family: var(--font-heading--family);
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+  }
+
+  .vto-has-banner {
+    min-height: 46vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center !important;
+  }
+
+  @media screen and (max-width: 767px) {
+    .vto-has-banner { min-height: 320px; }
+  }
+
   .virtual-try-on-trigger {
     margin: 20px 0;
     display: flex;
     justify-content: center;
   }
-  .virtual-try-on-btn {
+
+  .kj-hvto-launch {
     display: inline-flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
-    padding: 12px 32px;
+    padding: 12px 28px;
     cursor: pointer;
-    background-color: #000;
+    background-color: #222222;
     color: #fff;
     border: none;
     border-radius: 4px;
+    font-size: 13px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-  .virtual-try-on-btn:hover {
-    background-color: #333;
+    text-transform: lowercase;
+    letter-spacing: 0.4px;
+    transition: background 0.2s ease;
   }
 
-  /* Modal Styles */
-  .vto-modal {
-    display: none;
+  .kj-hvto-launch:hover { background-color: #000; }
+
+  /* hidden attr must beat the flex/grid display rules below */
+  .kj-hvto-consent[hidden],
+  .kj-hvto-overlay[hidden],
+  .kj-hvto-overlay [hidden] {
+    display: none !important;
+  }
+
+  /* Consent */
+  .kj-hvto-consent {
     position: fixed;
-    z-index: 999999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .vto-modal.active {
+    inset: 0;
+    z-index: 999998;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.25);
   }
 
-  .vto-modal-content {
-    background-color: #111;
-    padding: 16px;
-    border-radius: 12px;
+  .kj-hvto-card {
     position: relative;
-    width: 95%;
-    max-width: 500px;
-    text-align: center;
-    color: #fff;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    width: min(400px, 92%);
+    background: #ffffff;
+    box-shadow: 0 10px 34px rgba(0, 0, 0, 0.2);
+    padding: 24px 26px;
+    text-align: left;
   }
 
-  .vto-close-btn {
+  .kj-hvto-card h4 {
+    font-family: var(--font-heading--family);
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin: 0 0 12px;
+  }
+
+  .kj-hvto-card p {
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: #444;
+    margin: 0 0 10px;
+  }
+
+  .kj-hvto-card-x {
     position: absolute;
-    top: -40px;
-    right: 0;
-    font-size: 32px;
-    font-weight: normal;
-    color: #fff;
+    top: 12px;
+    right: 12px;
     background: none;
     border: none;
+    font-size: 20px;
+    line-height: 1;
+    color: #222;
     cursor: pointer;
-    z-index: 10;
+    padding: 4px;
   }
 
-  .vto-video-container {
-    position: relative;
+  .kj-hvto-agree-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: #222;
+    margin: 14px 0;
+    cursor: pointer;
+  }
+
+  .kj-hvto-agree-row input { accent-color: #222; }
+
+  .kj-hvto-agree {
+    display: block;
     width: 100%;
-    aspect-ratio: 3/4;
+    background: #ffffff;
+    border: 1px solid #222;
+    padding: 10px 16px;
+    font-size: 13px;
+    text-transform: lowercase;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .kj-hvto-agree:disabled { border-color: #c9c9c9; color: #a5a5a5; cursor: not-allowed; }
+  .kj-hvto-agree:not(:disabled):hover { background: #222; color: #fff; }
+
+  .kj-hvto-nothanks {
+    display: block;
+    margin: 12px auto 0;
+    background: none;
+    border: none;
+    font-size: 12px;
+    color: #222;
+    text-decoration: underline;
+    text-transform: lowercase;
+    cursor: pointer;
+  }
+
+  /* Studio overlay */
+  .kj-hvto-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999997;
+    background: #ffffff;
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+    padding: 24px;
+  }
+
+  .kj-hvto-global-x {
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    z-index: 6;
+    background: none;
+    border: none;
+    font-size: 26px;
+    line-height: 1;
+    color: #222;
+    cursor: pointer;
+  }
+
+  .kj-hvto-cam {
+    position: relative;
+    flex: 0 0 min(44%, 560px);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #FBF1EE;
+  }
+
+  .kj-hvto-ready {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: #FBF1EE;
+    color: #D98A93;
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .kj-hvto-spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 3px dotted #E4B4B9;
+    animation: kj-hvto-spin 1.2s linear infinite;
+  }
+
+  @keyframes kj-hvto-spin { to { transform: rotate(360deg); } }
+
+  .kj-hvto-live {
+    position: absolute;
+    inset: 0;
     background: #000;
-    border-radius: 8px;
     overflow: hidden;
   }
 
-  .vto-video {
-    display: none;
-  }
+  .kj-hvto-live video { display: none; }
 
-  .vto-canvas {
+  .kj-hvto-live canvas {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scaleX(-1);
+    transform: scaleX(-1); /* selfie mirror */
   }
 
-  .vto-loading {
+  .kj-hvto-cam-x {
     position: absolute;
-    top: 50%;
+    top: 12px;
+    right: 12px;
+    z-index: 4;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.88);
+    border: none;
+    color: #222;
+    font-size: 19px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .kj-hvto-tools {
+    position: absolute;
+    right: 12px;
+    bottom: 14px;
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .kj-hvto-tool {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #222;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  }
+
+  .kj-hvto-tool.active { outline: 2px solid #222; }
+
+  .kj-hvto-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
     left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-weight: bold;
-    letter-spacing: 2px;
+    width: 2px;
+    background: #fff;
+    z-index: 3;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+  }
+
+  .kj-hvto-handle {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 62px;
+    height: 32px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #222;
+    cursor: ew-resize;
+    touch-action: none;
+    user-select: none;
+  }
+
+  .kj-hvto-flash {
+    position: absolute;
+    inset: 0;
     z-index: 5;
-    font-size: 12px;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
   }
 
-  .vto-controls {
-    margin-top: 20px;
+  .kj-hvto-flash.on { animation: kj-hvto-flash 0.45s ease-out; }
+
+  @keyframes kj-hvto-flash {
+    0% { opacity: 0.9; }
+    100% { opacity: 0; }
   }
 
-  .vto-controls p {
-    margin-bottom: 12px;
+  /* Right rail */
+  .kj-hvto-rail {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding: 30px 10px;
+  }
+
+  .kj-hvto-cats { text-align: center; }
+
+  .kj-hvto-cats-label {
     font-size: 14px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    color: #222;
+    margin: 0 0 22px;
+    text-transform: lowercase;
   }
 
-  .vto-swatches {
+  .kj-hvto-cats-row {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .kj-hvto-cat-tile {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .kj-hvto-cat-tile img {
+    display: block;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+
+  .kj-hvto-cat-tile span {
+    font-size: 15px;
+    color: #C0848D;
+    text-transform: lowercase;
+  }
+
+  .kj-hvto-cat-tile:hover span { color: #222; }
+
+  .kj-hvto-list { width: min(480px, 100%); }
+
+  .kj-hvto-tabs {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 18px;
+    margin-bottom: 24px;
   }
 
-  .vto-swatch {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+  .kj-hvto-tab {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 16px;
+    color: #C0848D;
+    text-transform: lowercase;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform 0.2s;
   }
 
-  .vto-swatch:hover {
-    transform: scale(1.1);
+  .kj-hvto-tab.active {
+    color: #222;
+    font-weight: 700;
   }
 
-  .vto-swatch.active {
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 2px #111 inset;
+  .kj-hvto-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .kj-hvto-plist-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #e5e0da;
+    border-radius: 4px;
+    padding: 10px 12px;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .kj-hvto-plist-card:hover { border-color: #222; }
+
+  .kj-hvto-plist-card img {
+    display: block;
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    flex: 0 0 auto;
+  }
+
+  .kj-hvto-plist-card span {
+    font-family: var(--font-heading--family);
+    font-size: 13px;
+    font-weight: 600;
+    color: #222;
+    text-transform: lowercase;
+    line-height: 1.35;
+  }
+
+  .kj-hvto-detail { width: min(480px, 100%); }
+
+  .kj-hvto-pd-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .kj-hvto-pd-head h3 {
+    font-family: var(--font-heading--family);
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin: 0;
+  }
+
+  .kj-hvto-viewmore {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    color: #222;
+    text-decoration: underline;
+    text-transform: lowercase;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .kj-hvto-pd-desc {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #444;
+    margin: 0 0 18px;
+  }
+
+  .kj-hvto-pd-shade {
+    font-size: 13px;
+    color: #222;
+    text-transform: lowercase;
+    margin: 0 0 10px;
+    min-height: 16px;
+  }
+
+  .kj-hvto-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .kj-hvto-dot {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .kj-hvto-dot.active {
+    outline: 2px solid #222;
+    outline-offset: 2px;
+  }
+
+  .kj-hvto-add-form { margin: 0 0 26px; }
+
+  .kj-hvto-add {
+    font-family: var(--font-heading--family);
+    width: 100%;
+    background: #222222;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .kj-hvto-add:hover:not(:disabled) { background: #000; }
+  .kj-hvto-add:disabled { background: #999; cursor: not-allowed; }
+
+  .kj-hvto-tm-label {
+    font-size: 13px;
+    color: #222;
+    text-transform: lowercase;
+    margin: 0 0 12px;
+  }
+
+  .kj-hvto-tm-row {
+    display: flex;
+    gap: 14px;
+  }
+
+  .kj-hvto-tm-card {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .kj-hvto-tm-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    margin-bottom: 8px;
+  }
+
+  .kj-hvto-tm-card p {
+    font-size: 12px;
+    color: #222;
+    text-transform: lowercase;
+    margin: 0 0 2px;
+    line-height: 1.35;
+  }
+
+  .kj-hvto-tm-card span {
+    display: block;
+    font-size: 11px;
+    color: #777;
+    margin-bottom: 4px;
+  }
+
+  .kj-hvto-tm-try {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 12px;
+    color: #222;
+    text-decoration: underline;
+    text-transform: lowercase;
+    cursor: pointer;
+  }
+
+  @media screen and (max-width: 899px) {
+    .kj-hvto-overlay {
+      flex-direction: column;
+      overflow-y: auto;
+      padding: 16px;
+      padding-top: 48px;
+    }
+    .kj-hvto-cam {
+      flex: 0 0 auto;
+      height: 52vh;
+    }
+    .kj-hvto-rail {
+      overflow-y: visible;
+      padding: 20px 4px;
+    }
+    .kj-hvto-tm-row { flex-wrap: wrap; }
+    .kj-hvto-tm-card { flex: 0 0 calc(33% - 10px); }
   }
 </style>
 
-<!-- Load MediaPipe Libraries -->
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous" defer></script>
-
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const sectionId = '{{ section.id }}';
-    const btn = document.getElementById(`vto-button-${sectionId}`);
-    const modal = document.getElementById(`vto-modal-${sectionId}`);
-    const closeBtn = document.getElementById(`vto-close-${sectionId}`);
-    const videoElement = document.getElementById(`vto-video-${sectionId}`);
-    const canvasElement = document.getElementById(`vto-canvas-${sectionId}`);
-    const canvasCtx = canvasElement.getContext('2d');
-    const loadingText = document.getElementById(`vto-loading-${sectionId}`);
-    const swatches = document.querySelectorAll(`#vto-modal-${sectionId} .vto-swatch`);
-    
-    let camera = null;
-    let faceMesh = null;
+  (function () {
+    /* Homepage try-on studio — delegated document-level (survives DOM morph).
+       Camera + MediaPipe load lazily after consent. Renderer per category:
+       lips = lip fill, face = cheek blush, eyes = lid shadow. */
+    if (window.__kjHomeVto) return;
+    window.__kjHomeVto = { camera: null, faceMesh: null, color: null, mode: 'lips', loading: false, agreed: false, compare: false, split: 0.5, drag: false };
+    var S = window.__kjHomeVto;
 
-    // Default AR color opacity (Hex + Alpha)
-    // We append '80' to the hex to make it 50% opacity
-    let activeColorHex = '{{ section.settings.default_color_hex }}'; 
-    let activeColor = activeColorHex + '80'; 
+    function els() {
+      var overlay = document.querySelector('[data-kj-hvto-overlay]');
+      if (!overlay) return null;
+      return {
+        overlay: overlay,
+        consent: document.querySelector('[data-kj-hvto-consent]'),
+        ready: overlay.querySelector('[data-kj-hvto-ready]'),
+        readyLabel: overlay.querySelector('[data-kj-hvto-ready-label]'),
+        live: overlay.querySelector('[data-kj-hvto-live]'),
+        video: overlay.querySelector('[data-kj-hvto-video]'),
+        canvas: overlay.querySelector('[data-kj-hvto-canvas]'),
+        divider: overlay.querySelector('[data-kj-hvto-divider]'),
+        flash: overlay.querySelector('[data-kj-hvto-flash]'),
+        cam: overlay.querySelector('.kj-hvto-cam'),
+        cats: overlay.querySelector('[data-kj-hvto-cats]'),
+        list: overlay.querySelector('[data-kj-hvto-list]'),
+        detail: overlay.querySelector('[data-kj-hvto-detail]')
+      };
+    }
 
-    // Handle Swatch Clicks
-    swatches.forEach(swatch => {
-      swatch.addEventListener('click', (e) => {
-        swatches.forEach(s => s.classList.remove('active'));
-        e.target.classList.add('active');
-        activeColorHex = e.target.getAttribute('data-color');
-        activeColor = activeColorHex + '80'; // 50% opacity
+    function railState(name) {
+      var e = els();
+      if (!e) return;
+      e.cats.hidden = name !== 'cats';
+      e.list.hidden = name !== 'list';
+      e.detail.hidden = name !== 'detail';
+    }
+
+    function showCat(ci) {
+      var e = els();
+      if (!e) return;
+      railState('list');
+      e.list.querySelectorAll('[data-kj-hvto-tab]').forEach(function (t) {
+        t.classList.toggle('active', t.dataset.kjHvtoTab === ci);
       });
-    });
+      e.list.querySelectorAll('[data-kj-hvto-grid]').forEach(function (g) {
+        g.hidden = g.dataset.kjHvtoGrid !== ci;
+      });
+    }
+
+    function showProduct(key) {
+      var e = els();
+      if (!e) return;
+      railState('detail');
+      var shown = null;
+      e.detail.querySelectorAll('[data-kj-hvto-pd]').forEach(function (p) {
+        var match = p.dataset.kjHvtoPd === key;
+        p.hidden = !match;
+        if (match) shown = p;
+      });
+      if (!shown) return;
+      S.mode = shown.dataset.mode || 'lips';
+      var dot = shown.querySelector('.kj-hvto-dot.active') || shown.querySelector('.kj-hvto-dot');
+      S.color = dot ? dot.dataset.color : null;
+    }
+
+    function loadScript(src) {
+      return new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = src;
+        s.crossOrigin = 'anonymous';
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+      });
+    }
+
+    function dist(a, b, w, h) {
+      var dx = (a.x - b.x) * w;
+      var dy = (a.y - b.y) * h;
+      return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function softBlob(ctx, cx, cy, r, squash, color) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.scale(1, squash);
+      var g = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+      g.addColorStop(0, color);
+      g.addColorStop(1, color.slice(0, 7) + '00');
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(0, 0, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
 
     function onResults(results) {
-      loadingText.style.display = 'none';
-
-      // Match canvas dimensions to actual video feed to ensure coordinates map perfectly
-      if (canvasElement.width !== videoElement.videoWidth) {
-        canvasElement.width = videoElement.videoWidth;
-        canvasElement.height = videoElement.videoHeight;
+      var e = els();
+      if (!e || e.overlay.hidden) return;
+      if (!e.ready.hidden) { e.ready.hidden = true; e.live.hidden = false; }
+      var canvas = e.canvas, ctx = canvas.getContext('2d');
+      if (canvas.width !== e.video.videoWidth && e.video.videoWidth) {
+        canvas.width = e.video.videoWidth;
+        canvas.height = e.video.videoHeight;
       }
-
-      canvasCtx.save();
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-      
-      // Draw the video frame to the canvas (which is visually flipped by CSS)
-      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
-
-      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-        const landmarks = results.multiFaceLandmarks[0];
-        
-        // Full outer lip contour
-        const outerLip = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185, 61];
-        // Full inner lip contour (mouth opening)
-        const innerLip = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 80, 191, 78];
-
-        // We use globalCompositeOperation to smoothly blend the color over the lips
-        canvasCtx.globalCompositeOperation = 'multiply';
-        canvasCtx.fillStyle = activeColor;
-        
-        canvasCtx.beginPath();
-        
-        // Draw Outer Lip
-        outerLip.forEach((index, i) => {
-          const pt = landmarks[index];
-          if (i === 0) canvasCtx.moveTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
-          else canvasCtx.lineTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
-        });
-
-        // Draw Inner Lip (creates a hole in the middle)
-        innerLip.forEach((index, i) => {
-          const pt = landmarks[index];
-          if (i === 0) canvasCtx.moveTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
-          else canvasCtx.lineTo(pt.x * canvasElement.width, pt.y * canvasElement.height);
-        });
-        
-        // fill with evenodd punches out the overlapping inner area (the teeth/mouth opening)
-        canvasCtx.fill('evenodd');
-        
-        canvasCtx.globalCompositeOperation = 'source-over';
+      var w = canvas.width, h = canvas.height;
+      ctx.save();
+      ctx.clearRect(0, 0, w, h);
+      ctx.drawImage(results.image, 0, 0, w, h);
+      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0 && S.color) {
+        var lm = results.multiFaceLandmarks[0];
+        if (S.compare) {
+          /* canvas is CSS-mirrored: right of the on-screen divider = left of the bitmap */
+          ctx.beginPath();
+          ctx.rect(0, 0, w * (1 - S.split), h);
+          ctx.clip();
+        }
+        ctx.globalCompositeOperation = 'multiply';
+        if (S.mode === 'lips') {
+          var outer = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185, 61];
+          var inner = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 80, 191, 78];
+          ctx.fillStyle = S.color + '80';
+          ctx.beginPath();
+          outer.forEach(function (idx, i) {
+            var pt = lm[idx];
+            if (i === 0) ctx.moveTo(pt.x * w, pt.y * h);
+            else ctx.lineTo(pt.x * w, pt.y * h);
+          });
+          inner.forEach(function (idx, i) {
+            var pt = lm[idx];
+            if (i === 0) ctx.moveTo(pt.x * w, pt.y * h);
+            else ctx.lineTo(pt.x * w, pt.y * h);
+          });
+          ctx.fill('evenodd');
+        } else if (S.mode === 'face') {
+          var faceW = dist(lm[234], lm[454], w, h);
+          softBlob(ctx, lm[205].x * w, lm[205].y * h, faceW * 0.14, 0.8, S.color + '4D');
+          softBlob(ctx, lm[425].x * w, lm[425].y * h, faceW * 0.14, 0.8, S.color + '4D');
+        } else {
+          /* eyes: soft shadow above each eye (iris centers 468/473 via refineLandmarks) */
+          var reW = dist(lm[33], lm[133], w, h);
+          var reH = dist(lm[159], lm[145], w, h);
+          var leW = dist(lm[362], lm[263], w, h);
+          var leH = dist(lm[386], lm[374], w, h);
+          if (lm[468]) softBlob(ctx, lm[468].x * w, lm[468].y * h - reH * 1.7, reW * 0.62, 0.55, S.color + '59');
+          if (lm[473]) softBlob(ctx, lm[473].x * w, lm[473].y * h - leH * 1.7, leW * 0.62, 0.55, S.color + '59');
+        }
+        ctx.globalCompositeOperation = 'source-over';
       }
-      canvasCtx.restore();
+      ctx.restore();
     }
 
-    async function initAR() {
-      if (!faceMesh) {
-        // We ensure MediaPipe is available in the window
-        const checkMediaPipe = setInterval(() => {
-          if (window.FaceMesh && window.Camera) {
-            clearInterval(checkMediaPipe);
-            
-            faceMesh = new window.FaceMesh({locateFile: (file) => {
-              return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
-            }});
-            
-            faceMesh.setOptions({
-              maxNumFaces: 1,
-              refineLandmarks: true,
-              minDetectionConfidence: 0.5,
-              minTrackingConfidence: 0.5
-            });
-            
-            faceMesh.onResults(onResults);
+    function cameraFail() {
+      var e = els();
+      if (e && e.readyLabel) e.readyLabel.textContent = 'camera unavailable — please allow camera access';
+    }
 
-            camera = new window.Camera(videoElement, {
-              onFrame: async () => {
-                await faceMesh.send({image: videoElement});
-              },
-              width: 480,
-              height: 640
-            });
-            camera.start();
-          }
-        }, 100);
-      } else if (camera) {
-        camera.start();
+    function startAR() {
+      var e = els();
+      if (!e || S.loading) return;
+      var boot = function () {
+        if (!S.faceMesh) {
+          S.faceMesh = new window.FaceMesh({ locateFile: function (f) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/' + f; } });
+          S.faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+          S.faceMesh.onResults(onResults);
+          S.camera = new window.Camera(e.video, {
+            onFrame: function () { return S.faceMesh.send({ image: e.video }); },
+            width: 480,
+            height: 640
+          });
+        }
+        var p = S.camera.start();
+        if (p && p.catch) p.catch(cameraFail);
+      };
+      if (window.FaceMesh && window.Camera) { boot(); return; }
+      S.loading = true;
+      Promise.all([
+        loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js'),
+        loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js')
+      ]).then(function () { S.loading = false; boot(); })
+        .catch(function () { S.loading = false; cameraFail(); });
+    }
+
+    function openStudio() {
+      var e = els();
+      if (!e) return;
+      e.overlay.hidden = false;
+      e.ready.hidden = false;
+      e.live.hidden = true;
+      if (e.readyLabel) e.readyLabel.textContent = 'getting ready';
+      railState('cats');
+      startAR();
+    }
+
+    function closeAll() {
+      var e = els();
+      if (!e) return;
+      if (e.consent) e.consent.hidden = true;
+      e.overlay.hidden = true;
+      S.compare = false;
+      if (e.divider) e.divider.hidden = true;
+      var cmp = e.overlay.querySelector('[data-kj-hvto-compare]');
+      if (cmp) cmp.classList.remove('active');
+      if (S.camera) S.camera.stop();
+    }
+
+    document.addEventListener('click', function (ev) {
+      var open = ev.target.closest('[data-kj-hvto-open]');
+      if (open) {
+        var e = els();
+        if (!e) return;
+        if (S.agreed) { openStudio(); return; }
+        if (e.consent) e.consent.hidden = false;
+        return;
       }
-    }
-
-    function stopAR() {
-      if (camera) {
-        camera.stop();
+      if (ev.target.closest('[data-kj-hvto-close]')) { closeAll(); return; }
+      var agree = ev.target.closest('[data-kj-hvto-agree]');
+      if (agree && !agree.disabled) {
+        S.agreed = true;
+        var e1 = els();
+        if (e1 && e1.consent) e1.consent.hidden = true;
+        openStudio();
+        return;
       }
-      loadingText.style.display = 'block';
-    }
+      var cat = ev.target.closest('[data-kj-hvto-cat]');
+      if (cat) { showCat(cat.dataset.kjHvtoCat); return; }
+      var tab = ev.target.closest('[data-kj-hvto-tab]');
+      if (tab) { showCat(tab.dataset.kjHvtoTab); return; }
+      var openPd = ev.target.closest('[data-kj-hvto-open-pd]');
+      if (openPd) { showProduct(openPd.dataset.kjHvtoOpenPd); return; }
+      var back = ev.target.closest('[data-kj-hvto-back]');
+      if (back) { showCat(back.dataset.kjHvtoBack); return; }
+      var dot = ev.target.closest('[data-kj-hvto-dot]');
+      if (dot) {
+        var pd = dot.closest('[data-kj-hvto-pd]');
+        pd.querySelectorAll('[data-kj-hvto-dot]').forEach(function (d) { d.classList.remove('active'); });
+        dot.classList.add('active');
+        S.color = dot.dataset.color;
+        var label = pd.querySelector('[data-kj-hvto-shadelabel]');
+        if (label) label.textContent = dot.dataset.name || '';
+        var vid = pd.querySelector('[data-kj-hvto-varid]');
+        if (vid && dot.dataset.vid) vid.value = dot.dataset.vid;
+        return;
+      }
+      var snap = ev.target.closest('[data-kj-hvto-snap]');
+      if (snap) {
+        var e2 = els();
+        if (!e2 || !e2.canvas.width) return;
+        var a = document.createElement('a');
+        a.download = 'st-london-try-on.png';
+        a.href = e2.canvas.toDataURL('image/png');
+        a.click();
+        if (e2.flash) {
+          e2.flash.classList.remove('on');
+          void e2.flash.offsetWidth;
+          e2.flash.classList.add('on');
+        }
+        return;
+      }
+      var cmp = ev.target.closest('[data-kj-hvto-compare]');
+      if (cmp) {
+        var e3 = els();
+        if (!e3) return;
+        S.compare = !S.compare;
+        S.split = 0.5;
+        e3.divider.hidden = !S.compare;
+        e3.divider.style.left = '50%';
+        cmp.classList.toggle('active', S.compare);
+      }
+    });
 
-    if (btn) {
-      btn.addEventListener('click', () => {
-        modal.classList.add('active');
-        initAR();
-      });
-    }
+    document.addEventListener('change', function (ev) {
+      var check = ev.target.closest('[data-kj-hvto-check]');
+      if (!check) return;
+      var agree = document.querySelector('[data-kj-hvto-agree]');
+      if (agree) agree.disabled = !check.checked;
+    });
 
-    if (closeBtn) {
-      closeBtn.addEventListener('click', () => {
-        modal.classList.remove('active');
-        stopAR();
-      });
-    }
-  });
+    /* compare divider drag (relative to the camera panel) */
+    document.addEventListener('pointerdown', function (ev) {
+      if (!ev.target.closest('[data-kj-hvto-handle]')) return;
+      ev.preventDefault();
+      S.drag = true;
+    });
+    document.addEventListener('pointermove', function (ev) {
+      if (!S.drag) return;
+      var e = els();
+      if (!e) return;
+      var r = e.cam.getBoundingClientRect();
+      S.split = Math.min(0.88, Math.max(0.12, (ev.clientX - r.left) / r.width));
+      e.divider.style.left = (S.split * 100) + '%';
+    });
+    document.addEventListener('pointerup', function () { S.drag = false; });
+  })();
 </script>
 
 {% schema %}
@@ -402,16 +1151,59 @@
       "default": "Launch Camera"
     },
     {
-      "type": "color",
-      "id": "default_color_hex",
-      "label": "Default Try-On Color",
-      "default": "#FF69B4"
+      "type": "header",
+      "content": "Categories"
     },
     {
       "type": "text",
-      "id": "default_color_name",
-      "label": "Default Color Name",
-      "default": "Hot Pink"
+      "id": "cat1_label",
+      "label": "Category 1 label",
+      "default": "eyes"
+    },
+    {
+      "type": "text",
+      "id": "cat1_collection",
+      "label": "Category 1 collection handle",
+      "default": "eyes-2"
+    },
+    {
+      "type": "text",
+      "id": "cat1_image_url",
+      "label": "Category 1 tile image URL"
+    },
+    {
+      "type": "text",
+      "id": "cat2_label",
+      "label": "Category 2 label",
+      "default": "face"
+    },
+    {
+      "type": "text",
+      "id": "cat2_collection",
+      "label": "Category 2 collection handle",
+      "default": "face-uk"
+    },
+    {
+      "type": "text",
+      "id": "cat2_image_url",
+      "label": "Category 2 tile image URL"
+    },
+    {
+      "type": "text",
+      "id": "cat3_label",
+      "label": "Category 3 label",
+      "default": "lips"
+    },
+    {
+      "type": "text",
+      "id": "cat3_collection",
+      "label": "Category 3 collection handle",
+      "default": "lips-1"
+    },
+    {
+      "type": "text",
+      "id": "cat3_image_url",
+      "label": "Category 3 tile image URL"
     }
   ],
   "presets": [

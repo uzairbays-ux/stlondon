@@ -292,7 +292,20 @@
         if (btn) { btn.disabled = true; btn.innerHTML = 'adding…'; }
         var fd = new FormData(form);
         fd.append('sections', 'cart-drawer-section');
-        fetch('/cart/add', {
+        var swapAndOpen = function (html) {
+          var holder = document.getElementById('shopify-section-cart-drawer-section');
+          if (html && holder) holder.outerHTML = html;
+          var drawer = document.querySelector('#shopify-section-cart-drawer-section theme-drawer') ||
+                       document.querySelector('cart-drawer-component theme-drawer');
+          if (drawer && typeof drawer.open === 'function') {
+            drawer.open();
+          } else if (drawer) {
+            drawer.setAttribute('open', '');
+          }
+        };
+        /* sections also in the URL: analytics fetch-wrappers can re-serialize
+           the body and drop appended fields (seen as sections:null) */
+        fetch('/cart/add?sections=cart-drawer-section', {
           method: 'POST',
           body: fd,
           headers: { 'Accept': 'application/javascript', 'X-Requested-With': 'XMLHttpRequest' }
@@ -300,16 +313,14 @@
           .then(function (r) { return r.json(); })
           .then(function (data) {
             if (data.status) throw new Error(data.description || 'add failed');
-            var holder = document.getElementById('shopify-section-cart-drawer-section');
-            if (data.sections && data.sections['cart-drawer-section'] && holder) {
-              holder.outerHTML = data.sections['cart-drawer-section'];
-            }
-            var drawer = document.querySelector('#shopify-section-cart-drawer-section theme-drawer') ||
-                         document.querySelector('cart-drawer-component theme-drawer');
-            if (drawer && typeof drawer.open === 'function') {
-              drawer.open();
-            } else if (drawer) {
-              drawer.setAttribute('open', '');
+            if (data.sections && data.sections['cart-drawer-section']) {
+              swapAndOpen(data.sections['cart-drawer-section']);
+            } else {
+              /* add succeeded but sections were stripped — refetch the drawer */
+              fetch('/?sections=cart-drawer-section')
+                .then(function (r) { return r.json(); })
+                .then(function (s) { swapAndOpen(s['cart-drawer-section']); })
+                .catch(function () { swapAndOpen(null); });
             }
           })
           .catch(function () {
