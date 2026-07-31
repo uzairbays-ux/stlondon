@@ -42,8 +42,8 @@
         "text": "<p>recreate this flushed and contoured summer look featuring our best-selling blush and lip liner.</p>",
         "button_text": "shop now",
         "button_link": "/",
-        "image": "shopify://shop_images/kj-ig-1.jpg",
-        "external_video_url": "https://cdn.shopify.com/videos/c/o/v/4ce4d8dfde4943389c2dc976ce0ccf95.mp4",
+        "image": "shopify://shop_images/video-cover.jpg",
+        "external_video_url": "https://cdn.shopify.com/videos/c/o/v/4b220a62a99c4fa9a15ab32f3182c706.mp4",
         "media_side": "right",
         "bg_color": "#f8f5f2",
         "card_bg": "#ffffff",
@@ -84,7 +84,7 @@
       "type": "kj-hero-banner",
       "name": "KJ Spotlight Hero",
       "settings": {
-        "image_desktop": "shopify://shop_images/kj-spotlight-1.jpg",
+        "image_desktop": "shopify://shop_images/pagebreaker.png",
         "height_mode": "adapt",
         "desktop_height": 70,
         "mobile_height": 60,
@@ -124,7 +124,7 @@
       "type": "kj-hero-banner",
       "name": "KJ Spotlight Hero 2",
       "settings": {
-        "image_desktop": "shopify://shop_images/kj-spotlight-2.jpg",
+        "image_desktop": "shopify://shop_images/page-breaker-2.png",
         "height_mode": "adapt",
         "desktop_height": 70,
         "mobile_height": 60,
