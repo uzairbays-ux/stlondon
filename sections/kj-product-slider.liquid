@@ -236,7 +236,11 @@
   }
 
   .kj-slider-track-wrap {
-    width: 100%;
+    /* bleed past the container padding so scrolling cards clip at the OUTER
+       edge (viewport edge) instead of chopping at the 20px padding line */
+    margin: 0 -20px;
+    padding: 0 20px;
+    scroll-padding-inline: 20px;
     overflow-x: auto;
     /* the hover panel's slide-in offset (translateY 16px) counts as vertical
        overflow — clip it or the container grows a scrollbar */
