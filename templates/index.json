@@ -43,6 +43,7 @@
         "button_text": "shop now",
         "button_link": "/",
         "image": "shopify://shop_images/kj-ig-1.jpg",
+        "external_video_url": "https://cdn.shopify.com/videos/c/o/v/4ce4d8dfde4943389c2dc976ce0ccf95.mp4",
         "media_side": "right",
         "bg_color": "#f8f5f2",
         "card_bg": "#ffffff",

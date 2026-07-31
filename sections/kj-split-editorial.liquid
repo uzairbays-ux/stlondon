@@ -17,7 +17,9 @@
       </div>
 
       <div class="kj-split-media">
-        {%- if section.settings.video != blank -%}
+        {%- if section.settings.external_video_url != blank -%}
+          <video class="kj-split-media-el" src="{{ section.settings.external_video_url }}" autoplay loop muted playsinline preload="metadata"></video>
+        {%- elsif section.settings.video != blank -%}
           {{ section.settings.video | video_tag: image_size: '1200x', loop: true, muted: true, autoplay: true, controls: false, class: 'kj-split-media-el' }}
         {%- elsif section.settings.image != blank -%}
           <img src="{{ section.settings.image | image_url: width: 1200 }}" alt="{{ section.settings.heading | escape }}" class="kj-split-media-el" loading="lazy" width="1200" height="{{ 1200 | divided_by: section.settings.image.aspect_ratio | round }}">
@@ -182,6 +184,11 @@
       "type": "video",
       "id": "video",
       "label": "Video (optional, replaces image)"
+    },
+    {
+      "type": "text",
+      "id": "external_video_url",
+      "label": "Video URL (mp4; autoplay loop, overrides image)"
     },
     {
       "type": "select",

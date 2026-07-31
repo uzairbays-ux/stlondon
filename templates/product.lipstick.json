@@ -15,7 +15,7 @@
       "settings": {
         "bg_color": "#ffffff",
         "subtitle": "0.12 oz | soft-matte finish",
-        "shade_families": "nudes: Kylie, Blushing Babe, Koko K, An Apple A Day, Summer Somewhere, Irreplaceable, Work Mode, Here For It\nreds: Rendezvous, Fire Sign, Up To No Good, You Could Never",
+        "shade_families": "nudes: ST London, Blushing Babe, Koko K, An Apple A Day, Summer Somewhere, Irreplaceable, Work Mode, Here For It\nreds: Rendezvous, Fire Sign, Up To No Good, You Could Never",
         "benefits": "clean, cruelty free, high pigmented, non-drying, paraben free, smudge-resistant, vegan",
         "benefit_icons": "https://kyliecosmetics.com/cdn/shop/files/Circle_KC_Icons_-_Clean.png, https://kyliecosmetics.com/cdn/shop/files/Circle_KC_Icons_-_Cruelty_Free.png, https://kyliecosmetics.com/cdn/shop/files/highly_pigmented_41fb9799-730a-49f1-9958-40c28a9e78ed.png, https://kyliecosmetics.com/cdn/shop/files/non-drying_2c782c5b-a59c-40ae-9deb-686b413c7747.png, https://kyliecosmetics.com/cdn/shop/files/Circle_KC_Icons_-_Paraben_Free.png, https://kyliecosmetics.com/cdn/shop/files/smudge-resistant-2_5618ebea-f5b8-4cbb-a5d4-713e2a19aa32.png, https://kyliecosmetics.com/cdn/shop/files/Circle_KC_Icons_-_Vegan.png",
         "shipping_text": "<p>free uk shipping on orders over £40. easy returns within 30 days.</p>"
@@ -26,7 +26,7 @@
       "name": "Story: quote + how to",
       "settings": {
         "layout": "quote_howto",
-        "label": "from kylie",
+        "label": "from ST London",
         "heading": "THE MOST COMFORTABLE AND LIGHTWEIGHT MATTE LIPSTICK",
         "subheading": "how to use",
         "text": "<p>apply to lips for a highly pigmented, soft-matte finish.</p>",
@@ -259,7 +259,7 @@
             "body": "goes on smooth and lasts through coffee. wish there were more nude options but the formula is unmatched.",
             "date": "2/28/2026",
             "author": "amelia",
-            "shade": "kylie"
+            "shade": "ST London"
           }
         }
       },
