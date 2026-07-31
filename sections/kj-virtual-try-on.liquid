@@ -961,10 +961,11 @@
     /* Homepage try-on studio — delegated document-level (survives DOM morph).
        One applied product per category slot, all rendered together:
        lips = lip fill, face = cheek blush, eyes = lid shadow,
-       nails = fingertip polish via MediaPipe Hands (lazy). The tray lists
-       applied items and "add all" checks them out together. */
+       nails = fingertip polish. Face AND hands come from ONE MediaPipe
+       Holistic model — running FaceMesh + Hands as two solutions deadlocks
+       the frame loop (camera freeze) the moment both send on one frame. */
     if (window.__kjHomeVto) return;
-    window.__kjHomeVto = { camera: null, faceMesh: null, hands: null, handsRes: null, handsLoading: false, applied: {}, loading: false, agreed: false, compare: false, split: 0.5, drag: false };
+    window.__kjHomeVto = { camera: null, holistic: null, applied: {}, loading: false, agreed: false, compare: false, split: 0.5, drag: false };
     var S = window.__kjHomeVto;
 
     function els() {
@@ -1028,7 +1029,6 @@
         cents: parseInt(pd.dataset.cents, 10) || 0,
         pdKey: pd.dataset.kjHvtoPd
       };
-      if (mode === 'nails') ensureHands();
       renderTray();
     }
 
@@ -1085,21 +1085,6 @@
         s.onerror = reject;
         document.head.appendChild(s);
       });
-    }
-
-    function ensureHands() {
-      if (S.hands || S.handsLoading) return;
-      S.handsLoading = true;
-      var boot = function () {
-        S.hands = new window.Hands({ locateFile: function (f) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/' + f; } });
-        S.hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-        S.hands.onResults(function (r) { S.handsRes = r; });
-        S.handsLoading = false;
-      };
-      if (window.Hands) { boot(); return; }
-      loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js')
-        .then(boot)
-        .catch(function () { S.handsLoading = false; });
     }
 
     function dist(a, b, w, h) {
@@ -1166,7 +1151,7 @@
           ctx.rect(0, 0, w * (1 - S.split), h);
           ctx.clip();
         }
-        var lm = (results.multiFaceLandmarks && results.multiFaceLandmarks[0]) || null;
+        var lm = results.faceLandmarks || null;
         if (lm) {
           ctx.globalCompositeOperation = 'multiply';
           if (slots.lips) {
@@ -1201,8 +1186,11 @@
           }
           ctx.globalCompositeOperation = 'source-over';
         }
-        if (slots.nails && S.handsRes && S.handsRes.multiHandLandmarks && S.handsRes.multiHandLandmarks.length) {
-          drawNails(ctx, S.handsRes.multiHandLandmarks, w, h, slots.nails.color);
+        if (slots.nails) {
+          var handsList = [];
+          if (results.leftHandLandmarks) handsList.push(results.leftHandLandmarks);
+          if (results.rightHandLandmarks) handsList.push(results.rightHandLandmarks);
+          if (handsList.length) drawNails(ctx, handsList, w, h, slots.nails.color);
         }
       }
       ctx.restore();
@@ -1217,16 +1205,12 @@
       var e = els();
       if (!e || S.loading) return;
       var boot = function () {
-        if (!S.faceMesh) {
-          S.faceMesh = new window.FaceMesh({ locateFile: function (f) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/' + f; } });
-          S.faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-          S.faceMesh.onResults(onResults);
+        if (!S.holistic) {
+          S.holistic = new window.Holistic({ locateFile: function (f) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/holistic/' + f; } });
+          S.holistic.setOptions({ modelComplexity: 0, smoothLandmarks: true, refineFaceLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+          S.holistic.onResults(onResults);
           S.camera = new window.Camera(e.video, {
-            onFrame: function () {
-              var jobs = [S.faceMesh.send({ image: e.video })];
-              if (S.applied.nails && S.hands) jobs.push(S.hands.send({ image: e.video }));
-              return Promise.all(jobs);
-            },
+            onFrame: function () { return S.holistic.send({ image: e.video }); },
             width: 480,
             height: 640
           });
@@ -1234,11 +1218,11 @@
         var p = S.camera.start();
         if (p && p.catch) p.catch(cameraFail);
       };
-      if (window.FaceMesh && window.Camera) { boot(); return; }
+      if (window.Holistic && window.Camera) { boot(); return; }
       S.loading = true;
       Promise.all([
         loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js'),
-        loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js')
+        loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js')
       ]).then(function () { S.loading = false; boot(); })
         .catch(function () { S.loading = false; cameraFail(); });
     }
