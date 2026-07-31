@@ -33,10 +33,9 @@
   consent card -> full-screen overlay = camera panel left (50/50 split,
   getting ready -> live with close / save / compare split) + right rail:
   categories -> product list (tabs) -> product detail. One product per
-  category can be APPLIED at once (lips fill / cheek blush / lid shadow /
-  fingertip nails via MediaPipe Hands); the applied tray lists them and
-  "add all to cart" checks out everything together. MediaPipe loads
-  lazily after "agree" only; Hands loads only when nails are applied.
+  category can be APPLIED at once (lips fill / cheek blush / lid shadow);
+  the applied tray lists them and "add all to cart" checks out everything
+  together. MediaPipe loads lazily after "agree" only.
 {%- endcomment -%}
 
 <div class="kj-hvto-consent" data-kj-hvto-consent hidden>
@@ -85,7 +84,7 @@
   <!-- Right rail -->
   <div class="kj-hvto-rail">
     <div class="kj-hvto-rail-scroll">
-    {%- assign cat_ids = '1,2,3,4' | split: ',' -%}
+    {%- assign cat_ids = '1,2,3' | split: ',' -%}
 
     <!-- State: categories -->
     <div class="kj-hvto-cats" data-kj-hvto-cats>
@@ -101,14 +100,10 @@
               {%- assign c_label = section.settings.cat2_label | default: 'face' -%}
               {%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
               {%- assign c_img = section.settings.cat2_image_url -%}
-            {%- when '3' -%}
+            {%- else -%}
               {%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
               {%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
               {%- assign c_img = section.settings.cat3_image_url -%}
-            {%- else -%}
-              {%- assign c_label = section.settings.cat4_label | default: 'nails' -%}
-              {%- assign c_handle = section.settings.cat4_collection | default: 'colorist-nail-polish' -%}
-              {%- assign c_img = section.settings.cat4_image_url -%}
           {%- endcase -%}
           {%- assign c_col = collections[c_handle] -%}
           {%- assign tile_src = c_img -%}
@@ -133,8 +128,7 @@
           {%- case ci -%}
             {%- when '1' -%}{%- assign c_label = section.settings.cat1_label | default: 'eyes' -%}
             {%- when '2' -%}{%- assign c_label = section.settings.cat2_label | default: 'face' -%}
-            {%- when '3' -%}{%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
-            {%- else -%}{%- assign c_label = section.settings.cat4_label | default: 'nails' -%}
+            {%- else -%}{%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
           {%- endcase -%}
           <button type="button" class="kj-hvto-tab" data-kj-hvto-tab="{{ ci }}">{{ c_label | downcase }}</button>
         {%- endfor -%}
@@ -143,8 +137,7 @@
         {%- case ci -%}
           {%- when '1' -%}{%- assign c_handle = section.settings.cat1_collection | default: 'eyes-2' -%}
           {%- when '2' -%}{%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
-          {%- when '3' -%}{%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
-          {%- else -%}{%- assign c_handle = section.settings.cat4_collection | default: 'colorist-nail-polish' -%}
+          {%- else -%}{%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
         {%- endcase -%}
         {%- assign c_col = collections[c_handle] -%}
         <div class="kj-hvto-grid" data-kj-hvto-grid="{{ ci }}" hidden>
@@ -170,18 +163,14 @@
           {%- when '2' -%}
             {%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
             {%- assign c_label = section.settings.cat2_label | default: 'face' -%}
-          {%- when '3' -%}
+          {%- else -%}
             {%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
             {%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
-          {%- else -%}
-            {%- assign c_handle = section.settings.cat4_collection | default: 'colorist-nail-polish' -%}
-            {%- assign c_label = section.settings.cat4_label | default: 'nails' -%}
         {%- endcase -%}
         {%- assign c_mode = 'face' -%}
         {%- assign c_label_down = c_label | downcase -%}
         {%- if c_label_down contains 'lip' -%}{%- assign c_mode = 'lips' -%}
-        {%- elsif c_label_down contains 'eye' -%}{%- assign c_mode = 'eyes' -%}
-        {%- elsif c_label_down contains 'nail' -%}{%- assign c_mode = 'nails' -%}{%- endif -%}
+        {%- elsif c_label_down contains 'eye' -%}{%- assign c_mode = 'eyes' -%}{%- endif -%}
         {%- assign c_col = collections[c_handle] -%}
         {%- for product in c_col.products limit: 8 -%}
           {%- assign p_index = forloop.index -%}
@@ -960,15 +949,11 @@
   (function () {
     /* Homepage try-on studio — delegated document-level (survives DOM morph).
        One applied product per category slot, all rendered together:
-       lips = lip fill, face = cheek blush, eyes = lid shadow,
-       nails = fingertip polish. Engine = MediaPipe Tasks API:
-       FaceLandmarker + HandLandmarker, synchronous detectForVideo per
-       frame in our own rAF loop. HandLandmarker palm-detects the whole
-       frame (unlike Holistic, whose pose-guided hands miss a hand held
-       up in a face close-up), and two Tasks never deadlock the way the
-       classic FaceMesh+Hands solutions did. */
+       lips = lip fill, face = cheek blush, eyes = lid shadow.
+       Engine = MediaPipe Tasks API FaceLandmarker, synchronous
+       detectForVideo per frame in our own rAF loop. */
     if (window.__kjHomeVto) return;
-    window.__kjHomeVto = { stream: null, raf: null, face: null, hand: null, applied: {}, loading: false, agreed: false, compare: false, split: 0.5, drag: false };
+    window.__kjHomeVto = { stream: null, raf: null, face: null, applied: {}, loading: false, agreed: false, compare: false, split: 0.5, drag: false };
     var S = window.__kjHomeVto;
     var MP_VER = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21';
 
@@ -1039,7 +1024,7 @@
     function renderTray() {
       var e = els();
       if (!e || !e.tray) return;
-      var modes = ['eyes', 'face', 'lips', 'nails'];
+      var modes = ['eyes', 'face', 'lips'];
       var chips = '';
       var total = 0, symbol = '£', count = 0;
       modes.forEach(function (m) {
@@ -1100,30 +1085,7 @@
       ctx.restore();
     }
 
-    function drawNails(ctx, hands, w, h, color) {
-      /* polish = rotated ellipse over each fingertip nail bed */
-      var tips = [4, 8, 12, 16, 20];
-      ctx.fillStyle = color + 'B3';
-      hands.forEach(function (handLm) {
-        tips.forEach(function (t) {
-          var tip = handLm[t], base = handLm[t - 1];
-          if (!tip || !base) return;
-          var tx = tip.x * w, ty = tip.y * h;
-          var dx = tx - base.x * w, dy = ty - base.y * h;
-          var len = Math.sqrt(dx * dx + dy * dy);
-          if (!len) return;
-          ctx.save();
-          ctx.translate(tx - dx * 0.12, ty - dy * 0.12);
-          ctx.rotate(Math.atan2(dy, dx));
-          ctx.beginPath();
-          ctx.ellipse(0, 0, len * 0.3, len * 0.2, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.restore();
-        });
-      });
-    }
-
-    function drawFrame(e, faceRes, handRes) {
+    function drawFrame(e, faceRes) {
       if (!e.ready.hidden) { e.ready.hidden = true; e.live.hidden = false; }
       var canvas = e.canvas, ctx = canvas.getContext('2d');
       if (canvas.width !== e.video.videoWidth && e.video.videoWidth) {
@@ -1136,7 +1098,7 @@
       ctx.clearRect(0, 0, w, h);
       ctx.drawImage(e.video, 0, 0, w, h);
       var slots = S.applied;
-      if (slots.lips || slots.face || slots.eyes || slots.nails) {
+      if (slots.lips || slots.face || slots.eyes) {
         if (S.compare) {
           /* canvas is CSS-mirrored: right of the on-screen divider = left of the bitmap */
           ctx.beginPath();
@@ -1178,9 +1140,6 @@
           }
           ctx.globalCompositeOperation = 'source-over';
         }
-        if (slots.nails && handRes && handRes.landmarks && handRes.landmarks.length) {
-          drawNails(ctx, handRes.landmarks, w, h, slots.nails.color);
-        }
       }
       ctx.restore();
     }
@@ -1191,7 +1150,7 @@
     }
 
     function loadTasks() {
-      if (S.face && S.hand) return Promise.resolve();
+      if (S.face) return Promise.resolve();
       return import(MP_VER + '/vision_bundle.mjs').then(function (m) {
         return m.FilesetResolver.forVisionTasks(MP_VER + '/wasm').then(function (fs) {
           var mk = function (Ctor, path, opts) {
@@ -1202,10 +1161,8 @@
             };
             return make('GPU').catch(function () { return make('CPU'); });
           };
-          return Promise.all([
-            mk(m.FaceLandmarker, 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task', { numFaces: 1 }),
-            mk(m.HandLandmarker, 'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task', { numHands: 2 })
-          ]).then(function (r) { S.face = r[0]; S.hand = r[1]; });
+          return mk(m.FaceLandmarker, 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task', { numFaces: 1 })
+            .then(function (r) { S.face = r; });
         });
       });
     }
@@ -1216,13 +1173,9 @@
         var e = els();
         if (!e || e.overlay.hidden || !S.stream) { S.raf = null; return; }
         if (e.video.readyState >= 2 && S.face) {
-          var ts = performance.now();
-          var faceRes = null, handRes = null;
-          try { faceRes = S.face.detectForVideo(e.video, ts); } catch (err) {}
-          if (S.applied.nails && S.hand) {
-            try { handRes = S.hand.detectForVideo(e.video, ts); } catch (err) {}
-          }
-          drawFrame(e, faceRes, handRes);
+          var faceRes = null;
+          try { faceRes = S.face.detectForVideo(e.video, performance.now()); } catch (err) {}
+          drawFrame(e, faceRes);
         }
         S.raf = requestAnimationFrame(tick);
       };
@@ -1517,23 +1470,6 @@
       "type": "text",
       "id": "cat3_image_url",
       "label": "Category 3 tile image URL"
-    },
-    {
-      "type": "text",
-      "id": "cat4_label",
-      "label": "Category 4 label",
-      "default": "nails"
-    },
-    {
-      "type": "text",
-      "id": "cat4_collection",
-      "label": "Category 4 collection handle",
-      "default": "colorist-nail-polish"
-    },
-    {
-      "type": "text",
-      "id": "cat4_image_url",
-      "label": "Category 4 tile image URL"
     }
   ],
   "presets": [
