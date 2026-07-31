@@ -30,11 +30,13 @@
 
 {%- comment -%}
   Homepage try-on studio (reference behavior):
-  consent card -> full-screen overlay = camera panel left (getting ready ->
-  live with close / save / compare split) + right rail flowing
-  categories -> product list (tabs) -> product detail (shades, add to cart,
-  try more). Categories map to real collections; shade dots come from
-  kj-shade-hex. MediaPipe loads lazily after "agree" only.
+  consent card -> full-screen overlay = camera panel left (50/50 split,
+  getting ready -> live with close / save / compare split) + right rail:
+  categories -> product list (tabs) -> product detail. One product per
+  category can be APPLIED at once (lips fill / cheek blush / lid shadow /
+  fingertip nails via MediaPipe Hands); the applied tray lists them and
+  "add all to cart" checks out everything together. MediaPipe loads
+  lazily after "agree" only; Hands loads only when nails are applied.
 {%- endcomment -%}
 
 <div class="kj-hvto-consent" data-kj-hvto-consent hidden>
@@ -82,7 +84,8 @@
 
   <!-- Right rail -->
   <div class="kj-hvto-rail">
-    {%- assign cat_ids = '1,2,3' | split: ',' -%}
+    <div class="kj-hvto-rail-scroll">
+    {%- assign cat_ids = '1,2,3,4' | split: ',' -%}
 
     <!-- State: categories -->
     <div class="kj-hvto-cats" data-kj-hvto-cats>
@@ -98,10 +101,14 @@
               {%- assign c_label = section.settings.cat2_label | default: 'face' -%}
               {%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
               {%- assign c_img = section.settings.cat2_image_url -%}
-            {%- else -%}
+            {%- when '3' -%}
               {%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
               {%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
               {%- assign c_img = section.settings.cat3_image_url -%}
+            {%- else -%}
+              {%- assign c_label = section.settings.cat4_label | default: 'nails' -%}
+              {%- assign c_handle = section.settings.cat4_collection | default: 'colorist-nail-polish' -%}
+              {%- assign c_img = section.settings.cat4_image_url -%}
           {%- endcase -%}
           {%- assign c_col = collections[c_handle] -%}
           {%- assign tile_src = c_img -%}
@@ -126,7 +133,8 @@
           {%- case ci -%}
             {%- when '1' -%}{%- assign c_label = section.settings.cat1_label | default: 'eyes' -%}
             {%- when '2' -%}{%- assign c_label = section.settings.cat2_label | default: 'face' -%}
-            {%- else -%}{%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
+            {%- when '3' -%}{%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
+            {%- else -%}{%- assign c_label = section.settings.cat4_label | default: 'nails' -%}
           {%- endcase -%}
           <button type="button" class="kj-hvto-tab" data-kj-hvto-tab="{{ ci }}">{{ c_label | downcase }}</button>
         {%- endfor -%}
@@ -135,7 +143,8 @@
         {%- case ci -%}
           {%- when '1' -%}{%- assign c_handle = section.settings.cat1_collection | default: 'eyes-2' -%}
           {%- when '2' -%}{%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
-          {%- else -%}{%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
+          {%- when '3' -%}{%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
+          {%- else -%}{%- assign c_handle = section.settings.cat4_collection | default: 'colorist-nail-polish' -%}
         {%- endcase -%}
         {%- assign c_col = collections[c_handle] -%}
         <div class="kj-hvto-grid" data-kj-hvto-grid="{{ ci }}" hidden>
@@ -161,18 +170,22 @@
           {%- when '2' -%}
             {%- assign c_handle = section.settings.cat2_collection | default: 'face-uk' -%}
             {%- assign c_label = section.settings.cat2_label | default: 'face' -%}
-          {%- else -%}
+          {%- when '3' -%}
             {%- assign c_handle = section.settings.cat3_collection | default: 'lips-1' -%}
             {%- assign c_label = section.settings.cat3_label | default: 'lips' -%}
+          {%- else -%}
+            {%- assign c_handle = section.settings.cat4_collection | default: 'colorist-nail-polish' -%}
+            {%- assign c_label = section.settings.cat4_label | default: 'nails' -%}
         {%- endcase -%}
         {%- assign c_mode = 'face' -%}
         {%- assign c_label_down = c_label | downcase -%}
         {%- if c_label_down contains 'lip' -%}{%- assign c_mode = 'lips' -%}
-        {%- elsif c_label_down contains 'eye' -%}{%- assign c_mode = 'eyes' -%}{%- endif -%}
+        {%- elsif c_label_down contains 'eye' -%}{%- assign c_mode = 'eyes' -%}
+        {%- elsif c_label_down contains 'nail' -%}{%- assign c_mode = 'nails' -%}{%- endif -%}
         {%- assign c_col = collections[c_handle] -%}
         {%- for product in c_col.products limit: 8 -%}
           {%- assign p_index = forloop.index -%}
-          <div class="kj-hvto-pd" data-kj-hvto-pd="{{ ci }}-{{ p_index }}" data-mode="{{ c_mode }}" data-cat="{{ ci }}" hidden>
+          <div class="kj-hvto-pd" data-kj-hvto-pd="{{ ci }}-{{ p_index }}" data-mode="{{ c_mode }}" data-cat="{{ ci }}" data-title="{{ product.title | downcase | escape }}" data-money="{{ product.price | money }}" data-cents="{{ product.price }}" hidden>
             <div class="kj-hvto-pd-head">
               <h3>{{ product.title | downcase }}</h3>
               <button type="button" class="kj-hvto-viewmore" data-kj-hvto-back="{{ ci }}">view more products</button>
@@ -185,7 +198,7 @@
               {%- for variant in product.variants -%}
                 {%- capture pv_hex -%}{% render 'kj-shade-hex', shade: variant.title %}{%- endcapture -%}
                 {%- if pv_hex != blank and dot_count < 8 -%}
-                  <button type="button" class="kj-hvto-dot{% if dot_count == 0 %} active{% endif %}" data-kj-hvto-dot data-color="{{ pv_hex }}" data-name="{{ variant.title | escape | downcase }}" data-vid="{{ variant.id }}" style="background-color: {{ pv_hex }};" aria-label="{{ variant.title | escape }}"></button>
+                  <button type="button" class="kj-hvto-dot{% if dot_count == 0 %} active{% endif %}" data-kj-hvto-dot data-color="{{ pv_hex }}" data-name="{{ variant.title | escape | downcase }}" data-vid="{{ variant.id }}" data-avail="{{ variant.available }}" style="background-color: {{ pv_hex }};" aria-label="{{ variant.title | escape }}"></button>
                   {%- if dot_count == 0 -%}
                     {%- assign pd_first_name = variant.title | downcase -%}
                     {%- assign pd_first_vid = variant.id -%}
@@ -194,6 +207,26 @@
                 {%- endif -%}
               {%- endfor -%}
             {%- endcapture -%}
+            {%- if dot_count == 0 -%}
+              {%- comment -%} single-variant shade products carry the shade in the title
+                  ("Colorist Nail Paint - ST008 - Ruby") — derive the dot from it {%- endcomment -%}
+              {%- assign t_parts = product.title | split: ' - ' -%}
+              {%- assign t_last = t_parts | last | strip -%}
+              {%- capture pt_hex -%}{% render 'kj-shade-hex', shade: t_last %}{%- endcapture -%}
+              {%- if pt_hex == blank -%}
+                {%- assign t_words = product.title | split: ' ' -%}
+                {%- assign t_last = t_words | last | strip -%}
+                {%- capture pt_hex -%}{% render 'kj-shade-hex', shade: t_last %}{%- endcapture -%}
+              {%- endif -%}
+              {%- if pt_hex != blank -%}
+                {%- capture pd_dots -%}
+                  <button type="button" class="kj-hvto-dot active" data-kj-hvto-dot data-color="{{ pt_hex }}" data-name="{{ t_last | escape | downcase }}" data-vid="{{ product.selected_or_first_available_variant.id }}" data-avail="{{ product.selected_or_first_available_variant.available }}" style="background-color: {{ pt_hex }};" aria-label="{{ t_last | escape }}"></button>
+                {%- endcapture -%}
+                {%- assign pd_first_name = t_last | downcase -%}
+                {%- assign pd_first_vid = product.selected_or_first_available_variant.id -%}
+                {%- assign dot_count = 1 -%}
+              {%- endif -%}
+            {%- endif -%}
             {%- if dot_count == 0 -%}
               {%- assign pd_first_name = product.selected_or_first_available_variant.title | downcase | replace: 'default title', '' -%}
               {%- assign pd_first_vid = product.selected_or_first_available_variant.id -%}
@@ -234,6 +267,14 @@
           </div>
         {%- endfor -%}
       {%- endfor -%}
+    </div>
+    </div>
+
+    <!-- Applied tray: everything currently on, checks out together -->
+    <div class="kj-hvto-tray" data-kj-hvto-tray hidden>
+      <p class="kj-hvto-tray-label">applied:</p>
+      <div class="kj-hvto-tray-chips" data-kj-hvto-tray-chips></div>
+      <button type="button" class="kj-hvto-tray-add" data-kj-hvto-addall>add all to cart</button>
     </div>
   </div>
 </div>
@@ -379,7 +420,7 @@
     cursor: pointer;
   }
 
-  /* Studio overlay */
+  /* Studio overlay — camera and rail split 50/50 */
   .kj-hvto-overlay {
     position: fixed;
     inset: 0;
@@ -406,7 +447,8 @@
 
   .kj-hvto-cam {
     position: relative;
-    flex: 0 0 min(44%, 560px);
+    flex: 1 1 0;
+    min-width: 0;
     border-radius: 6px;
     overflow: hidden;
     background: #FBF1EE;
@@ -548,15 +590,27 @@
     100% { opacity: 0; }
   }
 
-  /* Right rail */
+  /* Right rail: scrollable states + pinned applied tray */
   .kj-hvto-rail {
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  }
+
+  .kj-hvto-rail-scroll {
+    flex: 1;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 30px 10px;
+  }
+
+  .kj-hvto-cats,
+  .kj-hvto-list,
+  .kj-hvto-detail {
+    margin: auto; /* centers when short, scrolls naturally when tall */
   }
 
   .kj-hvto-cats { text-align: center; }
@@ -572,6 +626,7 @@
     display: flex;
     gap: 16px;
     justify-content: center;
+    flex-wrap: wrap;
   }
 
   .kj-hvto-cat-tile {
@@ -799,6 +854,87 @@
     cursor: pointer;
   }
 
+  /* Applied tray */
+  .kj-hvto-tray {
+    border-top: 1px solid #ece7e1;
+    padding: 12px 10px 4px;
+  }
+
+  .kj-hvto-tray-label {
+    font-size: 12px;
+    color: #777;
+    text-transform: lowercase;
+    margin: 0 0 8px;
+  }
+
+  .kj-hvto-tray-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .kj-hvto-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    border: 1px solid #e0dad3;
+    border-radius: 16px;
+    padding: 5px 8px 5px 6px;
+    font-size: 12px;
+    background: #fff;
+    cursor: pointer;
+  }
+
+  .kj-hvto-chip i {
+    display: block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .kj-hvto-chip em {
+    font-style: normal;
+    text-transform: lowercase;
+    color: #222;
+    white-space: nowrap;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .kj-hvto-chip button {
+    background: none;
+    border: none;
+    font-size: 15px;
+    line-height: 1;
+    color: #777;
+    cursor: pointer;
+    padding: 0 2px;
+  }
+
+  .kj-hvto-chip button:hover { color: #222; }
+
+  .kj-hvto-tray-add {
+    font-family: var(--font-heading--family);
+    width: 100%;
+    background: #222222;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: lowercase;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .kj-hvto-tray-add:hover:not(:disabled) { background: #000; }
+  .kj-hvto-tray-add:disabled { background: #999; cursor: not-allowed; }
+
   @media screen and (max-width: 899px) {
     .kj-hvto-overlay {
       flex-direction: column;
@@ -810,7 +946,8 @@
       flex: 0 0 auto;
       height: 52vh;
     }
-    .kj-hvto-rail {
+    .kj-hvto-rail { flex: 0 0 auto; }
+    .kj-hvto-rail-scroll {
       overflow-y: visible;
       padding: 20px 4px;
     }
@@ -822,10 +959,12 @@
 <script>
   (function () {
     /* Homepage try-on studio — delegated document-level (survives DOM morph).
-       Camera + MediaPipe load lazily after consent. Renderer per category:
-       lips = lip fill, face = cheek blush, eyes = lid shadow. */
+       One applied product per category slot, all rendered together:
+       lips = lip fill, face = cheek blush, eyes = lid shadow,
+       nails = fingertip polish via MediaPipe Hands (lazy). The tray lists
+       applied items and "add all" checks them out together. */
     if (window.__kjHomeVto) return;
-    window.__kjHomeVto = { camera: null, faceMesh: null, color: null, mode: 'lips', loading: false, agreed: false, compare: false, split: 0.5, drag: false };
+    window.__kjHomeVto = { camera: null, faceMesh: null, hands: null, handsRes: null, handsLoading: false, applied: {}, loading: false, agreed: false, compare: false, split: 0.5, drag: false };
     var S = window.__kjHomeVto;
 
     function els() {
@@ -844,8 +983,16 @@
         cam: overlay.querySelector('.kj-hvto-cam'),
         cats: overlay.querySelector('[data-kj-hvto-cats]'),
         list: overlay.querySelector('[data-kj-hvto-list]'),
-        detail: overlay.querySelector('[data-kj-hvto-detail]')
+        detail: overlay.querySelector('[data-kj-hvto-detail]'),
+        tray: overlay.querySelector('[data-kj-hvto-tray]'),
+        trayChips: overlay.querySelector('[data-kj-hvto-tray-chips]')
       };
+    }
+
+    function esc(x) {
+      return String(x == null ? '' : x).replace(/[&<>"]/g, function (ch) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch];
+      });
     }
 
     function railState(name) {
@@ -868,6 +1015,52 @@
       });
     }
 
+    function applyFromDot(pd, dot) {
+      if (!pd || !dot) return;
+      var mode = pd.dataset.mode || 'lips';
+      S.applied[mode] = {
+        color: dot.dataset.color,
+        name: dot.dataset.name || '',
+        vid: dot.dataset.vid,
+        avail: dot.dataset.avail !== 'false',
+        title: pd.dataset.title || '',
+        money: pd.dataset.money || '',
+        cents: parseInt(pd.dataset.cents, 10) || 0,
+        pdKey: pd.dataset.kjHvtoPd
+      };
+      if (mode === 'nails') ensureHands();
+      renderTray();
+    }
+
+    function renderTray() {
+      var e = els();
+      if (!e || !e.tray) return;
+      var modes = ['eyes', 'face', 'lips', 'nails'];
+      var chips = '';
+      var total = 0, symbol = '£', count = 0;
+      modes.forEach(function (m) {
+        var s = S.applied[m];
+        if (!s) return;
+        count++;
+        total += s.cents || 0;
+        if (s.money) {
+          var sym = s.money.replace(/[\d.,\s]/g, '');
+          if (sym) symbol = sym;
+        }
+        chips += '<span class="kj-hvto-chip" data-kj-hvto-chip="' + m + '">' +
+          '<i style="background:' + esc(s.color) + '"></i>' +
+          '<em>' + esc(s.title) + (s.name ? ' &middot; ' + esc(s.name) : '') + '</em>' +
+          '<button type="button" data-kj-hvto-unapply="' + m + '" aria-label="remove">&times;</button>' +
+          '</span>';
+      });
+      e.trayChips.innerHTML = chips;
+      e.tray.hidden = count === 0;
+      var btn = e.tray.querySelector('[data-kj-hvto-addall]');
+      if (btn && count > 0) {
+        btn.textContent = 'add all to cart - ' + symbol + (total / 100).toFixed(2);
+      }
+    }
+
     function showProduct(key) {
       var e = els();
       if (!e) return;
@@ -879,9 +1072,8 @@
         if (match) shown = p;
       });
       if (!shown) return;
-      S.mode = shown.dataset.mode || 'lips';
       var dot = shown.querySelector('.kj-hvto-dot.active') || shown.querySelector('.kj-hvto-dot');
-      S.color = dot ? dot.dataset.color : null;
+      if (dot) applyFromDot(shown, dot);
     }
 
     function loadScript(src) {
@@ -893,6 +1085,21 @@
         s.onerror = reject;
         document.head.appendChild(s);
       });
+    }
+
+    function ensureHands() {
+      if (S.hands || S.handsLoading) return;
+      S.handsLoading = true;
+      var boot = function () {
+        S.hands = new window.Hands({ locateFile: function (f) { return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/' + f; } });
+        S.hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+        S.hands.onResults(function (r) { S.handsRes = r; });
+        S.handsLoading = false;
+      };
+      if (window.Hands) { boot(); return; }
+      loadScript('https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js')
+        .then(boot)
+        .catch(function () { S.handsLoading = false; });
     }
 
     function dist(a, b, w, h) {
@@ -915,6 +1122,29 @@
       ctx.restore();
     }
 
+    function drawNails(ctx, hands, w, h, color) {
+      /* polish = rotated ellipse over each fingertip nail bed */
+      var tips = [4, 8, 12, 16, 20];
+      ctx.fillStyle = color + 'B3';
+      hands.forEach(function (handLm) {
+        tips.forEach(function (t) {
+          var tip = handLm[t], base = handLm[t - 1];
+          if (!tip || !base) return;
+          var tx = tip.x * w, ty = tip.y * h;
+          var dx = tx - base.x * w, dy = ty - base.y * h;
+          var len = Math.sqrt(dx * dx + dy * dy);
+          if (!len) return;
+          ctx.save();
+          ctx.translate(tx - dx * 0.12, ty - dy * 0.12);
+          ctx.rotate(Math.atan2(dy, dx));
+          ctx.beginPath();
+          ctx.ellipse(0, 0, len * 0.3, len * 0.2, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        });
+      });
+    }
+
     function onResults(results) {
       var e = els();
       if (!e || e.overlay.hidden) return;
@@ -928,45 +1158,52 @@
       ctx.save();
       ctx.clearRect(0, 0, w, h);
       ctx.drawImage(results.image, 0, 0, w, h);
-      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0 && S.color) {
-        var lm = results.multiFaceLandmarks[0];
+      var slots = S.applied;
+      if (slots.lips || slots.face || slots.eyes || slots.nails) {
         if (S.compare) {
           /* canvas is CSS-mirrored: right of the on-screen divider = left of the bitmap */
           ctx.beginPath();
           ctx.rect(0, 0, w * (1 - S.split), h);
           ctx.clip();
         }
-        ctx.globalCompositeOperation = 'multiply';
-        if (S.mode === 'lips') {
-          var outer = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185, 61];
-          var inner = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 80, 191, 78];
-          ctx.fillStyle = S.color + '80';
-          ctx.beginPath();
-          outer.forEach(function (idx, i) {
-            var pt = lm[idx];
-            if (i === 0) ctx.moveTo(pt.x * w, pt.y * h);
-            else ctx.lineTo(pt.x * w, pt.y * h);
-          });
-          inner.forEach(function (idx, i) {
-            var pt = lm[idx];
-            if (i === 0) ctx.moveTo(pt.x * w, pt.y * h);
-            else ctx.lineTo(pt.x * w, pt.y * h);
-          });
-          ctx.fill('evenodd');
-        } else if (S.mode === 'face') {
-          var faceW = dist(lm[234], lm[454], w, h);
-          softBlob(ctx, lm[205].x * w, lm[205].y * h, faceW * 0.14, 0.8, S.color + '4D');
-          softBlob(ctx, lm[425].x * w, lm[425].y * h, faceW * 0.14, 0.8, S.color + '4D');
-        } else {
-          /* eyes: soft shadow above each eye (iris centers 468/473 via refineLandmarks) */
-          var reW = dist(lm[33], lm[133], w, h);
-          var reH = dist(lm[159], lm[145], w, h);
-          var leW = dist(lm[362], lm[263], w, h);
-          var leH = dist(lm[386], lm[374], w, h);
-          if (lm[468]) softBlob(ctx, lm[468].x * w, lm[468].y * h - reH * 1.7, reW * 0.62, 0.55, S.color + '59');
-          if (lm[473]) softBlob(ctx, lm[473].x * w, lm[473].y * h - leH * 1.7, leW * 0.62, 0.55, S.color + '59');
+        var lm = (results.multiFaceLandmarks && results.multiFaceLandmarks[0]) || null;
+        if (lm) {
+          ctx.globalCompositeOperation = 'multiply';
+          if (slots.lips) {
+            var outer = [61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291, 409, 270, 269, 267, 0, 37, 39, 40, 185, 61];
+            var inner = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 80, 191, 78];
+            ctx.fillStyle = slots.lips.color + '80';
+            ctx.beginPath();
+            outer.forEach(function (idx, i) {
+              var pt = lm[idx];
+              if (i === 0) ctx.moveTo(pt.x * w, pt.y * h);
+              else ctx.lineTo(pt.x * w, pt.y * h);
+            });
+            inner.forEach(function (idx, i) {
+              var pt = lm[idx];
+              if (i === 0) ctx.moveTo(pt.x * w, pt.y * h);
+              else ctx.lineTo(pt.x * w, pt.y * h);
+            });
+            ctx.fill('evenodd');
+          }
+          if (slots.face) {
+            var faceW = dist(lm[234], lm[454], w, h);
+            softBlob(ctx, lm[205].x * w, lm[205].y * h, faceW * 0.14, 0.8, slots.face.color + '4D');
+            softBlob(ctx, lm[425].x * w, lm[425].y * h, faceW * 0.14, 0.8, slots.face.color + '4D');
+          }
+          if (slots.eyes) {
+            var reW = dist(lm[33], lm[133], w, h);
+            var reH = dist(lm[159], lm[145], w, h);
+            var leW = dist(lm[362], lm[263], w, h);
+            var leH = dist(lm[386], lm[374], w, h);
+            if (lm[468]) softBlob(ctx, lm[468].x * w, lm[468].y * h - reH * 1.7, reW * 0.62, 0.55, slots.eyes.color + '59');
+            if (lm[473]) softBlob(ctx, lm[473].x * w, lm[473].y * h - leH * 1.7, leW * 0.62, 0.55, slots.eyes.color + '59');
+          }
+          ctx.globalCompositeOperation = 'source-over';
         }
-        ctx.globalCompositeOperation = 'source-over';
+        if (slots.nails && S.handsRes && S.handsRes.multiHandLandmarks && S.handsRes.multiHandLandmarks.length) {
+          drawNails(ctx, S.handsRes.multiHandLandmarks, w, h, slots.nails.color);
+        }
       }
       ctx.restore();
     }
@@ -985,7 +1222,11 @@
           S.faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
           S.faceMesh.onResults(onResults);
           S.camera = new window.Camera(e.video, {
-            onFrame: function () { return S.faceMesh.send({ image: e.video }); },
+            onFrame: function () {
+              var jobs = [S.faceMesh.send({ image: e.video })];
+              if (S.applied.nails && S.hands) jobs.push(S.hands.send({ image: e.video }));
+              return Promise.all(jobs);
+            },
             width: 480,
             height: 640
           });
@@ -1002,6 +1243,15 @@
         .catch(function () { S.loading = false; cameraFail(); });
     }
 
+    function swapDrawerAndOpen(html) {
+      var holder = document.getElementById('shopify-section-cart-drawer-section');
+      if (html && holder) holder.outerHTML = html;
+      var drawer = document.querySelector('#shopify-section-cart-drawer-section theme-drawer') ||
+                   document.querySelector('cart-drawer-component theme-drawer');
+      if (drawer && typeof drawer.open === 'function') drawer.open();
+      else if (drawer) drawer.setAttribute('open', '');
+    }
+
     function openStudio() {
       var e = els();
       if (!e) return;
@@ -1010,6 +1260,7 @@
       e.live.hidden = true;
       if (e.readyLabel) e.readyLabel.textContent = 'getting ready';
       railState('cats');
+      renderTray();
       startAR();
     }
 
@@ -1056,11 +1307,60 @@
         var pd = dot.closest('[data-kj-hvto-pd]');
         pd.querySelectorAll('[data-kj-hvto-dot]').forEach(function (d) { d.classList.remove('active'); });
         dot.classList.add('active');
-        S.color = dot.dataset.color;
         var label = pd.querySelector('[data-kj-hvto-shadelabel]');
         if (label) label.textContent = dot.dataset.name || '';
         var vid = pd.querySelector('[data-kj-hvto-varid]');
         if (vid && dot.dataset.vid) vid.value = dot.dataset.vid;
+        applyFromDot(pd, dot);
+        return;
+      }
+      var unapply = ev.target.closest('[data-kj-hvto-unapply]');
+      if (unapply) {
+        delete S.applied[unapply.dataset.kjHvtoUnapply];
+        renderTray();
+        return;
+      }
+      var chip = ev.target.closest('[data-kj-hvto-chip]');
+      if (chip) {
+        var slot = S.applied[chip.dataset.kjHvtoChip];
+        if (slot && slot.pdKey) showProduct(slot.pdKey);
+        return;
+      }
+      var addAll = ev.target.closest('[data-kj-hvto-addall]');
+      if (addAll) {
+        var items = [];
+        Object.keys(S.applied).forEach(function (m) {
+          var s = S.applied[m];
+          if (s && s.vid && s.avail !== false) items.push(parseInt(s.vid, 10));
+        });
+        if (!items.length) return;
+        var origLabel = addAll.textContent;
+        addAll.disabled = true;
+        addAll.textContent = 'adding…';
+        /* sequential single adds: a sold-out item must not sink the rest
+           (a multi-item /cart/add.js stops at the first failure) */
+        var queue = Promise.resolve();
+        items.forEach(function (id) {
+          queue = queue.then(function () {
+            return fetch('/cart/add.js', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+              body: JSON.stringify({ id: id, quantity: 1 })
+            }).catch(function () {});
+          });
+        });
+        queue
+          .then(function () {
+            return fetch('/?sections=cart-drawer-section')
+              .then(function (r) { return r.json(); })
+              .then(function (s) { swapDrawerAndOpen(s['cart-drawer-section']); })
+              .catch(function () { swapDrawerAndOpen(null); });
+          })
+          .finally(function () {
+            addAll.disabled = false;
+            addAll.textContent = origLabel;
+            renderTray();
+          });
         return;
       }
       var snap = ev.target.closest('[data-kj-hvto-snap]');
@@ -1204,6 +1504,23 @@
       "type": "text",
       "id": "cat3_image_url",
       "label": "Category 3 tile image URL"
+    },
+    {
+      "type": "text",
+      "id": "cat4_label",
+      "label": "Category 4 label",
+      "default": "nails"
+    },
+    {
+      "type": "text",
+      "id": "cat4_collection",
+      "label": "Category 4 collection handle",
+      "default": "colorist-nail-polish"
+    },
+    {
+      "type": "text",
+      "id": "cat4_image_url",
+      "label": "Category 4 tile image URL"
     }
   ],
   "presets": [
