@@ -280,7 +280,7 @@
       "name": "Virtual Try-On",
       "settings": {
         "bg_color": "#f8f5f2",
-        "bg_image_url": "https://www.kyliecosmetics.com/cdn/shop/files/v3_July_VTO_update_desktop_3336x954.psd.jpg",
+        "bg_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/tryon-bg.png?v=1785497220",
         "heading": "Try It On Virtually",
         "subtext": "See how this looks on you in real-time.",
         "button_text": "Launch Camera",
