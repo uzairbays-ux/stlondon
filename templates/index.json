@@ -283,9 +283,7 @@
         "bg_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/tryon-bg.png?v=1785497220",
         "heading": "Try It On Virtually",
         "subtext": "See how this looks on you in real-time.",
-        "button_text": "Launch Camera",
-        "default_color_hex": "#ff69b4",
-        "default_color_name": "Hot Pink"
+        "button_text": "Launch Camera"
       }
     },
     "kj_instagram_grid_1": {
