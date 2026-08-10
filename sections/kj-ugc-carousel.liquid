@@ -25,30 +25,34 @@
       </div>
     </div>
 
-    <div class="kj-ugc-trackwrap" data-kj-ugc-track>
+    <div class="kj-ugc-trackwrap" data-kj-ugc-track data-kj-ugc-infinite data-count="{{ section.blocks.size }}">
       <div class="kj-ugc-track">
-        {%- for block in section.blocks -%}
-          {%- liquid
-            assign src = block.settings.image | strip
-            if src != blank and src contains '//'
-            elsif src != blank
-              assign src = src | asset_url
-            endif
-          -%}
-          <div class="kj-ugc-card" {{ block.shopify_attributes }}>
-            {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}" class="kj-ugc-cardlink">{%- endif -%}
-              {%- if src != blank -%}
-                <img src="{{ src }}" alt="{{ block.settings.handle | escape }}" loading="lazy" class="kj-ugc-img">
-              {%- endif -%}
-              <div class="kj-ugc-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-              {%- if block.settings.handle != blank -%}
-                <p class="kj-ugc-handle">{{ block.settings.handle }}</p>
-              {%- endif -%}
-              {%- if block.settings.caption != blank -%}
-                <p class="kj-ugc-caption">{{ block.settings.caption }}</p>
-              {%- endif -%}
-            {%- if block.settings.link != blank -%}</a>{%- endif -%}
-          </div>
+        {%- comment -%} set rendered three times: wrap keeps scroll inside the first
+            set with two full sets of runway, so the scroller never clamps {%- endcomment -%}
+        {%- for setpass in (1..3) -%}
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign src = block.settings.image | strip
+              if src != blank and src contains '//'
+              elsif src != blank
+                assign src = src | asset_url
+              endif
+            -%}
+            <div class="kj-ugc-card" {% if setpass == 1 %}{{ block.shopify_attributes }}{% else %}aria-hidden="true" data-kj-ugc-clone{% endif %}>
+              {%- if block.settings.link != blank -%}<a href="{{ block.settings.link }}" class="kj-ugc-cardlink"{% if setpass == 2 %} tabindex="-1"{% endif %}>{%- endif -%}
+                {%- if src != blank -%}
+                  <img src="{{ src }}" alt="{{ block.settings.handle | escape }}" loading="lazy" class="kj-ugc-img">
+                {%- endif -%}
+                <div class="kj-ugc-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                {%- if block.settings.handle != blank -%}
+                  <p class="kj-ugc-handle">{{ block.settings.handle }}</p>
+                {%- endif -%}
+                {%- if block.settings.caption != blank -%}
+                  <p class="kj-ugc-caption">{{ block.settings.caption }}</p>
+                {%- endif -%}
+              {%- if block.settings.link != blank -%}</a>{%- endif -%}
+            </div>
+          {%- endfor -%}
         {%- endfor -%}
       </div>
     </div>
@@ -172,8 +176,27 @@
 
 <script>
   (function () {
+    /* infinite loop: the card set is rendered twice; when scroll passes one
+       set-width it wraps back silently. A slow marquee keeps it drifting,
+       pausing on hover/touch and after arrow clicks. Morph-safe: state in
+       data attributes, one global rAF drives every carousel on the page. */
     if (window.__kjUgcDelegated) return;
     window.__kjUgcDelegated = true;
+
+    function period(wrap) {
+      var n = parseInt(wrap.dataset.count, 10) || 0;
+      var kids = wrap.querySelectorAll('.kj-ugc-card');
+      if (!n || kids.length < n + 1) return 0;
+      return kids[n].offsetLeft - kids[0].offsetLeft;
+    }
+
+    function normalize(wrap) {
+      var W = period(wrap);
+      if (!W) return W;
+      if (wrap.scrollLeft >= W) wrap.scrollLeft -= W;
+      return W;
+    }
+
     document.addEventListener('click', function (e) {
       var prev = e.target.closest('[data-kj-ugc-prev]');
       var next = e.target.closest('[data-kj-ugc-next]');
@@ -183,8 +206,32 @@
       if (!wrap) return;
       var card = wrap.querySelector('.kj-ugc-card');
       var step = card ? card.getBoundingClientRect().width + 18 : 260;
+      wrap.dataset.hold = Date.now() + 4000;
+      var W = period(wrap);
+      if (prev && W && wrap.scrollLeft < step) wrap.scrollLeft += W;
       wrap.scrollBy({ left: prev ? -step : step, behavior: 'smooth' });
     });
+
+    ['pointerdown', 'touchstart'].forEach(function (evt) {
+      document.addEventListener(evt, function (e) {
+        var wrap = e.target.closest && e.target.closest('[data-kj-ugc-infinite]');
+        if (wrap) wrap.dataset.hold = Date.now() + 4000;
+      }, { passive: true });
+    });
+
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function tick() {
+      document.querySelectorAll('[data-kj-ugc-infinite]').forEach(function (wrap) {
+        var W = normalize(wrap);
+        if (!W || reduced) return;
+        var hold = parseInt(wrap.dataset.hold, 10) || 0;
+        if (Date.now() < hold) return;
+        if (wrap.matches(':hover')) return;
+        wrap.scrollLeft += 0.5;
+      });
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   })();
 </script>
 

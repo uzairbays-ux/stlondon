@@ -21,6 +21,7 @@
         <div class="kj-tstm-track">
           {%- for block in section.blocks -%}
             <div class="kj-tstm-card" {{ block.shopify_attributes }}>
+              <span class="kj-tstm-mark" aria-hidden="true">&ldquo;</span>
               <div class="kj-tstm-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
               <p class="kj-tstm-quote">&ldquo;{{ block.settings.quote }}&rdquo;</p>
               {%- if block.settings.author != blank -%}
@@ -39,7 +40,7 @@
 
 <style>
   .kj-tstm {
-    background: {{ section.settings.bg_color | default: '#ffffff' }};
+    background: linear-gradient(180deg, {{ section.settings.bg_color | default: '#F8F5F2' }} 0%, #F2ECE5 100%);
     padding: {{ section.settings.padding_top | default: 48 }}px 0 {{ section.settings.padding_bottom | default: 48 }}px;
   }
 
@@ -60,21 +61,21 @@
 
   .kj-tstm-heading {
     font-family: var(--font-heading--family);
-    font-size: 18px;
+    font-size: 26px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     color: {{ section.settings.heading_color | default: '#222222' }};
     margin: 0;
   }
 
   .kj-tstm-rating {
-    font-size: 12px;
-    color: #555;
+    font-size: 12.5px;
+    color: #6F5545;
     margin: 0;
   }
 
-  .kj-tstm-rating span { color: #222; letter-spacing: 2px; }
+  .kj-tstm-rating span { color: #C6A46C; letter-spacing: 3px; }
 
   .kj-tstm-row {
     display: flex;
@@ -84,25 +85,27 @@
 
   .kj-tstm-arrow {
     flex: 0 0 auto;
-    width: 34px;
-    height: 34px;
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     border: 1px solid #DDD2C8;
     background: #fff;
-    color: #222;
+    color: #6F5545;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(111, 85, 69, 0.10);
+    transition: all 0.2s ease;
   }
 
-  .kj-tstm-arrow:hover { border-color: #222; }
+  .kj-tstm-arrow:hover { border-color: #C6A46C; color: #C6A46C; }
 
   .kj-tstm-trackwrap {
     flex: 1;
     overflow-x: auto;
     overflow-y: hidden;
-    border-radius: 8px;
+    padding: 12px 4px 26px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
@@ -115,32 +118,57 @@
   }
 
   .kj-tstm-card {
+    position: relative;
     flex: 0 0 24%;
-    min-width: 250px;
-    background: #fff;
-    border: 1px solid #ece7e1;
-    border-radius: 8px;
-    padding: 18px 20px;
+    min-width: 260px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 30px 24px 22px;
+    box-shadow: 0 14px 34px rgba(111, 85, 69, 0.12);
+    overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .kj-tstm-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 44px rgba(111, 85, 69, 0.18);
+  }
+
+  .kj-tstm-mark {
+    position: absolute;
+    top: -14px;
+    right: 10px;
+    font-family: var(--font-heading--family);
+    font-size: 110px;
+    line-height: 1;
+    color: #C6A46C;
+    opacity: 0.18;
+    pointer-events: none;
   }
 
   .kj-tstm-stars {
-    color: #222;
-    font-size: 11px;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
+    color: #C6A46C;
+    font-size: 12px;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
   }
 
   .kj-tstm-quote {
-    font-size: 13px;
-    line-height: 1.6;
-    color: #444;
-    margin: 0 0 10px;
+    font-family: var(--font-heading--family);
+    font-size: 15px;
+    line-height: 1.65;
+    color: #222;
+    margin: 0 0 16px;
   }
 
   .kj-tstm-author {
-    font-size: 12px;
-    color: #888;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #91715B;
     margin: 0;
+    padding-top: 12px;
+    border-top: 1px solid #F0E9E1;
   }
 
   @media screen and (max-width: 749px) {
@@ -175,9 +203,9 @@
     { "type": "text", "id": "heading", "label": "Heading", "default": "LOVED BY BEAUTY LOVERS" },
     { "type": "text", "id": "rating_line", "label": "Rating line", "default": "4.8/5 based on 10,000+ reviews" },
     { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#222222" },
-    { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
-    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 100, "step": 4, "default": 48 },
-    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 100, "step": 4, "default": 48 }
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#F8F5F2" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 100, "step": 4, "default": 56 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 100, "step": 4, "default": 56 }
   ],
   "blocks": [
     {

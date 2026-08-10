@@ -32,7 +32,11 @@
           }
         }
       },
-      "block_order": ["slide_vanity", "slide_glowing", "slide_bestsellers"],
+      "block_order": [
+        "slide_vanity",
+        "slide_glowing",
+        "slide_bestsellers"
+      ],
       "settings": {
         "autoplay_seconds": 5,
         "bg_color": "#ffffff"
@@ -133,7 +137,13 @@
           }
         }
       },
-      "block_order": ["cat_face", "cat_lips", "cat_cheeks", "cat_eyes", "cat_skincare"],
+      "block_order": [
+        "cat_face",
+        "cat_lips",
+        "cat_cheeks",
+        "cat_eyes",
+        "cat_skincare"
+      ],
       "settings": {
         "heading": "SHOP BY CATEGORY",
         "bg_color": "#ffffff",
@@ -181,9 +191,23 @@
             "handle": "@sofia.glam",
             "caption": "blush on in bare peach is my everyday flush."
           }
+        },
+        "ugc_5": {
+          "type": "ugc",
+          "settings": {
+            "image": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_10_744198844_17979907119048388_6996748874457629845_n.jpg?v=1785499737",
+            "handle": "@amira.artistry",
+            "caption": "full look: intense eyeliner, rose blush on & matt moist in latte."
+          }
         }
       },
-      "block_order": ["ugc_1", "ugc_2", "ugc_3", "ugc_4"],
+      "block_order": [
+        "ugc_1",
+        "ugc_2",
+        "ugc_3",
+        "ugc_4",
+        "ugc_5"
+      ],
       "settings": {
         "heading": "REAL RESULTS. REAL PEOPLE.",
         "subheading": "Discover how our community wears ST London.",
@@ -240,12 +264,17 @@
           }
         }
       },
-      "block_order": ["q1", "q2", "q3", "q4"],
+      "block_order": [
+        "q1",
+        "q2",
+        "q3",
+        "q4"
+      ],
       "settings": {
         "heading": "LOVED BY BEAUTY LOVERS",
         "rating_line": "4.8/5 based on 10,000+ reviews",
         "heading_color": "#222222",
-        "bg_color": "#ffffff",
+        "bg_color": "#F8F5F2",
         "padding_top": 48,
         "padding_bottom": 48
       }
