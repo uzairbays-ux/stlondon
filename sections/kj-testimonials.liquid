@@ -46,6 +46,7 @@
   .kj-tstm {
     background: linear-gradient(180deg, {{ section.settings.bg_color | default: '#F8F5F2' }} 0%, #F2ECE5 100%);
     padding: {{ section.settings.padding_top | default: 48 }}px 0 {{ section.settings.padding_bottom | default: 48 }}px;
+    overflow-x: clip; /* the track bleeds to the viewport edges below */
   }
 
   .kj-tstm-container {
@@ -82,13 +83,14 @@
   .kj-tstm-rating span { color: #C6A46C; letter-spacing: 3px; }
 
   .kj-tstm-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    position: relative;
   }
 
   .kj-tstm-arrow {
-    flex: 0 0 auto;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
     width: 38px;
     height: 38px;
     border-radius: 50%;
@@ -104,12 +106,16 @@
   }
 
   .kj-tstm-arrow:hover { border-color: #C6A46C; color: #C6A46C; }
+  .kj-tstm-arrow[data-kj-tstm-prev] { left: -8px; }
+  .kj-tstm-arrow[data-kj-tstm-next] { right: -8px; }
 
   .kj-tstm-trackwrap {
-    flex: 1;
+    /* full-bleed: partial cards stay visible all the way to the viewport
+       edges instead of chopping at the container */
+    margin: 0 calc(50% - 50vw);
+    padding: 12px calc(50vw - 50%) 26px;
     overflow-x: auto;
     overflow-y: hidden;
-    padding: 12px 4px 26px;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
   }
