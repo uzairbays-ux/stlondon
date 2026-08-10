@@ -17,17 +17,21 @@
       <button type="button" class="kj-tstm-arrow" data-kj-tstm-prev aria-label="Previous">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
       </button>
-      <div class="kj-tstm-trackwrap" data-kj-tstm-track>
+      <div class="kj-tstm-trackwrap" data-kj-tstm-track data-kj-tstm-infinite data-count="{{ section.blocks.size }}">
         <div class="kj-tstm-track">
-          {%- for block in section.blocks -%}
-            <div class="kj-tstm-card" {{ block.shopify_attributes }}>
-              <span class="kj-tstm-mark" aria-hidden="true">&ldquo;</span>
-              <div class="kj-tstm-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
-              <p class="kj-tstm-quote">&ldquo;{{ block.settings.quote }}&rdquo;</p>
-              {%- if block.settings.author != blank -%}
-                <p class="kj-tstm-author">&mdash; {{ block.settings.author }}</p>
-              {%- endif -%}
-            </div>
+          {%- comment -%} set rendered three times: wrap keeps scroll inside the
+              first set with two full sets of runway, so it never clamps {%- endcomment -%}
+          {%- for setpass in (1..3) -%}
+            {%- for block in section.blocks -%}
+              <div class="kj-tstm-card" {% if setpass == 1 %}{{ block.shopify_attributes }}{% else %}aria-hidden="true" data-kj-tstm-clone{% endif %}>
+                <span class="kj-tstm-mark" aria-hidden="true">&ldquo;</span>
+                <div class="kj-tstm-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="kj-tstm-quote">&ldquo;{{ block.settings.quote }}&rdquo;</p>
+                {%- if block.settings.author != blank -%}
+                  <p class="kj-tstm-author">&mdash; {{ block.settings.author }}</p>
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
           {%- endfor -%}
         </div>
       </div>
@@ -179,8 +183,25 @@
 
 <script>
   (function () {
+    /* infinite loop, same scheme as the UGC carousel: tripled set, scroll
+       normalized into the first set, slow marquee paused on hover/touch. */
     if (window.__kjTstmDelegated) return;
     window.__kjTstmDelegated = true;
+
+    function period(wrap) {
+      var n = parseInt(wrap.dataset.count, 10) || 0;
+      var kids = wrap.querySelectorAll('.kj-tstm-card');
+      if (!n || kids.length < n + 1) return 0;
+      return kids[n].offsetLeft - kids[0].offsetLeft;
+    }
+
+    function normalize(wrap) {
+      var W = period(wrap);
+      if (!W) return W;
+      if (wrap.scrollLeft >= W) wrap.scrollLeft -= W;
+      return W;
+    }
+
     document.addEventListener('click', function (e) {
       var prev = e.target.closest('[data-kj-tstm-prev]');
       var next = e.target.closest('[data-kj-tstm-next]');
@@ -190,8 +211,32 @@
       if (!wrap) return;
       var card = wrap.querySelector('.kj-tstm-card');
       var step = card ? card.getBoundingClientRect().width + 16 : 280;
+      wrap.dataset.hold = Date.now() + 4000;
+      var W = period(wrap);
+      if (prev && W && wrap.scrollLeft < step) wrap.scrollLeft += W;
       wrap.scrollBy({ left: prev ? -step : step, behavior: 'smooth' });
     });
+
+    ['pointerdown', 'touchstart'].forEach(function (evt) {
+      document.addEventListener(evt, function (e) {
+        var wrap = e.target.closest && e.target.closest('[data-kj-tstm-infinite]');
+        if (wrap) wrap.dataset.hold = Date.now() + 4000;
+      }, { passive: true });
+    });
+
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function tick() {
+      document.querySelectorAll('[data-kj-tstm-infinite]').forEach(function (wrap) {
+        var W = normalize(wrap);
+        if (!W || reduced) return;
+        var hold = parseInt(wrap.dataset.hold, 10) || 0;
+        if (Date.now() < hold) return;
+        if (wrap.matches(':hover')) return;
+        wrap.scrollLeft += 0.4;
+      });
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
   })();
 </script>
 
