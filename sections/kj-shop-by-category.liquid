@@ -7,9 +7,19 @@
     <div class="kj-category-list">
       {%- for block in section.blocks -%}
         <div class="kj-category-item" {{ block.shopify_attributes }}>
-          <a href="{{ block.settings.collection.url | default: '#' }}" class="kj-category-link">
-            <div class="kj-category-image-wrap">
-              {%- if block.settings.image != blank -%}
+          {%- liquid
+            assign cat_url = block.settings.link | default: block.settings.collection.url | default: '#'
+            assign ext_src = block.settings.external_image_url | strip
+            if ext_src != blank and ext_src contains '//'
+            elsif ext_src != blank
+              assign ext_src = ext_src | asset_url
+            endif
+          -%}
+          <a href="{{ cat_url }}" class="kj-category-link">
+            <div class="kj-category-image-wrap{% if section.settings.tile_aspect == 'landscape' %} kj-category-image-wrap--landscape{% endif %}">
+              {%- if ext_src != blank -%}
+                <img src="{{ ext_src }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image">
+              {%- elsif block.settings.image != blank -%}
                 <img src="{{ block.settings.image | image_url: width: 700, height: 700, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image" width="700" height="700">
               {%- elsif block.settings.collection.image != blank -%}
                 <img src="{{ block.settings.collection.image | image_url: width: 700, height: 700, crop: 'center' }}" alt="{{ block.settings.title | escape }}" loading="lazy" class="kj-category-image" width="700" height="700">
@@ -17,9 +27,11 @@
                 <div class="kj-category-placeholder">{{ 'collection-1' | placeholder_svg_tag }}</div>
               {%- endif -%}
             </div>
-            <span class="kj-category-title" style="color: {{ section.settings.text_color }};">
-              {{ block.settings.title | default: block.settings.collection.title | default: 'Category' }}
-            </span>
+            {%- unless section.settings.hide_titles -%}
+              <span class="kj-category-title" style="color: {{ section.settings.text_color }};">
+                {{ block.settings.title | default: block.settings.collection.title | default: 'Category' }}
+              </span>
+            {%- endunless -%}
           </a>
         </div>
       {%- endfor -%}
@@ -46,8 +58,13 @@
 
   .kj-category-list {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat({{ section.settings.columns | default: 3 }}, 1fr);
     gap: 20px;
+  }
+
+  .kj-category-image-wrap.kj-category-image-wrap--landscape {
+    aspect-ratio: 4 / 3;
+    background: transparent;
   }
 
   .kj-category-item {
@@ -137,6 +154,31 @@
     },
     {
       "type": "range",
+      "id": "columns",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "Columns (desktop)",
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_titles",
+      "label": "Hide titles (labels baked in images)",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "tile_aspect",
+      "label": "Tile aspect",
+      "options": [
+        { "value": "square", "label": "Square" },
+        { "value": "landscape", "label": "Landscape 4:3" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "range",
       "id": "padding_top",
       "min": 0,
       "max": 100,
@@ -175,6 +217,16 @@
           "type": "text",
           "id": "title",
           "label": "Custom Title (Optional)"
+        },
+        {
+          "type": "text",
+          "id": "external_image_url",
+          "label": "Image URL or asset filename (optional)"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link override (optional)"
         }
       ]
     }

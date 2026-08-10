@@ -8,6 +8,7 @@
   }
 </style>
 {%- assign vto_bg = section.settings.bg_image_url -%}
+{%- unless section.settings.embed_only -%}
 <div
   class="virtual-try-on-section{% if vto_bg != blank %} vto-has-banner{% endif %}"
   id="vto-section-{{ section.id }}"
@@ -27,6 +28,7 @@
     </button>
   </div>
 </div>
+{%- endunless -%}
 
 {%- comment -%}
   Homepage try-on studio (reference behavior):
@@ -1387,6 +1389,12 @@
   "tag": "section",
   "class": "kj-vto-wrapper",
   "settings": [
+    {
+      "type": "checkbox",
+      "id": "embed_only",
+      "label": "Embed only (hide banner, keep studio)",
+      "default": false
+    },
     {
       "type": "color",
       "id": "bg_color",

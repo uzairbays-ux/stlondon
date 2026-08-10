@@ -1,0 +1,399 @@
+{%- comment -%}
+  AR shade-finder landing page (mockup p.3): FIND YOUR SHADE hero with
+  START AR MATCH (opens the try-on studio via [data-kj-hvto-open] —
+  pair this section with "KJ Virtual Try-On" in embed-only mode on the
+  same template), HOW IT WORKS steps, and two foundation feature cards.
+  Image settings accept a full URL or a theme asset filename.
+{%- endcomment -%}
+
+{%- liquid
+  assign hero_src = section.settings.hero_image | strip
+  if hero_src != blank and hero_src contains '//'
+  elsif hero_src != blank
+    assign hero_src = hero_src | asset_url
+  endif
+-%}
+
+<div class="kj-sf">
+  <div class="kj-sf-container">
+
+    <!-- Hero -->
+    <div class="kj-sf-hero">
+      <div class="kj-sf-hero-copy">
+        <h1 class="kj-sf-heading">{{ section.settings.heading }}</h1>
+        {%- if section.settings.text != blank -%}
+          <p class="kj-sf-text">{{ section.settings.text }}</p>
+        {%- endif -%}
+        <button type="button" class="kj-sf-cta" data-kj-hvto-open>{{ section.settings.cta_label }}</button>
+        <div class="kj-sf-alts">
+          <button type="button" class="kj-sf-alt" data-kj-hvto-open>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>live camera</span>
+          </button>
+          <span class="kj-sf-alt-divider"></span>
+          <a class="kj-sf-alt" href="{{ section.settings.manual_link | default: '#' }}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+            <span>manual match</span>
+          </a>
+        </div>
+      </div>
+      {%- if hero_src != blank -%}
+        <div class="kj-sf-hero-media">
+          <img src="{{ hero_src }}" alt="{{ section.settings.heading | escape }}" loading="lazy">
+        </div>
+      {%- endif -%}
+    </div>
+
+    <!-- How it works -->
+    <h2 class="kj-sf-how-heading">{{ section.settings.how_heading }}</h2>
+    <div class="kj-sf-steps">
+      {%- assign step_glyphs = 'scan,face,bottle' | split: ',' -%}
+      {%- for i in (1..3) -%}
+        {%- liquid
+          case i
+            when 1
+              assign st = section.settings.step1_title
+              assign sx = section.settings.step1_text
+            when 2
+              assign st = section.settings.step2_title
+              assign sx = section.settings.step2_text
+            else
+              assign st = section.settings.step3_title
+              assign sx = section.settings.step3_text
+          endcase
+        -%}
+        <div class="kj-sf-step">
+          <span class="kj-sf-step-num">{{ i }}</span>
+          <span class="kj-sf-step-icon">
+            {%- case step_glyphs[forloop.index0] -%}
+              {%- when 'scan' -%}
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
+              {%- when 'face' -%}
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><circle cx="12" cy="11" r="3"/><path d="M8 17c1-1.6 2.4-2.4 4-2.4s3 .8 4 2.4"/></svg>
+              {%- else -%}
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="8.5" y="8" width="7" height="13" rx="1.5"/><path d="M10 8V5h4v3M10.5 3.5h3"/><path d="M10.5 13h3"/></svg>
+            {%- endcase -%}
+          </span>
+          <h3 class="kj-sf-step-title">{{ st }}</h3>
+          <p class="kj-sf-step-text">{{ sx }}</p>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <!-- Foundation feature cards -->
+    <div class="kj-sf-cards">
+      {%- for i in (1..2) -%}
+        {%- liquid
+          if i == 1
+            assign card_product = all_products[section.settings.product1]
+            assign card_feats = section.settings.product1_features
+          else
+            assign card_product = all_products[section.settings.product2]
+            assign card_feats = section.settings.product2_features
+          endif
+        -%}
+        {%- if card_product != blank -%}
+          <div class="kj-sf-card">
+            {%- if card_product.featured_image != blank -%}
+              <img src="{{ card_product.featured_image | image_url: width: 500 }}" alt="{{ card_product.title | escape }}" loading="lazy" class="kj-sf-card-img">
+            {%- endif -%}
+            <div class="kj-sf-card-body">
+              <h3 class="kj-sf-card-title">{{ card_product.title | upcase }}</h3>
+              {%- if card_feats != blank -%}
+                <ul class="kj-sf-card-feats">
+                  {%- assign feats = card_feats | newline_to_br | split: '<br />' -%}
+                  {%- for f in feats -%}
+                    {%- assign ft = f | strip -%}
+                    {%- if ft != blank -%}
+                      <li><span class="kj-sf-check">&#10003;</span>{{ ft | upcase }}</li>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+              <a href="{{ card_product.url }}" class="kj-sf-card-cta">shop {{ card_product.title | downcase | truncatewords: 3, '' }}</a>
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+  </div>
+</div>
+
+<style>
+  .kj-sf {
+    background: #ffffff;
+    padding: 46px 0 70px;
+  }
+
+  .kj-sf-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .kj-sf-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 50px;
+    align-items: center;
+    margin-bottom: 70px;
+  }
+
+  .kj-sf-heading {
+    font-family: var(--font-heading--family);
+    font-size: clamp(34px, 4.6vw, 56px);
+    font-weight: 600;
+    line-height: 1.05;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #1c1c1c;
+    margin: 0 0 18px;
+  }
+
+  .kj-sf-text {
+    font-size: 15px;
+    line-height: 1.65;
+    color: #444;
+    margin: 0 0 26px;
+    max-width: 420px;
+  }
+
+  .kj-sf-cta {
+    font-family: var(--font-heading--family);
+    display: inline-block;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 15px 42px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .kj-sf-cta:hover { background: #000; }
+
+  .kj-sf-alts {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    margin-top: 30px;
+  }
+
+  .kj-sf-alt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #222;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .kj-sf-alt:hover { opacity: 0.7; }
+
+  .kj-sf-alt-divider {
+    width: 1px;
+    height: 44px;
+    background: #ddd;
+  }
+
+  .kj-sf-hero-media img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 560px;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  .kj-sf-how-heading {
+    font-family: var(--font-heading--family);
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-align: center;
+    color: #1c1c1c;
+    margin: 0 0 40px;
+  }
+
+  .kj-sf-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto 80px;
+    text-align: center;
+  }
+
+  .kj-sf-step-num {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #C98A5E;
+    margin-bottom: 12px;
+  }
+
+  .kj-sf-step-icon {
+    display: inline-flex;
+    color: #222;
+    margin-bottom: 14px;
+  }
+
+  .kj-sf-step-title {
+    font-family: var(--font-heading--family);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    color: #1c1c1c;
+  }
+
+  .kj-sf-step-text {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #666;
+    margin: 0;
+    max-width: 280px;
+    margin-inline: auto;
+  }
+
+  .kj-sf-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    border-top: 1px solid #eee;
+    padding-top: 60px;
+  }
+
+  .kj-sf-card {
+    display: flex;
+    gap: 26px;
+    align-items: center;
+  }
+
+  .kj-sf-card-img {
+    display: block;
+    width: 240px;
+    max-width: 42%;
+    height: auto;
+    flex: 0 0 auto;
+  }
+
+  .kj-sf-card-title {
+    font-family: var(--font-heading--family);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+    color: #1c1c1c;
+    margin: 0 0 14px;
+  }
+
+  .kj-sf-card-feats {
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+  }
+
+  .kj-sf-card-feats li {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12.5px;
+    letter-spacing: 0.6px;
+    color: #333;
+    margin-bottom: 9px;
+  }
+
+  .kj-sf-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border: 1px solid #C98A5E;
+    border-radius: 50%;
+    color: #C98A5E;
+    font-size: 10px;
+    flex: 0 0 auto;
+  }
+
+  .kj-sf-card-cta {
+    font-family: var(--font-heading--family);
+    display: inline-block;
+    background: #111;
+    color: #fff;
+    border-radius: 4px;
+    padding: 12px 26px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .kj-sf-card-cta:hover { background: #000; }
+
+  @media screen and (max-width: 899px) {
+    .kj-sf-hero { grid-template-columns: 1fr; gap: 30px; }
+    .kj-sf-steps { grid-template-columns: 1fr; gap: 34px; margin-bottom: 60px; }
+    .kj-sf-cards { grid-template-columns: 1fr; gap: 44px; }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Shade Finder",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "FIND YOUR SHADE" },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "Text",
+      "default": "Inclusive. Intentional. Effortless. Discover your closest match in seconds with our AR shade finder."
+    },
+    { "type": "text", "id": "cta_label", "label": "CTA label", "default": "START AR MATCH" },
+    { "type": "url", "id": "manual_link", "label": "Manual match link" },
+    { "type": "text", "id": "hero_image", "label": "Hero image (URL or asset filename)" },
+    { "type": "text", "id": "how_heading", "label": "How it works heading", "default": "HOW IT WORKS" },
+    { "type": "text", "id": "step1_title", "label": "Step 1 title", "default": "SCAN OR UPLOAD" },
+    { "type": "text", "id": "step1_text", "label": "Step 1 text", "default": "Use the live camera in a clear, natural light." },
+    { "type": "text", "id": "step2_title", "label": "Step 2 title", "default": "GET MATCHED" },
+    { "type": "text", "id": "step2_text", "label": "Step 2 text", "default": "Try shades on your own face in real time." },
+    { "type": "text", "id": "step3_title", "label": "Step 3 title", "default": "SHOP YOUR SHADE" },
+    { "type": "text", "id": "step3_text", "label": "Step 3 text", "default": "View your match, explore alternatives, and shop with confidence." },
+    { "type": "product", "id": "product1", "label": "Foundation card 1" },
+    {
+      "type": "textarea",
+      "id": "product1_features",
+      "label": "Card 1 features (one per line)",
+      "default": "High coverage\nTransfer-proof\nOil free"
+    },
+    { "type": "product", "id": "product2", "label": "Foundation card 2" },
+    {
+      "type": "textarea",
+      "id": "product2_features",
+      "label": "Card 2 features (one per line)",
+      "default": "High coverage\nSatin finish\nSoft-focus effect"
+    }
+  ],
+  "presets": [
+    { "name": "KJ Shade Finder" }
+  ]
+}
+{% endschema %}

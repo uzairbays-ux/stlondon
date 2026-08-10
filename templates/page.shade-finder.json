@@ -1,0 +1,34 @@
+{
+  "sections": {
+    "main": {
+      "type": "kj-shade-finder",
+      "name": "Shade Finder",
+      "settings": {
+        "heading": "FIND YOUR SHADE",
+        "text": "Inclusive. Intentional. Effortless. Discover your closest match in seconds with our AR shade finder.",
+        "cta_label": "START AR MATCH",
+        "manual_link": "/collections/face-foundation",
+        "hero_image": "mkt-ar-hero.jpg",
+        "how_heading": "HOW IT WORKS",
+        "step1_title": "SCAN OR UPLOAD",
+        "step1_text": "Use the live camera in a clear, natural light.",
+        "step2_title": "GET MATCHED",
+        "step2_text": "Try shades on your own face in real time.",
+        "step3_title": "SHOP YOUR SHADE",
+        "step3_text": "View your match, explore alternatives, and shop with confidence.",
+        "product1": "st-london-imperfection-eraser",
+        "product1_features": "High coverage\nTransfer-proof\nOil free",
+        "product2": "st-london-silk-effect-foundation",
+        "product2_features": "High coverage\nSatin finish\nSoft-focus effect"
+      }
+    },
+    "vto_studio": {
+      "type": "kj-virtual-try-on",
+      "name": "Try-On Studio (embedded)",
+      "settings": {
+        "embed_only": true
+      }
+    }
+  },
+  "order": ["main", "vto_studio"]
+}

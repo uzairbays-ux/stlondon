@@ -1,0 +1,197 @@
+{%- comment -%}
+  "LOVED BY BEAUTY LOVERS" — quote card carousel with arrows.
+{%- endcomment -%}
+
+<div class="kj-tstm" id="kj-tstm-{{ section.id }}">
+  <div class="kj-tstm-container">
+    <div class="kj-tstm-head">
+      {%- if section.settings.heading != blank -%}
+        <h2 class="kj-tstm-heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.rating_line != blank -%}
+        <p class="kj-tstm-rating"><span aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</span> {{ section.settings.rating_line }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="kj-tstm-row">
+      <button type="button" class="kj-tstm-arrow" data-kj-tstm-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="kj-tstm-trackwrap" data-kj-tstm-track>
+        <div class="kj-tstm-track">
+          {%- for block in section.blocks -%}
+            <div class="kj-tstm-card" {{ block.shopify_attributes }}>
+              <div class="kj-tstm-stars" aria-hidden="true">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+              <p class="kj-tstm-quote">&ldquo;{{ block.settings.quote }}&rdquo;</p>
+              {%- if block.settings.author != blank -%}
+                <p class="kj-tstm-author">&mdash; {{ block.settings.author }}</p>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+      <button type="button" class="kj-tstm-arrow" data-kj-tstm-next aria-label="Next">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .kj-tstm {
+    background: {{ section.settings.bg_color | default: '#ffffff' }};
+    padding: {{ section.settings.padding_top | default: 48 }}px 0 {{ section.settings.padding_bottom | default: 48 }}px;
+  }
+
+  .kj-tstm-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  .kj-tstm-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 22px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+
+  .kj-tstm-heading {
+    font-family: var(--font-heading--family);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: {{ section.settings.heading_color | default: '#222222' }};
+    margin: 0;
+  }
+
+  .kj-tstm-rating {
+    font-size: 12px;
+    color: #555;
+    margin: 0;
+  }
+
+  .kj-tstm-rating span { color: #222; letter-spacing: 2px; }
+
+  .kj-tstm-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .kj-tstm-arrow {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid #DDD2C8;
+    background: #fff;
+    color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  .kj-tstm-arrow:hover { border-color: #222; }
+
+  .kj-tstm-trackwrap {
+    flex: 1;
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 8px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .kj-tstm-trackwrap::-webkit-scrollbar { display: none; }
+
+  .kj-tstm-track {
+    display: flex;
+    gap: 16px;
+  }
+
+  .kj-tstm-card {
+    flex: 0 0 24%;
+    min-width: 250px;
+    background: #fff;
+    border: 1px solid #ece7e1;
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+
+  .kj-tstm-stars {
+    color: #222;
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  .kj-tstm-quote {
+    font-size: 13px;
+    line-height: 1.6;
+    color: #444;
+    margin: 0 0 10px;
+  }
+
+  .kj-tstm-author {
+    font-size: 12px;
+    color: #888;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .kj-tstm-card { flex: 0 0 78%; min-width: 0; }
+    .kj-tstm-arrow { display: none; }
+  }
+</style>
+
+<script>
+  (function () {
+    if (window.__kjTstmDelegated) return;
+    window.__kjTstmDelegated = true;
+    document.addEventListener('click', function (e) {
+      var prev = e.target.closest('[data-kj-tstm-prev]');
+      var next = e.target.closest('[data-kj-tstm-next]');
+      if (!prev && !next) return;
+      var root = e.target.closest('.kj-tstm');
+      var wrap = root && root.querySelector('[data-kj-tstm-track]');
+      if (!wrap) return;
+      var card = wrap.querySelector('.kj-tstm-card');
+      var step = card ? card.getBoundingClientRect().width + 16 : 280;
+      wrap.scrollBy({ left: prev ? -step : step, behavior: 'smooth' });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "KJ Testimonials",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "LOVED BY BEAUTY LOVERS" },
+    { "type": "text", "id": "rating_line", "label": "Rating line", "default": "4.8/5 based on 10,000+ reviews" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#222222" },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 100, "step": 4, "default": 48 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 100, "step": 4, "default": 48 }
+  ],
+  "blocks": [
+    {
+      "type": "quote",
+      "name": "Quote",
+      "settings": [
+        { "type": "textarea", "id": "quote", "label": "Quote" },
+        { "type": "text", "id": "author", "label": "Author" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    { "name": "KJ Testimonials" }
+  ]
+}
+{% endschema %}

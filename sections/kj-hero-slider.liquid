@@ -1,0 +1,230 @@
+{%- comment -%}
+  Marketing hero slider: full-width auto-rotating slides. Artwork carries
+  its own text/CTA, so each slide is one big linked image. Mixed aspect
+  ratios letterbox onto the slide background (white artwork = seamless).
+  Image settings accept a full URL or a theme asset filename.
+{%- endcomment -%}
+
+{%- assign auto = section.settings.autoplay_seconds | default: 5 -%}
+<div class="kj-hslider" id="kj-hslider-{{ section.id }}" data-kj-hslider data-autoplay="{{ auto }}" data-index="0" data-count="{{ section.blocks.size }}">
+  <div class="kj-hslider-track" data-kj-hslider-track>
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign src = block.settings.image | strip
+        if src != blank and src contains '//'
+        elsif src != blank
+          assign src = src | asset_url
+        endif
+        assign msrc = block.settings.image_mobile | strip
+        if msrc != blank and msrc contains '//'
+        elsif msrc != blank
+          assign msrc = msrc | asset_url
+        endif
+      -%}
+      <a class="kj-hslide" href="{{ block.settings.link | default: '#' }}" {{ block.shopify_attributes }}>
+        {%- if src != blank -%}
+          <picture>
+            {%- if msrc != blank -%}<source media="(max-width: 749px)" srcset="{{ msrc }}">{%- endif -%}
+            <img src="{{ src }}" alt="{{ block.settings.alt | escape }}" {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}>
+          </picture>
+        {%- endif -%}
+      </a>
+    {%- endfor -%}
+  </div>
+
+  {%- if section.blocks.size > 1 -%}
+    <button type="button" class="kj-hslider-arrow kj-hslider-prev" data-kj-hslider-prev aria-label="Previous slide">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <button type="button" class="kj-hslider-arrow kj-hslider-next" data-kj-hslider-next aria-label="Next slide">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+    <div class="kj-hslider-dots">
+      {%- for block in section.blocks -%}
+        <button type="button" class="kj-hslider-dot{% if forloop.first %} active{% endif %}" data-kj-hslider-dot="{{ forloop.index0 }}" aria-label="Go to slide {{ forloop.index }}"></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+<style>
+  .kj-hslider {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 92vh;
+    overflow: hidden;
+    background: {{ section.settings.bg_color | default: '#ffffff' }};
+  }
+
+  .kj-hslider-track {
+    display: flex;
+    height: 100%;
+    transition: transform 0.55s cubic-bezier(0.33, 0, 0.2, 1);
+  }
+
+  .kj-hslide {
+    flex: 0 0 100%;
+    min-width: 0;
+    display: block;
+    height: 100%;
+  }
+
+  .kj-hslide picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .kj-hslide img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .kj-hslider-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1px solid #DDD2C8;
+    background: rgba(255, 255, 255, 0.92);
+    color: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .kj-hslider-arrow:hover { background: #fff; border-color: #222; }
+  .kj-hslider-prev { left: 18px; }
+  .kj-hslider-next { right: 18px; }
+
+  .kj-hslider-dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 16px;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .kj-hslider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: #d6cdc4;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .kj-hslider-dot.active {
+    background: #222;
+    width: 22px;
+    border-radius: 4px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .kj-hslider { aspect-ratio: 7 / 11; max-height: none; }
+    .kj-hslide img { object-fit: cover; }
+    .kj-hslider-arrow { display: none; }
+  }
+</style>
+
+<script>
+  (function () {
+    /* delegated + morph-safe: state lives in data attributes, one global
+       ticker drives autoplay for any slider on the page */
+    if (window.__kjHSlider) return;
+    window.__kjHSlider = true;
+
+    function goTo(slider, idx) {
+      var count = parseInt(slider.dataset.count, 10) || 1;
+      idx = ((idx % count) + count) % count;
+      slider.dataset.index = idx;
+      slider.dataset.last = Date.now();
+      var track = slider.querySelector('[data-kj-hslider-track]');
+      if (track) track.style.transform = 'translateX(-' + idx * 100 + '%)';
+      slider.querySelectorAll('[data-kj-hslider-dot]').forEach(function (d) {
+        d.classList.toggle('active', d.dataset.kjHsliderDot === String(idx));
+      });
+    }
+
+    document.addEventListener('click', function (e) {
+      var prev = e.target.closest('[data-kj-hslider-prev]');
+      var next = e.target.closest('[data-kj-hslider-next]');
+      var dot = e.target.closest('[data-kj-hslider-dot]');
+      if (!prev && !next && !dot) return;
+      e.preventDefault();
+      var slider = e.target.closest('[data-kj-hslider]');
+      if (!slider) return;
+      var idx = parseInt(slider.dataset.index, 10) || 0;
+      if (prev) goTo(slider, idx - 1);
+      else if (next) goTo(slider, idx + 1);
+      else goTo(slider, parseInt(dot.dataset.kjHsliderDot, 10));
+    });
+
+    setInterval(function () {
+      document.querySelectorAll('[data-kj-hslider]').forEach(function (slider) {
+        var auto = parseFloat(slider.dataset.autoplay);
+        var count = parseInt(slider.dataset.count, 10) || 1;
+        if (!auto || count < 2) return;
+        var last = parseInt(slider.dataset.last, 10) || 0;
+        if (!last) { slider.dataset.last = Date.now(); return; }
+        if (Date.now() - last >= auto * 1000) {
+          goTo(slider, (parseInt(slider.dataset.index, 10) || 0) + 1);
+        }
+      });
+    }, 500);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "KJ Hero Slider",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "autoplay_seconds",
+      "label": "Autoplay seconds (0 = off)",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Slide background",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        { "type": "text", "id": "image", "label": "Image (URL or asset filename)" },
+        { "type": "text", "id": "image_mobile", "label": "Mobile image (URL or asset filename)" },
+        { "type": "url", "id": "link", "label": "Link" },
+        { "type": "text", "id": "alt", "label": "Alt text" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    { "name": "KJ Hero Slider" }
+  ]
+}
+{% endschema %}

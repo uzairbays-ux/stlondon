@@ -1,0 +1,84 @@
+{%- comment -%}
+  Simple linked image banner (artwork carries its own text/CTA).
+  Image settings accept a full URL or a theme asset filename.
+  Used for: Matt Moist banner, Find Your Shade strip, Silk Effect
+  feature, ESG trust strip.
+{%- endcomment -%}
+
+{%- liquid
+  assign src = section.settings.image | strip
+  if src != blank and src contains '//'
+  elsif src != blank
+    assign src = src | asset_url
+  endif
+  assign msrc = section.settings.image_mobile | strip
+  if msrc != blank and msrc contains '//'
+  elsif msrc != blank
+    assign msrc = msrc | asset_url
+  endif
+-%}
+
+<div class="kj-imgbanner kj-imgbanner-{{ section.id }}">
+  {%- if src != blank -%}
+    {%- if section.settings.link != blank -%}<a href="{{ section.settings.link }}" class="kj-imgbanner-link">{%- endif -%}
+      <picture>
+        {%- if msrc != blank -%}<source media="(max-width: 749px)" srcset="{{ msrc }}">{%- endif -%}
+        <img src="{{ src }}" alt="{{ section.settings.alt | escape }}" loading="lazy">
+      </picture>
+    {%- if section.settings.link != blank -%}</a>{%- endif -%}
+  {%- endif -%}
+</div>
+
+<style>
+  .kj-imgbanner-{{ section.id }} {
+    background: {{ section.settings.bg_color | default: '#ffffff' }};
+    padding-top: {{ section.settings.padding_top | default: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | default: 0 }}px;
+  }
+
+  .kj-imgbanner-{{ section.id }} picture,
+  .kj-imgbanner-{{ section.id }} a {
+    display: block;
+    {% if section.settings.max_width == 'contained' %}
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    {% endif %}
+  }
+
+  .kj-imgbanner-{{ section.id }} img {
+    display: block;
+    width: 100%;
+    height: auto;
+    {% if section.settings.max_width == 'contained' %}border-radius: 8px;{% endif %}
+  }
+</style>
+
+{% schema %}
+{
+  "name": "KJ Image Banner",
+  "tag": "section",
+  "settings": [
+    { "type": "text", "id": "image", "label": "Image (URL or asset filename)" },
+    { "type": "text", "id": "image_mobile", "label": "Mobile image (URL or asset filename)" },
+    { "type": "url", "id": "link", "label": "Link" },
+    { "type": "text", "id": "alt", "label": "Alt text" },
+    {
+      "type": "select",
+      "id": "max_width",
+      "label": "Width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "contained", "label": "Contained (1400px)" }
+      ],
+      "default": "full"
+    },
+    { "type": "color", "id": "bg_color", "label": "Background", "default": "#ffffff" },
+    { "type": "range", "id": "padding_top", "label": "Padding top", "min": 0, "max": 100, "step": 4, "default": 0 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding bottom", "min": 0, "max": 100, "step": 4, "default": 0 }
+  ],
+  "presets": [
+    { "name": "KJ Image Banner" }
+  ]
+}
+{% endschema %}

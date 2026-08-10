@@ -1,440 +1,279 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "kj_hero_banner_LqQPrr": {
-      "type": "kj-hero-banner",
-      "name": "KJ Hero Banner",
-      "settings": {
-        "image_desktop": "shopify://shop_images/main-hero.png",
-        "image_mobile": "shopify://shop_images/kj-hero-mobile.jpg",
-        "height_mode": "vh",
-        "desktop_height": 100,
-        "mobile_height": 100,
-        "overlay_color": "#000000",
-        "overlay_opacity": 0,
-        "text_alignment": "left",
-        "text_color": "#ffffff",
-        "eyebrow": "COMING JULY 30",
-        "heading": "MOOD STONES",
-        "subheading": "the new fragrance trio.",
-        "button_bg_color": "#ffffff",
-        "button_text_color": "#000000",
-        "button_1_text": "get notified",
-        "button_1_link": "/",
-        "button_2_text": "",
-        "button_2_link": ""
-      }
-    },
-    "kj_split_editorial_1": {
-      "type": "kj-split-editorial",
-      "name": "KJ Split Editorial",
-      "settings": {
-        "heading": "THE SUMMER LOOK",
-        "heading_color": "#91715b",
-        "text": "<p>recreate this flushed and contoured summer look featuring our best-selling blush and lip liner.</p>",
-        "button_text": "shop now",
-        "button_link": "/",
-        "image": "shopify://shop_images/video-cover.jpg",
-        "external_video_url": "https://cdn.shopify.com/videos/c/o/v/4b220a62a99c4fa9a15ab32f3182c706.mp4",
-        "media_side": "right",
-        "bg_color": "#f8f5f2",
-        "card_bg": "#ffffff",
-        "padding_top": 40,
-        "padding_bottom": 40
-      }
-    },
-    "kj_featured_product_1": {
-      "type": "kj-product-slider",
+    "hero_slider": {
+      "type": "kj-hero-slider",
+      "name": "Hero Slider",
       "blocks": {
-        "tab_all": {
-          "type": "tab",
+        "slide_vanity": {
+          "type": "slide",
           "settings": {
-            "label": "All",
-            "collection": "best-seller"
+            "image": "mkt-hero-vanity-desktop.jpg",
+            "image_mobile": "mkt-hero-vanity-mobile.jpg",
+            "link": "/collections/all",
+            "alt": "Upgrade your vanity — premium-looking makeup for every skin tone"
+          }
+        },
+        "slide_glowing": {
+          "type": "slide",
+          "settings": {
+            "image": "mkt-slide-new-glowing.jpg",
+            "image_mobile": "",
+            "link": "/collections/illuminator-highlighter",
+            "alt": "New and glowing — fresh, radiant beauty"
+          }
+        },
+        "slide_bestsellers": {
+          "type": "slide",
+          "settings": {
+            "image": "mkt-slide-bestsellers.jpg",
+            "image_mobile": "",
+            "link": "/collections/best-seller",
+            "alt": "Our bestsellers — loved by 10,000+ beauty buyers"
           }
         }
       },
-      "block_order": [
-        "tab_all"
-      ],
-      "name": "KJ Featured Grid",
+      "block_order": ["slide_vanity", "slide_glowing", "slide_bestsellers"],
       "settings": {
-        "layout": "grid",
-        "heading": "SHOP THE EDIT",
-        "collection": "best-seller",
-        "shop_all_link": "/collections/best-seller",
-        "product_limit": 4,
-        "show_secondary_image": true,
-        "bg_color": "#f8f5f2",
-        "heading_color": "#91715b",
-        "text_color": "#000000",
-        "padding_top": 60,
-        "padding_bottom": 60
+        "autoplay_seconds": 5,
+        "bg_color": "#ffffff"
       }
     },
-    "kj_hero_spotlight_1": {
-      "type": "kj-hero-banner",
-      "name": "KJ Spotlight Hero",
-      "settings": {
-        "image_desktop": "shopify://shop_images/pagebreaker.png",
-        "height_mode": "adapt",
-        "desktop_height": 70,
-        "mobile_height": 60,
-        "overlay_color": "#000000",
-        "overlay_opacity": 0,
-        "text_alignment": "left",
-        "text_color": "#91715b",
-        "eyebrow": "",
-        "heading": "SUMMER FAVES",
-        "subheading": "discover the go-tos this summer.",
-        "button_bg_color": "#ffffff",
-        "button_text_color": "#000000",
-        "button_1_text": "shop now",
-        "button_1_link": "/",
-        "button_2_text": "",
-        "button_2_link": ""
-      }
-    },
-    "kj_product_slider_y7xFYq": {
+    "shop_here": {
       "type": "kj-product-slider",
-      "name": "KJ Product Slider",
+      "name": "Shop Here",
       "settings": {
         "layout": "slider",
-        "heading": "BEST SELLERS",
+        "heading": "SHOP HERE",
         "collection": "best-seller",
-        "shop_all_link": "",
+        "shop_all_link": "/collections/best-seller",
         "product_limit": 8,
         "show_secondary_image": true,
-        "bg_color": "#f8f5f2",
-        "heading_color": "#91715b",
-        "text_color": "#000000",
-        "padding_top": 60,
-        "padding_bottom": 60
-      }
-    },
-    "kj_hero_spotlight_2": {
-      "type": "kj-hero-banner",
-      "name": "KJ Spotlight Hero 2",
-      "settings": {
-        "image_desktop": "shopify://shop_images/page-breaker-2.png",
-        "height_mode": "adapt",
-        "desktop_height": 70,
-        "mobile_height": 60,
-        "overlay_color": "#000000",
-        "overlay_opacity": 0,
-        "text_alignment": "left",
-        "text_color": "#ffffff",
-        "eyebrow": "",
-        "heading": "THE SCENT OF THE SUMMER",
-        "subheading": "a warm floral scent, perfect for summer.",
-        "button_bg_color": "#ffffff",
-        "button_text_color": "#000000",
-        "button_1_text": "shop now",
-        "button_1_link": "/",
-        "button_2_text": "",
-        "button_2_link": ""
-      }
-    },
-    "kj_video_carousel_1": {
-      "type": "kj-video-carousel",
-      "blocks": {
-        "video_1": {
-          "type": "video",
-          "settings": {
-            "external_video_url": "https://cdn.shopify.com/videos/c/o/v/4ce4d8dfde4943389c2dc976ce0ccf95.mp4",
-            "external_poster_url": "",
-            "product": ""
-          }
-        },
-        "video_2": {
-          "type": "video",
-          "settings": {
-            "external_video_url": "",
-            "external_poster_url": "https://cdn6.fireworktv.com/medias/2025/4/2/1743623565-aridzock/transcoded/720x1200/bellakrys_cosmic2_paid.jpg.62.webp",
-            "product": ""
-          }
-        },
-        "video_3": {
-          "type": "video",
-          "settings": {
-            "external_video_url": "",
-            "external_poster_url": "https://cdn6.fireworktv.com/medias/2024/4/25/1714061420-rhjincyx/transcoded/720x1200/carolinemstern_COSMIC-1714061505758.jpg.62.webp",
-            "product": ""
-          }
-        },
-        "video_4": {
-          "type": "video",
-          "settings": {
-            "external_video_url": "",
-            "external_poster_url": "https://cdn4.fireworktv.com/medias/2025/4/2/1743623847-irhmjsdz/transcoded/720x1200/mirandawillcry_cosmic2_ugc_paid.jpg.62.webp",
-            "product": ""
-          }
-        },
-        "video_XyHPQG": {
-          "type": "video",
-          "settings": {
-            "external_video_url": "",
-            "external_poster_url": "https://cdn3.fireworktv.com/medias/2025/2/26/1740614069-lsbnmazt/transcoded/720x1200/cosmic_2.0_vvmanley.jpg.62.webp",
-            "product": ""
-          }
-        }
-      },
-      "block_order": [
-        "video_1",
-        "video_2",
-        "video_3",
-        "video_4",
-        "video_XyHPQG"
-      ],
-      "name": "KJ Video Carousel",
-      "settings": {
-        "heading": "AS SEEN ON SOCIAL",
-        "subheading": "",
         "bg_color": "#ffffff",
-        "heading_color": "#91715b",
+        "heading_color": "#222222",
         "text_color": "#000000",
-        "padding_top": 60,
-        "padding_bottom": 60
+        "padding_top": 55,
+        "padding_bottom": 55
       }
     },
-    "kj_shop_by_category_rnENN9": {
+    "banner_mattmoist": {
+      "type": "kj-image-banner",
+      "name": "Matt Moist Banner",
+      "settings": {
+        "image": "mkt-banner-mattmoist-desktop.jpg",
+        "image_mobile": "mkt-banner-mattmoist-mobile.jpg",
+        "link": "/collections/matte-moist-lipstick",
+        "alt": "Glossy lips, matt finish — Matt Moist Lipstick",
+        "max_width": "full",
+        "bg_color": "#ffffff",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "banner_shade": {
+      "type": "kj-image-banner",
+      "name": "Find Your Shade Strip",
+      "settings": {
+        "image": "mkt-banner-shade-desktop.jpg",
+        "image_mobile": "mkt-banner-shade-mobile.jpg",
+        "link": "/pages/find-your-shade",
+        "alt": "Find your shade — inclusive, intentional, effortless",
+        "max_width": "full",
+        "bg_color": "#ffffff",
+        "padding_top": 24,
+        "padding_bottom": 24
+      }
+    },
+    "shop_category": {
       "type": "kj-shop-by-category",
+      "name": "Shop by Category",
       "blocks": {
-        "category_a4tDkj": {
+        "cat_face": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "image": "shopify://shop_images/kj-cat-1.jpg",
-            "title": "lips"
+            "collection": "face-uk",
+            "title": "face",
+            "external_image_url": "mkt-cat-face.jpg",
+            "link": "/collections/face-uk"
           }
         },
-        "category_rD4wC9": {
+        "cat_lips": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "image": "shopify://shop_images/kj-cat-2.jpg",
-            "title": "face"
+            "collection": "lips-1",
+            "title": "lips",
+            "external_image_url": "mkt-cat-lips.png",
+            "link": "/collections/lips-1"
           }
         },
-        "category_VMTJ7r": {
+        "cat_cheeks": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "image": "shopify://shop_images/kj-cat-3.jpg",
-            "title": "eyes"
+            "collection": "blush-on",
+            "title": "cheeks",
+            "external_image_url": "mkt-cat-cheeks.png",
+            "link": "/collections/blush-on"
           }
         },
-        "category_dPeP99": {
+        "cat_eyes": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "image": "shopify://shop_images/kj-cat-4.jpg",
-            "title": "lip care"
+            "collection": "eyes-2",
+            "title": "eyes",
+            "external_image_url": "mkt-cat-eyes.png",
+            "link": "/collections/eyes-2"
           }
         },
-        "category_kj5": {
+        "cat_skincare": {
           "type": "category",
           "settings": {
-            "collection": "",
-            "image": "shopify://shop_images/kj-ig-4.jpg",
-            "title": "skin"
-          }
-        },
-        "category_kj6": {
-          "type": "category",
-          "settings": {
-            "collection": "",
-            "image": "shopify://shop_images/kj-ig-2.jpg",
-            "title": "fragrance"
+            "collection": "skin-stl",
+            "title": "skincare",
+            "external_image_url": "mkt-cat-skincare.jpg",
+            "link": "/collections/skin-stl"
           }
         }
       },
-      "block_order": [
-        "category_a4tDkj",
-        "category_rD4wC9",
-        "category_VMTJ7r",
-        "category_dPeP99",
-        "category_kj5",
-        "category_kj6"
-      ],
-      "name": "KJ Shop by Category",
+      "block_order": ["cat_face", "cat_lips", "cat_cheeks", "cat_eyes", "cat_skincare"],
       "settings": {
         "heading": "SHOP BY CATEGORY",
-        "bg_color": "#f8f5f2",
-        "heading_color": "#91715b",
+        "bg_color": "#ffffff",
+        "heading_color": "#222222",
         "text_color": "#000000",
-        "padding_top": 60,
+        "columns": 5,
+        "hide_titles": true,
+        "tile_aspect": "landscape",
+        "padding_top": 30,
         "padding_bottom": 60
       }
     },
-    "kj_virtual_try_on_cYPN3T": {
-      "type": "kj-virtual-try-on",
-      "name": "Virtual Try-On",
-      "settings": {
-        "bg_color": "#f8f5f2",
-        "bg_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/tryon-bg.png?v=1785497220",
-        "heading": "Try It On Virtually",
-        "subtext": "See how this looks on you in real-time.",
-        "button_text": "Launch Camera"
-      }
-    },
-    "kj_instagram_grid_1": {
-      "type": "kj-instagram-grid",
+    "ugc": {
+      "type": "kj-ugc-carousel",
+      "name": "Real Results",
       "blocks": {
-        "p01": {
-          "type": "post",
+        "ugc_1": {
+          "type": "ugc",
           "settings": {
-            "image": "",
-            "external_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_9_753534658_17981011560048388_3502701572439378753_n.jpg?v=1785499737",
-            "link": ""
+            "image": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_9_753534658_17981011560048388_3502701572439378753_n.jpg?v=1785499737",
+            "handle": "@glowwithhana",
+            "caption": "the silk effect base blurred everything — zero cakiness all day."
           }
         },
-        "p02": {
-          "type": "post",
+        "ugc_2": {
+          "type": "ugc",
           "settings": {
-            "external_image_url": "https://cdn6.fireworktv.com/medias/2025/4/2/1743623565-aridzock/transcoded/720x1200/bellakrys_cosmic2_paid.jpg.62.webp",
-            "link": ""
+            "image": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_15_504406975_17932710504048388_3829184658429699698_n.jpg?v=1785499737",
+            "handle": "@maya.mua",
+            "caption": "matt moist in ruby is THE red. one swipe, full colour."
           }
         },
-        "p03": {
-          "type": "post",
+        "ugc_3": {
+          "type": "ugc",
           "settings": {
-            "external_image_url": "https://cdn6.fireworktv.com/medias/2024/4/25/1714061420-rhjincyx/transcoded/720x1200/carolinemstern_COSMIC-1714061505758.jpg.62.webp",
-            "link": ""
+            "image": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_6_757267344_17982355113048388_9049314143122462717_n.jpg?v=1785499737",
+            "handle": "@beautybyzee",
+            "caption": "dual wet & dry compact keeps my t-zone matte through a 12h shift."
           }
         },
-        "p04": {
-          "type": "post",
+        "ugc_4": {
+          "type": "ugc",
           "settings": {
-            "external_image_url": "https://cdn4.fireworktv.com/medias/2025/4/2/1743623847-irhmjsdz/transcoded/720x1200/mirandawillcry_cosmic2_ugc_paid.jpg.62.webp",
-            "link": ""
-          }
-        },
-        "p05": {
-          "type": "post",
-          "settings": {
-            "external_image_url": "https://cdn3.fireworktv.com/medias/2025/2/26/1740614069-lsbnmazt/transcoded/720x1200/cosmic_2.0_vvmanley.jpg.62.webp",
-            "link": ""
-          }
-        },
-        "p06": {
-          "type": "post",
-          "settings": {
-            "external_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_15_504406975_17932710504048388_3829184658429699698_n.jpg?v=1785499737",
-            "link": ""
-          }
-        },
-        "p07": {
-          "type": "post",
-          "settings": {
-            "external_image_url": "https://cdn1.fireworktv.com/medias/2025/4/2/1743624274-bxankmdq/transcoded/720x1200/kiyana.ebrahimi_comsic2_ugc_paid.jpg.62.webp",
-            "link": ""
-          }
-        },
-        "p08": {
-          "type": "post",
-          "settings": {
-            "image": "shopify://shop_images/kj-ig-4.jpg",
-            "external_image_url": "",
-            "link": ""
-          }
-        },
-        "p09": {
-          "type": "post",
-          "settings": {
-            "image": "shopify://shop_images/kj-ig-5.jpg",
-            "external_image_url": "",
-            "link": ""
-          }
-        },
-        "p10": {
-          "type": "post",
-          "settings": {
-            "image": "shopify://shop_images/kj-ig-6.jpg",
-            "external_image_url": "",
-            "link": ""
-          }
-        },
-        "p11": {
-          "type": "post",
-          "settings": {
-            "image": "",
-            "external_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_6_757267344_17982355113048388_9049314143122462717_n.jpg?v=1785499737",
-            "link": ""
-          }
-        },
-        "p12": {
-          "type": "post",
-          "settings": {
-            "image": "",
-            "external_image_url": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_7_758518282_4495127294080326_2888261835313860864_n.jpg?v=1785499737",
-            "link": ""
-          }
-        },
-        "p13": {
-          "type": "post",
-          "settings": {
-            "image": "shopify://shop_images/kj-ig-2.jpg",
-            "external_image_url": "",
-            "link": ""
-          }
-        },
-        "p14": {
-          "type": "post",
-          "settings": {
-            "image": "shopify://shop_images/kj-ig-3.jpg",
-            "external_image_url": "",
-            "link": ""
+            "image": "https://cdn.shopify.com/s/files/1/0722/6343/4527/files/imgi_7_758518282_4495127294080326_2888261835313860864_n.jpg?v=1785499737",
+            "handle": "@sofia.glam",
+            "caption": "blush on in bare peach is my everyday flush."
           }
         }
       },
-      "block_order": [
-        "p01",
-        "p02",
-        "p03",
-        "p04",
-        "p05",
-        "p06",
-        "p07",
-        "p08",
-        "p09",
-        "p10",
-        "p11",
-        "p12",
-        "p13",
-        "p14"
-      ],
-      "name": "KJ Instagram Grid",
+      "block_order": ["ugc_1", "ugc_2", "ugc_3", "ugc_4"],
       "settings": {
-        "heading": "SHOP OUR IG",
-        "handle_text": "@stlondon",
-        "handle_link": "",
-        "bg_color": "#f8f5f2",
-        "heading_color": "#91715b",
-        "text_color": "#000000",
-        "padding_top": 60,
-        "padding_bottom": 60
+        "heading": "REAL RESULTS. REAL PEOPLE.",
+        "subheading": "Discover how our community wears ST London.",
+        "heading_color": "#222222",
+        "bg_color": "#ffffff",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "banner_silk": {
+      "type": "kj-image-banner",
+      "name": "Silk Effect Banner",
+      "settings": {
+        "image": "mkt-banner-silk-desktop.jpg",
+        "image_mobile": "mkt-banner-silk-mobile.jpg",
+        "link": "/products/st-london-silk-effect-foundation",
+        "alt": "Silk Effect Foundation — skin-loving, second skin",
+        "max_width": "full",
+        "bg_color": "#ffffff",
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "testimonials": {
+      "type": "kj-testimonials",
+      "name": "Loved by Beauty Lovers",
+      "blocks": {
+        "q1": {
+          "type": "quote",
+          "settings": {
+            "quote": "The foundation gives flawless coverage all day without ever feeling heavy.",
+            "author": "Cleo S."
+          }
+        },
+        "q2": {
+          "type": "quote",
+          "settings": {
+            "quote": "Silk Effect is a life-changer. Bare-skin feel, but the finish looks airbrushed.",
+            "author": "Maya A."
+          }
+        },
+        "q3": {
+          "type": "quote",
+          "settings": {
+            "quote": "Matt Moist doesn't dry my lips out and the colour payoff is unreal for the price.",
+            "author": "Sana T."
+          }
+        },
+        "q4": {
+          "type": "quote",
+          "settings": {
+            "quote": "The shade finder matched me perfectly on the first try. Quality rivals brands twice the price.",
+            "author": "Adda W."
+          }
+        }
+      },
+      "block_order": ["q1", "q2", "q3", "q4"],
+      "settings": {
+        "heading": "LOVED BY BEAUTY LOVERS",
+        "rating_line": "4.8/5 based on 10,000+ reviews",
+        "heading_color": "#222222",
+        "bg_color": "#ffffff",
+        "padding_top": 48,
+        "padding_bottom": 48
+      }
+    },
+    "banner_esg": {
+      "type": "kj-image-banner",
+      "name": "ESG Trust Strip",
+      "settings": {
+        "image": "mkt-banner-esg.jpg",
+        "image_mobile": "",
+        "link": "",
+        "alt": "Cruelty free. Vegan. ESG — ethical choices for a better tomorrow.",
+        "max_width": "contained",
+        "bg_color": "#ffffff",
+        "padding_top": 12,
+        "padding_bottom": 56
       }
     }
   },
   "order": [
-    "kj_hero_banner_LqQPrr",
-    "kj_split_editorial_1",
-    "kj_featured_product_1",
-    "kj_hero_spotlight_1",
-    "kj_product_slider_y7xFYq",
-    "kj_hero_spotlight_2",
-    "kj_video_carousel_1",
-    "kj_shop_by_category_rnENN9",
-    "kj_virtual_try_on_cYPN3T",
-    "kj_instagram_grid_1"
+    "hero_slider",
+    "shop_here",
+    "banner_mattmoist",
+    "banner_shade",
+    "shop_category",
+    "ugc",
+    "banner_silk",
+    "testimonials",
+    "banner_esg"
   ]
 }
